@@ -3,16 +3,19 @@
 <widget xmlns     = "http://www.w3.org/ns/widgets"
 		xmlns:gap = "http://phonegap.com/ns/1.0"
 		id        = "com.phonegap.ia04_nf28"
-		version   = "">
+		version   = "0.0.1">
 
-	<name></name>
+	<name>IA04-NF28</name>
 
 	<description>
 		
 	</description>
 
 	<author>
-		
+		Florian Impellettieri
+		Jean Vintache
+		Marouane Hammi
+		Adrien Jacquet
 	</author>
 
 	<!--
