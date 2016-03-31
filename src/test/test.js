@@ -1,6 +1,6 @@
-function onClickPostButton () {
+function onClickPostButton (server) {
 	$.ajax({
-		url: "http://localhost:8182",
+		url: "http://"+server+":8182",
 		method: "POST",
 		data: {value : prompt()}
 	})
@@ -13,9 +13,9 @@ function onClickPostButton () {
 	});
 }
 
-function periodicGet () {
+function periodicGet (server) {
 	$.ajax({
-		url: "http://localhost:8182",
+		url: "http://"+server+":8182",
 		method: "GET"
 	})
 	.done(function(data) {
@@ -26,7 +26,9 @@ function periodicGet () {
 		console.log("GET request --> KO");
 	})
 	.always(function () {
-		setTimeout(periodicGet, 500);
+		setTimeout(periodicGet, 500, server);
 	});
 }
-periodicGet();
+
+var server = prompt("server adress");
+periodicGet(server);
