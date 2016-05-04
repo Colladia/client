@@ -33,33 +33,63 @@
         android:gravity="center_horizontal"
         android:id="@+id/getSection">
         <Button
-            android:id="@+id/sendHttpRequest"
+            android:id="@+id/sendGetHttpRequest"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Send Http Request" />
+            android:text="Get" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="28dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:id="@+id/getSection">
+        <Button
+            android:id="@+id/sendPutHttpRequest"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Put" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_marginTop="28dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:id="@+id/getSection">
+        <Button
+            android:id="@+id/sendDelHttpRequest"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Del" />
     </LinearLayout>
     <LinearLayout
         android:orientation="horizontal"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="40dp"
         android:layout_marginRight="40dp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/locSection">
         <TextView
             android:text="Reponse request:"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:layout_width="120dp"
-            android:layout_height="30dp"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:gravity="left"
             android:id="@+id/requestResponseLabel" />
         <TextView
             android:text=""
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceLarge"
             android:layout_width="wrap_content"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:gravity="left"
             android:id="@+id/responseRequestText" />
     </LinearLayout>

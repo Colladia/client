@@ -18,11 +18,12 @@ namespace testXamarinHttp.Droid
 	public class MainActivity : Activity
 	{
         private string server = "10.0.2.2";
-        private string jsonToSend =
+
+        /*private string jsonToSend =
             "{\"employees\":[" +
                                 "{\"firstName\":\"John\", \"lastName\":\"Doe\"}," +
-                                "{\"firstName\":\"Anna\", \"lastName\":\"Smith\"}," +
-            "]}";
+                                "{\"firstName\":\"Anna\", \"lastName\":\"Smith\"}" +
+            "]}";*/
 
         private const string port = ":8182";
 
@@ -36,18 +37,53 @@ namespace testXamarinHttp.Droid
             // Get the host server ip adress 
             EditText hostIp = FindViewById<EditText>(Resource.Id.hostText);
             hostIp.Text = server;
-            Button button = FindViewById<Button>(Resource.Id.sendHttpRequest);
+            Button getButton = FindViewById<Button>(Resource.Id.sendGetHttpRequest);
+            Button putButton = FindViewById<Button>(Resource.Id.sendPutHttpRequest);
+            Button delButton = FindViewById<Button>(Resource.Id.sendDelHttpRequest);
+            //Button postButton = FindViewById<Button>(Resource.Id.sendHttpRequest);
+
 
             // When the user clicks the button ...
-            button.Click += async (sender, e) => {
+            getButton.Click += async (sender, e) => {
                 //get the ip server
                 server = hostIp.Text;
                 //create the url
                 string url = "http://" + server + "" + port;
 
                 // Fetch the information asynchronously, 
-                JsonValue json = await PostAsync(url, jsonToSend);
-                //JsonValue json = await GetAsync(url);
+                //JsonValue json = await PostAsync(url, jsonToSend);
+                JsonValue json = await GetAsync(url, "0",null);
+
+
+                // parse the results, then update the screen:
+                Display(json);
+            };
+
+            // When the user clicks the button ...
+            putButton.Click += async (sender, e) => {
+                //get the ip server
+                server = hostIp.Text;
+                //create the url
+                string url = "http://" + server + "" + port;
+
+                // Fetch the information asynchronously, 
+                JsonValue json = await PutAsync(url, "0", null, null);
+
+
+                // parse the results, then update the screen:
+                Display(json);
+            };
+
+            // When the user clicks the button ...
+            delButton.Click += async (sender, e) => {
+                //get the ip server
+                server = hostIp.Text;
+                //create the url
+                string url = "http://" + server + "" + port;
+
+                // Fetch the information asynchronously, 
+                JsonValue json = await DelAsync(url, "0", null);
+
 
                 // parse the results, then update the screen:
                 Display(json);
@@ -109,14 +145,21 @@ namespace testXamarinHttp.Droid
 
 
 
-        // Send a http request of GET type, passing the url     
-        private async Task<JsonValue> GetAsync(string url, string headersInput)
+        // Send a http request of GET type, passing the url
+        //idDiagram corresponds to the id of the diagram
+        //pathIdElement MUST be ordered with a parentElement the followed by its subelement and so on
+        private async Task<JsonValue> GetAsync(string url, string idDiagram, string[] pathIdElement)
         {
+            String uri = url + "/" + idDiagram;
+            if (pathIdElement!=null && pathIdElement.Length > 0) {
+                foreach(string element in pathIdElement){
+                    uri = uri + "/" + idDiagram;             
+                }
+            }
             // Create an HTTP web request using the URL:
-            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(url));
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
             request.ContentType = "application/json";
             request.Method = "GET";
-            //TODO test this way of sending data in get request.Headers["timeStamp"] = headersInput; 
 
             // Send the request to the server and wait for the response:
             using (WebResponse response = await request.GetResponseAsync())
@@ -137,6 +180,91 @@ namespace testXamarinHttp.Droid
 
 
 
+        // Send a http request of DELETE type, passing the url
+        //idDiagram corresponds to the id of the diagram
+        //pathIdElement MUST be ordered with a parentElement the followed by its subelement and so on
+        private async Task<JsonValue> DelAsync(string url, string idDiagram, string[] pathIdElement)
+        {
+            String uri = url + "/" + idDiagram;
+            if (pathIdElement != null && pathIdElement.Length > 0)
+            {
+                foreach (string element in pathIdElement)
+                {
+                    uri = uri + "/" + idDiagram;
+                }
+            }
+            // Create an HTTP web request using the URL:
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
+            request.ContentType = "application/json";
+            request.Method = "DELETE";
+
+            // Send the request to the server and wait for the response:
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                // Get a stream representation of the HTTP web response:
+                using (Stream stream = response.GetResponseStream())
+                {
+                    // Use this stream to build a JSON document object:
+                    JsonValue jsonDoc = await Task.Run(() => JsonObject.Load(stream));
+                    Console.Out.WriteLine("Response: {0}", response.ToString());
+
+                    // Return the JSON document:
+                    return jsonDoc;
+                }
+            }
+        }
+
+
+
+
+
+        // Send a http request of PUT type, passing the url
+        //idDiagram corresponds to the id of the diagram
+        //if the purpose is to create a diagram then other parameter must be null
+        //else 
+        //pathIdElement MUST be ordered with a parentElement followed by its subelement and so on
+        //descriptionElementJson contain a json for the properties of the element
+        private async Task<JsonValue> PutAsync(string url, string idDiagram, string[] pathIdElement, string descriptionElementJson)
+        {
+            String uri = url + "/" + idDiagram;
+            if (pathIdElement != null && pathIdElement.Length > 0)
+            {
+                foreach (string element in pathIdElement)
+                {
+                    uri = uri + "/" + idDiagram;
+                }
+            }
+
+            // Create an HTTP web request using the URL:
+            HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(new Uri(uri));
+            request.ContentType = "application/json";
+            request.Method = "PUT";
+
+            if (descriptionElementJson != null){
+                //Encode the message to send in UTF8
+                byte[] arr = System.Text.Encoding.UTF8.GetBytes(descriptionElementJson);
+                request.ContentLength = arr.Length;
+
+                Stream dataStream = request.GetRequestStream();
+                dataStream.Write(arr, 0, arr.Length);
+                dataStream.Close();
+            }
+
+            // Send the request to the server and wait for the response:
+            using (WebResponse response = await request.GetResponseAsync())
+            {
+                // Get a stream representation of the HTTP web response:
+                using (Stream stream = response.GetResponseStream())
+                {
+                    // Use this stream to build a JSON document object:
+                    JsonValue jsonDoc = await Task.Run(() => JsonObject.Load(stream));
+                    Console.Out.WriteLine("Response: {0}", response.ToString());
+
+                    // Return the JSON document:
+                    return jsonDoc;
+                }
+            }
+        }
 
 
 
