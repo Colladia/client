@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.ia04nf28.colladia" >
 
+    <!-- TODO not needed anymore -->
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
@@ -16,11 +17,19 @@
         <activity
             android:name=".LoginActivity"
             android:label="@string/app_name" >
+        <activity
+            android:name=".LoginActivity"
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".DrawActivity"
+            android:label="@string/title_activity_draw"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
     </application>
 
