@@ -17,4 +17,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
+    <string name="nav_menu_contributor">Users</string>
+    <string name="nav_menu_home_back">Back</string>
 </resources>
