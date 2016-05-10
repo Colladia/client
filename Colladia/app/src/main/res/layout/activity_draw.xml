@@ -15,11 +15,22 @@
 
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
+        android:layout_width="140dp"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_draw"
-        app:menu="@menu/activity_draw_drawer" />
+        app:menu="@menu/activity_draw_drawer" >
+
+        <ExpandableListView
+            android:id="@+id/navigation_menu_expand_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="192dp"
+            android:background="@android:color/white"
+            android:choiceMode="singleChoice"
+            android:listSelector="@color/colorGrey">
+        </ExpandableListView>
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

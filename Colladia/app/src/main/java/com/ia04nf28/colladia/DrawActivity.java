@@ -12,9 +12,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ExpandableListView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class DrawActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+
+    private DrawerLayout drawer;
+    ExpandableListAdapter mMenuAdapter;
+    ExpandableListView expandableList;
+    List<ExpandedMenuModel> listDataHeader;
+    HashMap<ExpandedMenuModel, List<String>> listDataChild;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,14 +44,24 @@ public class DrawActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        //TODO see navigationView.setNavigationItemSelectedListener(this);
+        expandableList = (ExpandableListView) findViewById(R.id.navigation_menu_expand_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
+
+        prepareListData();
+        mMenuAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild, expandableList);
+
+        // setting list adapter
+        expandableList.setAdapter(mMenuAdapter);
     }
 
     @Override
@@ -78,24 +100,83 @@ public class DrawActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+    private void prepareListData() {
+        listDataHeader = new ArrayList<ExpandedMenuModel>();
+        listDataChild = new HashMap<ExpandedMenuModel, List<String>>();
+
+        ExpandedMenuModel item1 = new ExpandedMenuModel();
+        item1.setIconName("Basic");
+        item1.setIconImg(R.drawable.ic_menu_camera);
+        // Adding data header
+        listDataHeader.add(item1);
+
+        ExpandedMenuModel item2 = new ExpandedMenuModel();
+        item2.setIconName("Link");
+        item2.setIconImg(R.drawable.ic_menu_gallery);
+        listDataHeader.add(item2);
+
+        ExpandedMenuModel item3 = new ExpandedMenuModel();
+        item3.setIconName("Picture");
+        item3.setIconImg(R.drawable.ic_menu_share);
+        listDataHeader.add(item3);
+
+        // Adding child data
+        List<String> heading1 = new ArrayList<String>();
+        heading1.add("Square");
+        heading1.add("Circle");
+        heading1.add("Triangle");
+
+        List<String> heading2 = new ArrayList<String>();
+        heading2.add("Simple");
+        heading2.add("Arrow");
+        heading2.add("Double Arrow");
+
+        List<String> heading3 = new ArrayList<String>();
+        heading2.add("Person");
+
+        listDataChild.put(listDataHeader.get(0), heading1);// Header, Child data
+        listDataChild.put(listDataHeader.get(1), heading2);
+        listDataChild.put(listDataHeader.get(2), heading3);
+
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        int id = menuItem.getItemId();
+
+                        if (id == R.id.nav_contributor) {
+                            Toast.makeText(DrawActivity.this, "View collaborator", Toast.LENGTH_SHORT).show();
+
+                        } else if (id == R.id.nav_home) {
+
+                            Toast.makeText(DrawActivity.this, "Go back", Toast.LENGTH_SHORT).show();
+                        }
+                        menuItem.setChecked(true);
+                        drawer.closeDrawers();
+                        return true;
+                    }
+                });
+
+        expandableList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+
+                int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
+                parent.setItemChecked(index, true);
+
+                Toast.makeText(DrawActivity.this, "clicked " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString(), Toast.LENGTH_SHORT).show();
+                drawer.closeDrawers();
+                return true;
+            }
+        });
+    }
+
 }
