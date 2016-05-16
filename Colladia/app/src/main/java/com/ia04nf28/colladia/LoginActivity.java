@@ -3,34 +3,30 @@ package com.ia04nf28.colladia;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
 
 /**
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity {
-
-    /**
-     * A dummy authentication store containing known user names and passwords.
-     * TODO: remove after connecting to a real authentication system.
-     */
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
-    };
-
-    /**
-     * Keep track of the login task to ensure we can cancel it if requested.
-     */
-    private UserLoginTask mAuthTask = null;
-
     // UI references.
     private EditText mUserLoginView;
     private EditText mServerAddressView;
@@ -63,10 +59,6 @@ public class LoginActivity extends AppCompatActivity {
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
-        if (mAuthTask != null) {
-            return;
-        }
-
         // Reset errors.
         mUserLoginView.setError(null);
         mServerAddressView.setError(null);
@@ -108,8 +100,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(userLogin, address);
-            mAuthTask.execute((Void) null);
+            sendSimpleRequest(address);
         }
     }
 
@@ -159,55 +150,40 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    private void sendSimpleRequest(String address) {
+        RequestQueue rq = Volley.newRequestQueue(this);
 
-        private final String mLogin;
-        private final String mAddress;
+        StringRequest request = new StringRequest(Request.Method.GET, address,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        showProgress(false);
+                        startDrawActivity();
+                        //finish();
+                    }
+                }
+                , new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        showProgress(false);
+                        validationFail(error);
+                    }
+                });
 
-        UserLoginTask(String login, String address) {
-            mLogin = login;
-            mAddress = address;
-        }
+        // Add the request to the RequestQueue.
+        rq.add(request);
+    }
 
-        @Override
-        protected Boolean doInBackground(Void... params) {
-            // TODO: attempt authentication against a network service.
+    private void startDrawActivity() {
+        Intent intent = new Intent(this, DrawActivity.class);
+        startActivity(intent);
+    }
 
-            try {
-                // Simulate network access.
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                return false;
-            }
-
-            RequestQueue q = Volley.newRequestQueue(this);
-
-
-            return true;
-        }
-
-        @Override
-        protected void onPostExecute(final Boolean success) {
-            mAuthTask = null;
-            showProgress(false);
-
-            if (success) {
-                finish();
-            } else {
-                mServerAddressView.setError(getString(R.string.error_incorrect_address));
-                mServerAddressView.requestFocus();
-            }
-        }
-
-        @Override
-        protected void onCancelled() {
-            mAuthTask = null;
-            showProgress(false);
-        }
+    private void validationFail(VolleyError error) {
+        //mServerAddressView.setError(getString(R.string.error_incorrect_address));
+        mServerAddressView.setError(error.getMessage());
+        mServerAddressView.requestFocus();
+        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
     }
 }
 
