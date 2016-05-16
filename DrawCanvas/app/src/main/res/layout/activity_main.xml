@@ -8,13 +8,15 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.nf28_ia04.colladia.draw_test.MainActivity">
-    <com.nf28_ia04.colladia.draw_test.Panel
+<!--    <com.nf28_ia04.colladia.draw_test.Panel
         android:id="@+id/SurfaceView01"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:maxHeight="40dip">
-    </com.nf28_ia04.colladia.draw_test.Panel>
-
+    </com.nf28_ia04.colladia.draw_test.Panel>-->
+    <com.nf28_ia04.colladia.draw_test.DrawColladia
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

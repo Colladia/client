@@ -13,6 +13,9 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.Volley;
+
 /**
  * A login screen that offers login via email/password.
  */
@@ -184,7 +187,7 @@ public class LoginActivity extends AppCompatActivity {
                 return false;
             }
 
-            RequestQueue q = Volley.newRequestQueue(this);
+            RequestQueue q = Volley.newRequestQueue(getApplicationContext());
 
 
             return true;
