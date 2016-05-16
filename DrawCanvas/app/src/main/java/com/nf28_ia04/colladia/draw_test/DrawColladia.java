@@ -44,6 +44,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     static final int INSERT = 4;
     int mode = NONE;
 
+    private final static int INDEX = 0;
 
     /** All available circles */
     private HashSet<Element> listElement = new HashSet<>();
@@ -193,6 +194,10 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
                 touchedElement = getTouchedElement(x, y);
                 if(touchedElement!= null){
                     Log.d(TAG, "Find an element :  x: " + x + " y: " + y );
+                    PointF center = ChangementBase.WindowToAbsolute(x,y,root.x,root.y);
+                    touchedElement.setX(center.x);
+                    touchedElement.setY(center.y);
+                    listPointedElement.put(evt.getPointerId(INDEX), touchedElement);
 
                 } else if (mode==INSERT){
                     mode = SCROLL;
@@ -210,10 +215,25 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
                 //time = System.currentTimeMillis();
                 break;
             case MotionEvent.ACTION_MOVE:
-                moveTouch(x, y);
+                int pointerId = evt.getPointerId(INDEX);
+
+                x = evt.getX(INDEX);
+                y = evt.getY(INDEX);
+
+                touchedElement = listPointedElement.get(pointerId);
+
+                if (null != touchedElement) {
+                    PointF center = ChangementBase.WindowToAbsolute(x,y,root.x,root.y);
+                    touchedElement.setX(center.x);
+                    touchedElement.setY(center.y);
+                } else {
+                    moveTouch(x, y);
+                }
+
                 invalidate();
                 break;
             case MotionEvent.ACTION_UP:
+                clearElementPointer();
                 upTouch();
                 invalidate();
                 break;
