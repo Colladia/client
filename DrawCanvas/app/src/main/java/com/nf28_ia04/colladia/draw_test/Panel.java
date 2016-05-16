@@ -45,7 +45,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback {
         super(context, attrs);
         // TODO Auto-generated constructor stub
         getHolder().addCallback(this);
-        canvasthread = new CanvasThread(getHolder(), this);
+        //canvasthread = new CanvasThread(getHolder(), this);
         setFocusable(true);
     }
 
@@ -98,6 +98,7 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback {
         //canvas.drawBitmap(kangoo, 10, 10, null);
         canvas.drawBitmap(kangoo,matrix,paint);
 
+
     }
 
 
@@ -109,8 +110,8 @@ public class Panel extends SurfaceView implements SurfaceHolder.Callback {
 
 
     /** PanZoomWithTouch function
-     /*      Listen to touch actions and perform Zoom or Pan respectively
-     /* */
+     *  Listen to touch actions and perform Zoom or Pan respectively
+     */
     void PanZoomWithTouch(MotionEvent event){
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN://when first finger down, get first point
