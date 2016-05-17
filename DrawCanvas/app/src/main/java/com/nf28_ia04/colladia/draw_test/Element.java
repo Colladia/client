@@ -11,7 +11,15 @@ public abstract class Element{
 
     private float x;
     private float y;
+    private float width;
+    private float height;
     private Paint paint;
+    protected PointF center;
+
+    public Element()
+    {
+        center = new PointF();
+    }
 
     public Element(float x, float y, Paint paint) {
         this.x = x;
@@ -21,6 +29,15 @@ public abstract class Element{
     public Element(float x, float y) {
         this.x = x;
         this.y = y;
+    }
+
+    public void set(float x, float y, float width, float height)
+    {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+        center.set((x + width)/2, (y + height)/2);
     }
 
     public float getX() {

@@ -12,6 +12,19 @@ public class CircleElement extends Element {
     private int radius;
     private static final int DEFAULT_RADIUS = 50;
 
+    public CircleElement()
+    {
+        super();
+        this.radius = DEFAULT_RADIUS;
+
+        Paint defaultPaint = new Paint();
+        defaultPaint.setColor(Color.BLUE);
+        defaultPaint.setStrokeWidth(40);
+        defaultPaint.setStyle(Paint.Style.FILL);
+        this.setPaint(defaultPaint);
+    }
+
+
     public CircleElement(float x, float y, int radius) {
         super(x, y);
         this.radius = radius;
@@ -19,7 +32,7 @@ public class CircleElement extends Element {
         Paint defaultPaint = new Paint();
         defaultPaint.setColor(Color.BLUE);
         defaultPaint.setStrokeWidth(40);
-        defaultPaint.setStyle(Paint.Style.FILL);
+        defaultPaint.setStyle(Paint.Style.STROKE);
         this.setPaint(defaultPaint);
     }
 
@@ -36,7 +49,7 @@ public class CircleElement extends Element {
 
     @Override
     public void drawElement(Canvas canvas, PointF absoluteRoot) {
-        PointF coord = ChangementBase.AbsoluteToWindow(this.getX(),this.getY(),absoluteRoot.x,absoluteRoot.y);
+        PointF coord = ChangementBase.AbsoluteToWindow(this.center.x, this.center.y, absoluteRoot.x, absoluteRoot.y);
         canvas.drawCircle(coord.x, coord.y, this.getRadius(), this.getPaint());
     }
 
@@ -52,6 +65,13 @@ public class CircleElement extends Element {
 
     public void setRadius(int radius) {
         this.radius = radius;
+    }
+
+    @Override
+    public void set(float x, float y, float width, float height)
+    {
+        super.set(x, y, width, height);
+        this.radius = Math.min(Math.round(width/2), Math.round(height/2));
     }
 
 }
