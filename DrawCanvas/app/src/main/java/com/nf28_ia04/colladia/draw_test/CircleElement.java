@@ -59,6 +59,11 @@ public class CircleElement extends Element {
         return ((this.getX() - finger.x) * (this.getX() - finger.x) + (this.getY() - finger.y) * (this.getY() - finger.y) <= this.radius * this.radius);
     }
 
+    @Override
+    public void resize(float resizeFactor) {
+        this.radius *= resizeFactor;
+    }
+
     public int getRadius() {
         return radius;
     }

@@ -1,10 +1,12 @@
 package com.nf28_ia04.colladia.draw_test;
 
+import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -41,13 +43,10 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
     int mode = INSERT;
 
-    private final static int INDEX = 0;
 
     /** All available circles */
     private HashSet<Element> listElement = new HashSet<>();
     private SparseArray<Element> listPointedElement = new SparseArray<>();
-    private final Random mRadiusGenerator = new Random();
-    private final static int RADIUS_LIMIT = 100;
 
 
     private static final float ZOOM_MIN = 0.1f;
@@ -66,6 +65,8 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     private float translateY = 0f;
     private float prevTranslateX = 0f;
     private float prevTranslateY = 0f;
+    private float oldDistanceFingerSpace = 0f;
+    private float newDistanceFingerSpace = 0f;
 
 
     private PointF root = new PointF(0f, 0f);
@@ -163,8 +164,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh)
-    {
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
         super.onSizeChanged(w, h, oldw, oldh);
         screen.set(0, 0, w, h);
         //super.onSizeChanged(w, h, oldw, oldh);
@@ -193,6 +193,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
         canvas.drawCircle(root.x, root.y, 10, paint); //represent the absoluteRoot of the view
         canvas.drawRect(root.x + 100, root.y + 100, root.x + 200, root.y + 200, paint);
+
 
         for (Element elem : listElement) {
             elem.drawElement(canvas,root);
@@ -241,10 +242,20 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
             case NONE:
                 // We touched an object on the screen
-                if(selected != null) mode = EDIT;
-                else mode = SCROLL;
+                if(selected != null)
+                    mode = EDIT;
+                else //or we touch any object on the screen
+                    mode = SCROLL;
                 break;
         }
+
+/*TODO resize
+        else if(null != touchedElement && oldDistanceFingerSpace!=0f){
+        newDistanceFingerSpace = spacing(evt);
+        float scale = newDistanceFingerSpace / oldDistanceFingerSpace;
+        oldDistanceFingerSpace = 0f;
+        newDistanceFingerSpace = 0f;
+        touchedElement.resize(scale);*/
     }
 
     private void moveTouch(float x, float y)
@@ -326,6 +337,21 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
                 prevTranslateY = translateY;
                 break;
         }
+/*      TODO For resize see
+  pointerId = evt.getPointerId(INDEX);
+
+        x = evt.getX(INDEX);
+        y = evt.getY(INDEX);
+
+        touchedElement = listPointedElement.get(pointerId);
+
+        if (null != touchedElement) {
+            oldDistanceFingerSpace = spacing(evt);
+            Log.d(TAG, "oldDist=" + oldDistanceFingerSpace);
+        }
+        invalidate();
+        //time = System.currentTimeMillis();
+        break;*/
     }
 
     @Override
@@ -335,6 +361,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         float y = evt.getY();
         long time = System.currentTimeMillis();
         Element touchedElement = null;
+        int pointerId = 0;
 
         switch(evt.getAction())
         {
@@ -390,6 +417,14 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         listPointedElement.clear();
     }
 
+    /** Determine the space between the first two fingers */
+    private float spacing(MotionEvent event) {
+        // ...
+        float x = event.getX(0) - event.getX(1);
+        float y = event.getY(0) - event.getY(1);
+        return (float) Math.sqrt(x * x + y * y);
+    }
+
 
     public class SimpleScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
@@ -410,15 +445,15 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
             running = run;
         }
 
-        public boolean isRunning(){ return running; }
+        public boolean isRunning() {
+            return running;
+        }
 
         @Override
-        public void run()
-        {
+        public void run() {
             Canvas c;
 
-            while (running)
-            {
+            while (running) {
                 c = null;
                 try {
 
@@ -444,7 +479,8 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
                 // and it's battery friendly :)
                 try {
                     Thread.sleep(20);
-                } catch(InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
 
             }
         }

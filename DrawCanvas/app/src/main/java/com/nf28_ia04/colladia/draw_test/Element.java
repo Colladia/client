@@ -66,5 +66,6 @@ public abstract class Element{
 
     public abstract void drawElement(Canvas canvas, PointF absoluteRoot);
     public abstract boolean isTouch(PointF finger, PointF absoluteRoot);
+    public abstract void resize(float resizeFactor);
 
 }
