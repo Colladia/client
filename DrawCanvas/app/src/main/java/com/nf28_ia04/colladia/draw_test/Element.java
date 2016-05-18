@@ -2,6 +2,7 @@ package com.nf28_ia04.colladia.draw_test;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.PointF;
 
 /**
@@ -31,29 +32,23 @@ public abstract class Element{
         this.y = y;
     }
 
-    public void set(float x, float y, float width, float height)
+    public void set(float x, float y, float width, float height, PointF absoluteRoot, float zoom)
     {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
-        center.set((x + width)/2, (y + height)/2);
+        PointF topLeftCorner = ChangementBase.WindowToAbsolute(x, y, absoluteRoot.x, absoluteRoot.y, zoom);
+        PointF bottomRightCorner = ChangementBase.WindowToAbsolute(width,height, absoluteRoot.x, absoluteRoot.y, zoom);
+        this.x = topLeftCorner.x;
+        this.y = topLeftCorner.y;
+        this.width = bottomRightCorner.x;
+        this.height = bottomRightCorner.y;
+        center.set((this.x + this.width)/2, (this.y + this.height)/2);
     }
 
     public float getX() {
         return x;
     }
 
-    public void setX(float x) {
-        this.x = x;
-    }
-
     public float getY() {
         return y;
-    }
-
-    public void setY(float y) {
-        this.y = y;
     }
 
     public Paint getPaint() {
@@ -65,7 +60,7 @@ public abstract class Element{
     }
 
     public abstract void drawElement(Canvas canvas, PointF absoluteRoot);
-    public abstract boolean isTouch(PointF finger, PointF absoluteRoot);
+    public abstract boolean isTouch(PointF finger, PointF absoluteRoot, float zoom);
     public abstract void resize(float resizeFactor);
 
 }

@@ -49,13 +49,12 @@ public class CircleElement extends Element {
 
     @Override
     public void drawElement(Canvas canvas, PointF absoluteRoot) {
-        PointF coord = ChangementBase.AbsoluteToWindow(this.center.x, this.center.y, absoluteRoot.x, absoluteRoot.y);
-        canvas.drawCircle(coord.x, coord.y, this.getRadius(), this.getPaint());
+        canvas.drawCircle(center.x, center.y, this.getRadius(), this.getPaint());
     }
 
     @Override
-    public boolean isTouch(PointF finger,PointF absoluteRoot ) {//TODO check for absolute root or window
-        finger =  ChangementBase.WindowToAbsolute(finger.x, finger.y, absoluteRoot.x, absoluteRoot.y);
+    public boolean isTouch(PointF finger,PointF absoluteRoot, float zoom ) {
+        finger =  ChangementBase.WindowToAbsolute(finger.x, finger.y, absoluteRoot.x, absoluteRoot.y, zoom);
         return ((this.getX() - finger.x) * (this.getX() - finger.x) + (this.getY() - finger.y) * (this.getY() - finger.y) <= this.radius * this.radius);
     }
 
@@ -73,9 +72,9 @@ public class CircleElement extends Element {
     }
 
     @Override
-    public void set(float x, float y, float width, float height)
+    public void set(float x, float y, float width, float height, PointF absoluteRoot, float zoom)
     {
-        super.set(x, y, width, height);
+        super.set(x, y, width, height,absoluteRoot, zoom);
         this.radius = Math.min(Math.round(width/2), Math.round(height/2));
     }
 

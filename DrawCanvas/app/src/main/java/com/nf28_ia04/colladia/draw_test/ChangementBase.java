@@ -7,11 +7,11 @@ import android.graphics.PointF;
  */
 public class ChangementBase {
 
-    public static PointF AbsoluteToWindow(float pointX, float pointY, float absoluteRootX, float absoluteRootY){
-        return new PointF(pointX + absoluteRootX, pointY + absoluteRootY);
+    public static PointF AbsoluteToWindow(float pointX, float pointY, float absoluteRootX, float absoluteRootY, float zoom){
+        return new PointF((pointX + absoluteRootX)*zoom, (pointY + absoluteRootY)*zoom);
     }
 
-    public static PointF WindowToAbsolute(float pointX, float pointY, float absoluteRootX, float absoluteRootY){
-        return new PointF(pointX - absoluteRootX, pointY - absoluteRootY);
+    public static PointF WindowToAbsolute(float pointX, float pointY, float absoluteRootX, float absoluteRootY, float zoom){
+        return new PointF((pointX - absoluteRootX)/zoom, (pointY - absoluteRootY)/zoom);
     }
 }

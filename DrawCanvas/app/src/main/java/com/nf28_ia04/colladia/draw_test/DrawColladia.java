@@ -129,6 +129,8 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeWidth(5f);
+
+
     }
 
     /** Surface methods **/
@@ -181,18 +183,18 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
         canvas.save();
 
-        Log.d(TAG, Integer.toString(mode));
+        //Log.d(TAG, Integer.toString(mode));
 
-        canvas.scale(scaleFactor, scaleFactor, scaleDetector.getFocusX(), scaleDetector.getFocusY());
+       //canvas.scale(scaleFactor, scaleFactor, scaleDetector.getFocusX(), scaleDetector.getFocusY());
+       canvas.scale(scaleFactor, scaleFactor, 0, 0);
         canvas.translate(translateX / scaleFactor, translateY / scaleFactor);
 
 
-        canvas.drawColor(Color.GRAY);
+        canvas.drawColor(Color.WHITE);
 
         canvas.drawRect(0, 0, 2000, 2000, border);
 
-        canvas.drawCircle(root.x, root.y, 10, paint); //represent the absoluteRoot of the view
-        canvas.drawRect(root.x + 100, root.y + 100, root.x + 200, root.y + 200, paint);
+        //canvas.drawCircle(root.x, root.y, 10, paint); //represent the absoluteRoot of the view
 
 
         for (Element elem : listElement) {
@@ -233,7 +235,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
                 // We add the selected element from the menu to the canvas
                 drawElem = new CircleElement();
-                drawElem.set(iX, iY, mX, mY);
+                drawElem.set(iX, iY, mX, mY,root,scaleFactor);
 
                 listElement.add(drawElem);
 
@@ -271,7 +273,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
             case INSERT:
                 mX = Math.round(x);
                 mY = Math.round(y);
-                drawElem.set(iX, iY, mX, mY);
+                drawElem.set(iX, iY, mX, mY, root, scaleFactor);//TODO issue if ix > mx and so on do a test
                 break;
 
             case SCROLL:
@@ -282,6 +284,9 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
                 if(Math.abs(translateX) >= TOLERANCE || Math.abs(translateY) >= TOLERANCE)
                 {
                     scrolled = true;
+                    // Update our root point
+                    root.x = translateX;
+                    root.y = translateY;
 
                     /*root.x += dx;
                     root.y += dy;
@@ -307,7 +312,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iX, iY, mX, mY);
+                drawElem.set(iX, iY, mX, mY, root,scaleFactor);
                 drawElem = null;
                 break;
 
@@ -326,7 +331,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iX, iY, mX, mY);
+                drawElem.set(iX, iY, mX, mY, root,scaleFactor);
                 drawElem = null;
                 break;
 
@@ -363,6 +368,10 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         Element touchedElement = null;
         int pointerId = 0;
 
+        Log.d(TAG, "Point         x : "+x+" y : "+y);
+        PointF temp = ChangementBase.WindowToAbsolute(x,y,root.x,root.y,scaleFactor);
+        Log.d(TAG, "Point absolue x : "+temp.x+" y : "+temp.y);
+        Log.d(TAG, "Point root    x : "+root.x+" y : "+root.y);
         switch(evt.getAction())
         {
             // First finger on screen
@@ -401,7 +410,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     {
         for (Element elem : listElement)
         {
-            if (elem.isTouch(new PointF(xTouch,yTouch),root))
+            if (elem.isTouch(new PointF(xTouch,yTouch),root, scaleFactor))
             {
                 return elem;
             }
