@@ -25,6 +25,7 @@ import com.android.volley.toolbox.Volley;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
+import com.ia04nf28.colladia.model.Manager;
 
 /**
  * A login screen for Colladia
@@ -178,6 +179,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startDrawActivity() {
+
+        String userLogin = mUserLoginView.getText().toString();
+        String address = mServerAddressView.getText().toString();
+
+        Manager.instance(this.getApplicationContext()).login(userLogin, address);
+
         Intent intent = new Intent(this, DrawActivity.class);
         startActivity(intent);
     }
