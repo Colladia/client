@@ -7,6 +7,7 @@ import android.view.SurfaceHolder;
  * Created by Mar on 11/05/2016.
  */
 public class CanvasThread extends Thread {
+
     private SurfaceHolder _surfaceHolder;
     private DrawColladia _panel;
     private boolean _run = false;
@@ -21,11 +22,15 @@ public class CanvasThread extends Thread {
     }
 
     @Override
-    public void run() {
+    public void run()
+    {
         Canvas c;
-        while (_run) {
+
+        while (_run)
+        {
             c = null;
             try {
+
                 c = _surfaceHolder.lockCanvas(null);
                 synchronized (_surfaceHolder) {
                     _panel.onDraw(c);
