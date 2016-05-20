@@ -183,7 +183,7 @@ public class LoginActivity extends AppCompatActivity {
         String userLogin = mUserLoginView.getText().toString();
         String address = mServerAddressView.getText().toString();
 
-        //Manager.instance(this.getApplicationContext()).login(userLogin, address);
+        Manager.instance(this.getApplicationContext()).login(userLogin, address);
 
         Intent intent = new Intent(this, DrawActivity.class);
         startActivity(intent);

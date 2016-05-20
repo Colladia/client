@@ -51,7 +51,10 @@ public class Manager {
             public void onResponse(String s) {
                 try {
                     JSONObject mainObject = new JSONObject(s);
-                    JSONArray jArray = mainObject.getJSONArray("list");
+                    String dList = mainObject.getString("diagram-list");
+
+                    JSONArray jArray = new JSONArray(dList);
+
                     List<String> res = new ArrayList<String>();
 
                     // add items not already in the stored list
