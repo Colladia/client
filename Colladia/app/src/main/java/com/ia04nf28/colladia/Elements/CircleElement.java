@@ -1,12 +1,14 @@
-package com.nf28_ia04.colladia.draw_test;
+package com.ia04nf28.colladia.Elements;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
+import com.ia04nf28.colladia.Utils.ChangementBase;
+
 /**
- * Created by Mar on 15/05/2016.
+ * Created by Mar on 17/05/2016.
  */
 public class CircleElement extends Element {
     private int radius;
@@ -54,5 +56,4 @@ public class CircleElement extends Element {
         super.set(topLeftCorner,bottomRightCorner);
         this.radius = Math.min(Math.round(this.width/2), Math.round(this.height/2));
     }
-
 }

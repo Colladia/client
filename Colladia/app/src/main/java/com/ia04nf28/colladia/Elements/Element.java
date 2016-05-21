@@ -1,17 +1,18 @@
-package com.nf28_ia04.colladia.draw_test;
+package com.ia04nf28.colladia.Elements;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.PointF;
-import android.graphics.Shader;
+
+import java.util.UUID;
 
 /**
- * Created by Mar on 15/05/2016.
+ * Created by Mar on 17/05/2016.
  */
-public abstract class Element{
+public abstract class Element {
 
+    private String idElement = UUID.randomUUID().toString();
     private float x;
     private float y;
     protected float width;
@@ -68,6 +69,10 @@ public abstract class Element{
         return y;
     }
 
+    public PointF getCenter() {
+        return center;
+    }
+
     public Paint getPaint() {
         return paint;
     }
@@ -96,5 +101,4 @@ public abstract class Element{
     public void deselectElement(){
         paint.setColor(Color.BLUE);
     }
-
 }

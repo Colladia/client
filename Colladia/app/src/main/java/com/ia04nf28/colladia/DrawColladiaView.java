@@ -1,4 +1,4 @@
-package com.nf28_ia04.colladia.draw_test;
+package com.ia04nf28.colladia;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -14,14 +14,17 @@ import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.ia04nf28.colladia.Elements.CircleElement;
+import com.ia04nf28.colladia.Elements.Element;
+import com.ia04nf28.colladia.Utils.ChangementBase;
+
 import java.util.HashSet;
 
 /**
- * Created by Mar on 14/05/2016.
+ * Created by Mar on 17/05/2016.
  */
-public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback {
-
-    private static final String TAG = "DrawColladia";
+public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback {
+    private static final String TAG = "DrawColladiaView";
 
     private Paint paint;
     private Paint border;
@@ -41,8 +44,6 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
     /** All available circles */
     private HashSet<Element> listElement = new HashSet<>();
-    private SparseArray<Element> listPointedElement = new SparseArray<>();
-
 
     private static final float ZOOM_MIN = 0.1f;
     private static final float ZOOM_MAX = 10.f;
@@ -83,21 +84,21 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
 
     /*** Constructors **/
-    public DrawColladia(Context c)
+    public DrawColladiaView(Context c)
     {
         super(c);
         scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         init(c);
     }
 
-    public DrawColladia(Context c, AttributeSet attrs)
+    public DrawColladiaView(Context c, AttributeSet attrs)
     {
         super(c, attrs);
         scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         init(c);
     }
 
-    public DrawColladia(Context c, AttributeSet attrs, int defStyle)
+    public DrawColladiaView(Context c, AttributeSet attrs, int defStyle)
     {
         super(c, attrs, defStyle);
         scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
@@ -218,13 +219,11 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
             prevSelected = null;
         }
         if(selected!=null){
-            Log.d(TAG, "Element found x : "+selected.center.x+" y : "+selected.center.y);
+            Log.d(TAG, "Element found x : "+selected.getCenter().x+" y : "+selected.getCenter().y);
             selected.selectElement();
             prevSelected = selected;
         }
 
-        // down event is the first pointer, we clear the array
-        clearElementPointer();
 
         switch(mode)
         {
@@ -254,7 +253,6 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
     private void moveTouch(float x, float y)
     {
-        //Element touchedElement = listPointedElement.get(pointerId);
 
         switch(mode)
         {
@@ -310,7 +308,6 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
         mode = NONE;
 
-        clearElementPointer();
     }
 
     private void pointerDownTouch(float x, float y)
@@ -354,9 +351,8 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     {
         float x = evt.getX();
         float y = evt.getY();
-        currAbsolutePoint = ChangementBase.WindowToAbsolute(x,y,root.x,root.y,scaleFactor);
+        currAbsolutePoint = ChangementBase.WindowToAbsolute(x, y, root.x, root.y, scaleFactor);
         long time = System.currentTimeMillis();
-        int pointerId = 0;
 
         Log.d(TAG, "Point         x : "+x+" y : "+y);
         Log.d(TAG, "Point absolue x : "+currAbsolutePoint.x+" y : "+currAbsolutePoint.y);
@@ -412,13 +408,6 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         return null;
     }
 
-    /**
-     * Clears all CircleArea - pointer id relations
-     */
-    private void clearElementPointer() {
-        Log.w(TAG, "clearCirclePointer");
-        listPointedElement.clear();
-    }
 
     /** Determine the space between the first two fingers */
     private float spacing(MotionEvent event) {

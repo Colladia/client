@@ -1,5 +1,6 @@
 package com.ia04nf28.colladia;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -156,7 +157,8 @@ public class DrawActivity extends AppCompatActivity
                             Toast.makeText(DrawActivity.this, "View collaborator", Toast.LENGTH_SHORT).show();
 
                         } else if (id == R.id.nav_home) {
-
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(intent);
                             Toast.makeText(DrawActivity.this, "Go back", Toast.LENGTH_SHORT).show();
                         }
                         menuItem.setChecked(true);
