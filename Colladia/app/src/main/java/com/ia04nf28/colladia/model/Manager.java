@@ -12,6 +12,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.TimerTask;
+import java.util.Timer;
 
 
 /**
@@ -24,6 +26,13 @@ public class Manager {
     private final ObservableList<String> diagrams;
     private User user;
     private State state;
+    private Timer requestTimer = new Timer();
+    private TimerTask getDiagramsTask = new TimerTask() {
+        @Override
+        public void run() {
+            requestDiagrams();
+        }
+    };
 
     public static Manager instance(Context ctx) {
         if (instance == null) {
@@ -45,14 +54,18 @@ public class Manager {
         // TODO check url
         // TODO if url valid
         state = State.LOGGED;
+        requestTimer.schedule(getDiagramsTask, 0, 5000);
+        // end of if url valid
+    }
 
+    private void requestDiagrams() {
         // get diagrams list
         Requestator.instance(context).getDiagramsList(new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 try {
                     JSONObject mainObject = new JSONObject(s);
-                    String status = mainObject.getString("");
+                    String status = mainObject.getString("status");
 
                     if (status.equalsIgnoreCase("ok")) {
                         String dList = mainObject.getString("diagram-list");
@@ -112,7 +125,7 @@ public class Manager {
             public void onResponse(String s) {
                 try {
                     JSONObject mainObject = new JSONObject(s);
-                    String status = mainObject.getString("");
+                    String status = mainObject.getString("status");
 
                     if (status.equalsIgnoreCase("ok")) {
                         diagrams.add(name);
@@ -140,7 +153,7 @@ public class Manager {
             public void onResponse(String s) {
                 try {
                     JSONObject mainObject = new JSONObject(s);
-                    String status = mainObject.getString("");
+                    String status = mainObject.getString("status");
 
                     if (status.equalsIgnoreCase("ok")) {
                         diagrams.remove(name);
