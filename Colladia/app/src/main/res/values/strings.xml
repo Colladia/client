@@ -19,4 +19,10 @@
     <string name="action_settings">Settings</string>
     <string name="nav_menu_contributor">Users</string>
     <string name="nav_menu_home_back">Back</string>
+    <string name="square">Square</string>
+    <string name="circle">Circle</string>
+    <string name="triangle">Triangle</string>
+    <string name="line">Simple</string>
+    <string name="arrow">Arrow</string>
+    <string name="doubleArrow">Double Arrow</string>
 </resources>

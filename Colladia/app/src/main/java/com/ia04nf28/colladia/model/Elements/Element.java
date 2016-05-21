@@ -1,4 +1,4 @@
-package com.ia04nf28.colladia.Elements;
+package com.ia04nf28.colladia.model.Elements;
 
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -79,6 +79,10 @@ public abstract class Element {
 
     public void setPaint(Paint paint) {
         this.paint = paint;
+    }
+
+    public String getIdElement() {
+        return idElement;
     }
 
     public abstract void drawElement(Canvas canvas);

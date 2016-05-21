@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -16,18 +17,25 @@ import android.view.MenuItem;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.ia04nf28.colladia.model.Diagram;
+import com.ia04nf28.colladia.model.Elements.CircleElement;
+import com.ia04nf28.colladia.model.Elements.Element;
+import com.ia04nf28.colladia.model.Elements.ElementFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 public class DrawActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = "DrawActivity";
 
     private DrawerLayout drawer;
     ExpandableListAdapter mMenuAdapter;
     ExpandableListView expandableList;
     List<ExpandedMenuModel> listDataHeader;
     HashMap<ExpandedMenuModel, List<String>> listDataChild;
+    private DrawColladiaView drawView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +43,7 @@ public class DrawActivity extends AppCompatActivity
         setContentView(R.layout.activity_draw);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        drawView = (DrawColladiaView) findViewById(R.id.draw_view);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -128,14 +137,14 @@ public class DrawActivity extends AppCompatActivity
 
         // Adding child data
         List<String> heading1 = new ArrayList<String>();
-        heading1.add("Square");
-        heading1.add("Circle");
-        heading1.add("Triangle");
+        heading1.add(getString(R.string.square));
+        heading1.add(getString(R.string.circle));
+        heading1.add(getString(R.string.triangle));
 
         List<String> heading2 = new ArrayList<String>();
-        heading2.add("Simple");
-        heading2.add("Arrow");
-        heading2.add("Double Arrow");
+        heading2.add(getString(R.string.line));
+        heading2.add(getString(R.string.arrow));
+        heading2.add(getString(R.string.doubleArrow));
 
         List<String> heading3 = new ArrayList<String>();
         heading2.add("Person");
@@ -173,6 +182,15 @@ public class DrawActivity extends AppCompatActivity
 
                 int index = parent.getFlatListPosition(ExpandableListView.getPackedPositionForChild(groupPosition, childPosition));
                 parent.setItemChecked(index, true);
+
+                //TODO need to change with the model
+                Diagram dia = new Diagram(getApplicationContext());
+                String classElement = dia.getTypeElementClassNameMap().get(listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString());
+                Element newElement = ElementFactory.createElement(classElement);
+                if (newElement!=null){
+                    drawView.drawElem = newElement;
+                    drawView.mode = DrawColladiaView.INSERT;
+                }
 
                 Toast.makeText(DrawActivity.this, "clicked " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString(), Toast.LENGTH_SHORT).show();
                 drawer.closeDrawers();

@@ -8,14 +8,13 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.ia04nf28.colladia.Elements.CircleElement;
-import com.ia04nf28.colladia.Elements.Element;
+import com.ia04nf28.colladia.model.Elements.CircleElement;
+import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 
 import java.util.HashSet;
@@ -39,11 +38,11 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     static final int INSERT = 4;
     static final int RESIZE = 5;
 
-    int mode = INSERT;
+    int mode = NONE;
 
-
-    /** All available circles */
+    /** All available elements */
     private HashSet<Element> listElement = new HashSet<>();
+
 
     private static final float ZOOM_MIN = 0.1f;
     private static final float ZOOM_MAX = 10.f;
@@ -76,7 +75,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private RectF screen;
     private Element selected;
     private Element prevSelected;
-    private Element drawElem;
+    public Element drawElem;
 
     ScaleGestureDetector scaleDetector;
 
@@ -233,7 +232,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
 
                 // We add the selected element from the menu to the canvas
-                drawElem = new CircleElement();
+                //drawElem = new CircleElement();
                 drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
 
                 listElement.add(drawElem);

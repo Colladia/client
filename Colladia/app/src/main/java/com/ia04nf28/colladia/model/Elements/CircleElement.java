@@ -1,11 +1,7 @@
-package com.ia04nf28.colladia.Elements;
+package com.ia04nf28.colladia.model.Elements;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.PointF;
-
-import com.ia04nf28.colladia.Utils.ChangementBase;
 
 /**
  * Created by Mar on 17/05/2016.
