@@ -16,46 +16,27 @@ public class CircleElement extends Element {
     {
         super();
         this.radius = DEFAULT_RADIUS;
-
-        Paint defaultPaint = new Paint();
-        defaultPaint.setColor(Color.BLUE);
-        defaultPaint.setStrokeWidth(40);
-        defaultPaint.setStyle(Paint.Style.FILL);
-        this.setPaint(defaultPaint);
     }
 
 
     public CircleElement(float x, float y, int radius) {
         super(x, y);
         this.radius = radius;
-
-        Paint defaultPaint = new Paint();
-        defaultPaint.setColor(Color.BLUE);
-        defaultPaint.setStrokeWidth(40);
-        defaultPaint.setStyle(Paint.Style.STROKE);
-        this.setPaint(defaultPaint);
     }
 
     public CircleElement(float x, float y) {
         super(x, y);
         this.radius = DEFAULT_RADIUS;
-
-        Paint defaultPaint = new Paint();
-        defaultPaint.setColor(Color.BLUE);
-        defaultPaint.setStrokeWidth(40);
-        defaultPaint.setStyle(Paint.Style.FILL);
-        this.setPaint(defaultPaint);
     }
 
     @Override
-    public void drawElement(Canvas canvas, PointF absoluteRoot) {
+    public void drawElement(Canvas canvas) {
         canvas.drawCircle(center.x, center.y, this.getRadius(), this.getPaint());
     }
 
     @Override
-    public boolean isTouch(PointF finger,PointF absoluteRoot, float zoom ) {
-        finger =  ChangementBase.WindowToAbsolute(finger.x, finger.y, absoluteRoot.x, absoluteRoot.y, zoom);
-        return ((this.getX() - finger.x) * (this.getX() - finger.x) + (this.getY() - finger.y) * (this.getY() - finger.y) <= this.radius * this.radius);
+    public boolean isTouch(PointF finger) {
+        return ((this.center.x - finger.x) * (this.center.x - finger.x) + (this.center.y - finger.y) * (this.center.y - finger.y) <= this.radius * this.radius);
     }
 
     @Override
@@ -67,15 +48,11 @@ public class CircleElement extends Element {
         return radius;
     }
 
-    public void setRadius(int radius) {
-        this.radius = radius;
-    }
-
     @Override
-    public void set(float x, float y, float width, float height, PointF absoluteRoot, float zoom)
+    public void set(PointF topLeftCorner, PointF bottomRightCorner)
     {
-        super.set(x, y, width, height,absoluteRoot, zoom);
-        this.radius = Math.min(Math.round(width/2), Math.round(height/2));
+        super.set(topLeftCorner,bottomRightCorner);
+        this.radius = Math.min(Math.round(this.width/2), Math.round(this.height/2));
     }
 
 }

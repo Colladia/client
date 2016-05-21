@@ -1,12 +1,8 @@
 package com.nf28_ia04.colladia.draw_test;
 
-import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -17,10 +13,8 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Created by Mar on 14/05/2016.
@@ -38,8 +32,9 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     static final int NONE   = 0;
     static final int SCROLL = 1;
     static final int ZOOM   = 2;
-    static final int EDIT   = 3;
+    static final int MOVE = 3;
     static final int INSERT = 4;
+    static final int RESIZE = 5;
 
     int mode = INSERT;
 
@@ -57,8 +52,10 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     private int screenWidth = getContext().getResources().getDisplayMetrics().widthPixels;
     private int screenHeight = getContext().getResources().getDisplayMetrics().heightPixels;
 
-    private int mX, mY, iX, iY; // current x/y and initial x/y
-
+    //mPointAbsolutePoint and iPointAbsolutePoint are relative to the absolute root
+    private PointF mPointAbsolutePoint = new PointF(0f,0f);// corresponds to mX and mY, current x/y
+    private PointF iPointAbsolutePoint = new PointF(0f,0f);// corresponds to iX and iY, initial x/y
+    private PointF currAbsolutePoint = new PointF(0f,0f);
     private float xPos = 0f;
     private float yPos = 0f;
     private float translateX = 0f;
@@ -77,6 +74,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
     private RectF screen;
     private Element selected;
+    private Element prevSelected;
     private Element drawElem;
 
     ScaleGestureDetector scaleDetector;
@@ -185,20 +183,16 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
         //Log.d(TAG, Integer.toString(mode));
 
-       //canvas.scale(scaleFactor, scaleFactor, scaleDetector.getFocusX(), scaleDetector.getFocusY());
-       canvas.scale(scaleFactor, scaleFactor, 0, 0);
+        //canvas.scale(scaleFactor, scaleFactor, scaleDetector.getFocusX(), scaleDetector.getFocusY());
+        canvas.scale(scaleFactor, scaleFactor, 0, 0);
         canvas.translate(translateX / scaleFactor, translateY / scaleFactor);
 
 
         canvas.drawColor(Color.WHITE);
-
         canvas.drawRect(0, 0, 2000, 2000, border);
 
-        //canvas.drawCircle(root.x, root.y, 10, paint); //represent the absoluteRoot of the view
-
-
         for (Element elem : listElement) {
-            elem.drawElement(canvas,root);
+            elem.drawElement(canvas);
         }
 
         canvas.restore();
@@ -217,25 +211,31 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         //mode = SCROLL;
 
         // We check if an element was touched
-        selected = getTouchedElement(x, y);
+        selected = getTouchedElement(currAbsolutePoint);
+
+        if(prevSelected!=null){
+            prevSelected.deselectElement();
+            prevSelected = null;
+        }
+        if(selected!=null){
+            Log.d(TAG, "Element found x : "+selected.center.x+" y : "+selected.center.y);
+            selected.selectElement();
+            prevSelected = selected;
+        }
 
         // down event is the first pointer, we clear the array
         clearElementPointer();
-
-        //PointF center = ChangementBase.WindowToAbsolute(xPos, yPos, root.x, root.y);
 
         switch(mode)
         {
             case INSERT:
                 // Get the position where we create the element
-                iX = (Math.round(x));
-                iY = (Math.round(y));
-                mX = (Math.round(x));
-                mY = (Math.round(y));
+                iPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
+                mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
 
                 // We add the selected element from the menu to the canvas
                 drawElem = new CircleElement();
-                drawElem.set(iX, iY, mX, mY,root,scaleFactor);
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
 
                 listElement.add(drawElem);
 
@@ -245,35 +245,22 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
             case NONE:
                 // We touched an object on the screen
                 if(selected != null)
-                    mode = EDIT;
+                    mode = MOVE;
                 else //or we touch any object on the screen
                     mode = SCROLL;
                 break;
         }
-
-/*TODO resize
-        else if(null != touchedElement && oldDistanceFingerSpace!=0f){
-        newDistanceFingerSpace = spacing(evt);
-        float scale = newDistanceFingerSpace / oldDistanceFingerSpace;
-        oldDistanceFingerSpace = 0f;
-        newDistanceFingerSpace = 0f;
-        touchedElement.resize(scale);*/
     }
 
     private void moveTouch(float x, float y)
     {
         //Element touchedElement = listPointedElement.get(pointerId);
 
-        // Update our root point
-        //root.x += translateX;
-        //root.y += translateY;
-
         switch(mode)
         {
             case INSERT:
-                mX = Math.round(x);
-                mY = Math.round(y);
-                drawElem.set(iX, iY, mX, mY, root, scaleFactor);//TODO issue if ix > mx and so on do a test
+                mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);//TODO issue if iPointAbsolutePoint > mPointAbsolutePoint and so on do a test
                 break;
 
             case SCROLL:
@@ -288,18 +275,18 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
                     root.x = translateX;
                     root.y = translateY;
 
-                    /*root.x += dx;
-                    root.y += dy;
-                    scrollBy(-(int)dx, -(int)dy);
-                    xPos = x;
-                    yPos = y;*/
                 }
                 break;
 
-            case EDIT:
-                /*PointF center = ChangementBase.WindowToAbsolute(x, y, root.x, root.y);
-                touchedElement.setX(center.x);
-                touchedElement.setY(center.y);*/
+            case MOVE:
+                if(selected!=null){
+                    selected.move(currAbsolutePoint);
+                }
+                break;
+            case RESIZE:
+                if(selected!=null){
+                    selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
+                }
                 break;
         }
     }
@@ -312,7 +299,7 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iX, iY, mX, mY, root,scaleFactor);
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
                 drawElem = null;
                 break;
 
@@ -328,35 +315,38 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
     private void pointerDownTouch(float x, float y)
     {
+        if(selected!= null)
+            mode = RESIZE;
+
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iX, iY, mX, mY, root,scaleFactor);
+                drawElem.set(iPointAbsolutePoint,mPointAbsolutePoint);
                 drawElem = null;
                 break;
 
             case SCROLL:
                 scrolled = false;
-
                 prevTranslateX = translateX;
                 prevTranslateY = translateY;
                 break;
+            case RESIZE:
+                selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
+                break;
         }
-/*      TODO For resize see
-  pointerId = evt.getPointerId(INDEX);
+    }
 
-        x = evt.getX(INDEX);
-        y = evt.getY(INDEX);
-
-        touchedElement = listPointedElement.get(pointerId);
-
-        if (null != touchedElement) {
-            oldDistanceFingerSpace = spacing(evt);
-            Log.d(TAG, "oldDist=" + oldDistanceFingerSpace);
+    private void pointerUpTouch(float x, float y){
+        switch(mode)
+        {
+            case RESIZE:
+                if(selected!=null){
+                    selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
+                }
+                mode = NONE;
+                break;
         }
-        invalidate();
-        //time = System.currentTimeMillis();
-        break;*/
+
     }
 
     @Override
@@ -364,13 +354,12 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
     {
         float x = evt.getX();
         float y = evt.getY();
+        currAbsolutePoint = ChangementBase.WindowToAbsolute(x,y,root.x,root.y,scaleFactor);
         long time = System.currentTimeMillis();
-        Element touchedElement = null;
         int pointerId = 0;
 
         Log.d(TAG, "Point         x : "+x+" y : "+y);
-        PointF temp = ChangementBase.WindowToAbsolute(x,y,root.x,root.y,scaleFactor);
-        Log.d(TAG, "Point absolue x : "+temp.x+" y : "+temp.y);
+        Log.d(TAG, "Point absolue x : "+currAbsolutePoint.x+" y : "+currAbsolutePoint.y);
         Log.d(TAG, "Point root    x : "+root.x+" y : "+root.y);
         switch(evt.getAction())
         {
@@ -381,6 +370,8 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
             // Finger moved while pressed on screen
             case MotionEvent.ACTION_MOVE:
+                if(evt.getPointerCount()>1)
+                    newDistanceFingerSpace = spacing(evt);
                 moveTouch(x, y);
                 break;
 
@@ -391,11 +382,14 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
 
             // Second finger on screen
             case MotionEvent.ACTION_POINTER_DOWN:
+                oldDistanceFingerSpace = spacing(evt);
+                newDistanceFingerSpace = spacing(evt);
                 pointerDownTouch(x, y);
                 break;
 
             // Other finger removed from screen
             case MotionEvent.ACTION_POINTER_UP:
+                pointerUpTouch(x,y);
                 break;
         }
 
@@ -406,11 +400,11 @@ public class DrawColladia extends SurfaceView implements SurfaceHolder.Callback 
         return true;
     }
 
-    private Element getTouchedElement(final float xTouch, final float yTouch)
+    private Element getTouchedElement(final PointF pointTouch)
     {
         for (Element elem : listElement)
         {
-            if (elem.isTouch(new PointF(xTouch,yTouch),root, scaleFactor))
+            if (elem.isTouch(pointTouch))
             {
                 return elem;
             }
