@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 
@@ -39,8 +40,8 @@ public class Manager {
     }
 
     public void login(String user, String url) {
-
         Requestator.instance(context).setUrl(url);
+
         // TODO check url
         // TODO if url valid
         state = State.LOGGED;
@@ -51,23 +52,99 @@ public class Manager {
             public void onResponse(String s) {
                 try {
                     JSONObject mainObject = new JSONObject(s);
-                    String dList = mainObject.getString("diagram-list");
+                    String status = mainObject.getString("");
 
-                    JSONArray jArray = new JSONArray(dList);
+                    if (status.equalsIgnoreCase("ok")) {
+                        String dList = mainObject.getString("diagram-list");
 
-                    List<String> res = new ArrayList<String>();
+                        JSONArray jArray = new JSONArray(dList);
 
-                    // add items not already in the stored list
-                    for (int i = 0; i<jArray.length(); i++){
-                        String item = jArray.getString(i);
-                        res.add(item);
-                        if (!diagrams.contains(item)) {
-                            diagrams.add(item);
+                        List<String> res = new ArrayList<String>();
+
+                        // add items not already in the stored list
+                        for (int i = 0; i<jArray.length(); i++){
+                            String item = jArray.getString(i);
+                            res.add(item);
+                            if (!diagrams.contains(item)) {
+                                diagrams.add(item);
+                            }
                         }
+
+                        // remove the items that were stored but that were not in the response list
+                        diagrams.retainAll(res);
                     }
 
-                    // remove the items that were stored but that were not in the response list
-                    diagrams.retainAll(res);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Get the names of available diagrams
+     * @return an unmodifiable list of String
+     */
+    public List<String> getDiagrams() {
+        return Collections.unmodifiableList(diagrams);
+    }
+
+    /**
+     * Listen to the changes affecting the list of available diagrams names
+     * @param callback the callback to execute when a change occurs
+     */
+    public void addOnDiagramsChangeCallback(ObservableList.OnListChangedCallback<ObservableList<String>> callback){
+        diagrams.addOnListChangedCallback(callback);
+    }
+
+    /**
+     * Add a diagram to the model
+     * @param name
+     */
+    public void addDiagram(final String name){
+        // trying to add a diagram already existing
+        if (diagrams.contains(name))
+            return;
+
+        // put new diagram
+        Requestator.instance(context).putDiagram(name, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                try {
+                    JSONObject mainObject = new JSONObject(s);
+                    String status = mainObject.getString("");
+
+                    if (status.equalsIgnoreCase("ok")) {
+                        diagrams.add(name);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    /**
+     * Remove a diagram from the model
+     * @param name
+     */
+    public void removeDiagram(final String name){
+        // trying to remove a non-existing diagram
+        if (!diagrams.contains(name))
+            return;
+
+        // delete requested diagram
+        Requestator.instance(context).deleteDiagram(name, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                try {
+                    JSONObject mainObject = new JSONObject(s);
+                    String status = mainObject.getString("");
+
+                    if (status.equalsIgnoreCase("ok")) {
+                        diagrams.remove(name);
+                    }
 
                 } catch (JSONException e) {
                     e.printStackTrace();
