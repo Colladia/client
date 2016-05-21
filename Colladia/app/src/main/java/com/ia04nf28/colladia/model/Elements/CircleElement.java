@@ -50,6 +50,6 @@ public class CircleElement extends Element {
     public void set(PointF topLeftCorner, PointF bottomRightCorner)
     {
         super.set(topLeftCorner,bottomRightCorner);
-        this.radius = Math.min(Math.round(this.width/2), Math.round(this.height/2));
+        this.radius = Math.min(Math.round(getWidth()/2), Math.round(getHeight()/2));
     }
 }

@@ -1,6 +1,9 @@
 package com.ia04nf28.colladia.model.Elements;
 
+import android.content.Context;
 import android.util.Log;
+
+import com.ia04nf28.colladia.R;
 
 /**
  * Created by Mar on 21/05/2016.
@@ -8,11 +11,15 @@ import android.util.Log;
 public class ElementFactory {
     private static final String TAG = "ElementFactory";
 
-    public static Element createElement(String typeElement){
+    public static Element createElement(Context ctx, String typeElement){
         Element newElement = null;
-        if(typeElement.equals(CircleElement.class.getSimpleName())){
+        if(typeElement.equals(ctx.getString(R.string.circle))){
             newElement = new CircleElement();
-        } else{
+        } else if(typeElement.equals(ctx.getString(R.string.square))){
+            newElement = new SquareElement();
+        }else if(typeElement.equals(ctx.getString(R.string.line))){
+            newElement = new LineElement();
+        }else{
             Log.d(TAG, "No such element");
         }
         return newElement;

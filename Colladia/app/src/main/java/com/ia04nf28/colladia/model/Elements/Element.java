@@ -15,8 +15,8 @@ public abstract class Element {
     private String idElement = UUID.randomUUID().toString();
     private float x;
     private float y;
-    protected float width;
-    protected float height;
+    private float width;
+    private float height;
     private Paint paint;
     protected PointF center;
 
@@ -47,7 +47,7 @@ public abstract class Element {
 
     public void set(PointF topLeftCorner, PointF bottomRightCorner)
     {
-        //TODO check if correct
+        //TODO issue topleftCorner is not alaways the topleftcorner
         if(topLeftCorner.x > bottomRightCorner.x || topLeftCorner.y > bottomRightCorner.y){//case where the two corner are in the wrong order then inverse them
             PointF tempPoint = topLeftCorner;
             topLeftCorner = bottomRightCorner;
@@ -69,8 +69,36 @@ public abstract class Element {
         return y;
     }
 
+    public float getWidth() {
+        return width;
+    }
+
+    public float getHeight() {
+        return height;
+    }
+
+    public void setX(float x) {
+        this.x = x;
+    }
+
+    public void setY(float y) {
+        this.y = y;
+    }
+
+    public void setWidth(float width) {
+        this.width = width;
+    }
+
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
     public PointF getCenter() {
         return center;
+    }
+
+    public void setCenter(PointF center) {
+        this.center = center;
     }
 
     public Paint getPaint() {

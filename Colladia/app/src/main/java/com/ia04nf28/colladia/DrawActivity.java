@@ -184,9 +184,7 @@ public class DrawActivity extends AppCompatActivity
                 parent.setItemChecked(index, true);
 
                 //TODO need to change with the model
-                Diagram dia = new Diagram(getApplicationContext());
-                String classElement = dia.getTypeElementClassNameMap().get(listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString());
-                Element newElement = ElementFactory.createElement(classElement);
+                Element newElement = ElementFactory.createElement(getApplicationContext(), listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString());
                 if (newElement!=null){
                     drawView.drawElem = newElement;
                     drawView.mode = DrawColladiaView.INSERT;

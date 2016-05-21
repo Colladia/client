@@ -17,13 +17,5 @@ import java.util.Map;
 public class Diagram {
     /** All available elements */
     private ObservableMap<String,Element> listElement = new ObservableArrayMap();
-    private static Map<String, String> typeElementClassNameMap = new HashMap<>();
 
-    public Diagram(Context ctx) {
-        typeElementClassNameMap.put(ctx.getString(R.string.circle), CircleElement.class.getSimpleName());
-    }
-
-    public static Map<String, String> getTypeElementClassNameMap() {
-        return typeElementClassNameMap;
-    }
 }
