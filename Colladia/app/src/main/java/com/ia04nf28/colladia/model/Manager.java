@@ -145,8 +145,15 @@ public class Manager {
         return currentDiagram == null ? new Diagram() : currentDiagram;
     }
 
-    public void setCurrentDiagram(Diagram diagram) {
-        currentDiagram = diagram;
+    public void setCurrentDiagram(String diaId) {
+        // TODO get diagram from server and load it
+        Requestator.instance(context).getDiagram(diaId, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+            }
+        });
+
     }
 
     /**
