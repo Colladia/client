@@ -24,6 +24,7 @@ public class Manager {
 
     private final Context context;
     private final ObservableList<String> diagrams;
+    private Diagram currentDiagram;
     private User user;
     private State state;
     private Timer requestTimer = new Timer();
@@ -44,6 +45,7 @@ public class Manager {
     private Manager(Context ctx) {
         context = ctx;
         diagrams = new ObservableArrayList<>();
+        currentDiagram = null;
         state = State.START;
         user = null;
     }
@@ -136,6 +138,11 @@ public class Manager {
                 }
             }
         });
+    }
+
+    public final Diagram getCurrentDiagram() {
+        // TODO wait for diagram selection if null
+        return currentDiagram == null ? new Diagram() : currentDiagram;
     }
 
     /**
