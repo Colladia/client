@@ -18,4 +18,7 @@ public class Diagram {
     /** All available elements */
     private ObservableMap<String,Element> listElement = new ObservableArrayMap();
 
+    public ObservableMap<String, Element> getListElement() {
+        return listElement;
+    }
 }
