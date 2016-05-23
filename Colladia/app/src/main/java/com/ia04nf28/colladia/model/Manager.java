@@ -50,7 +50,7 @@ public class Manager {
         user = null;
     }
 
-    public void login(String user, String url) {
+    public void login(User user, String url) {
         Requestator.instance(context).setUrl(url);
 
         // TODO check url
@@ -143,6 +143,10 @@ public class Manager {
     public final Diagram getCurrentDiagram() {
         // TODO wait for diagram selection if null
         return currentDiagram == null ? new Diagram() : currentDiagram;
+    }
+
+    public void setCurrentDiagram(Diagram diagram) {
+        currentDiagram = diagram;
     }
 
     /**
