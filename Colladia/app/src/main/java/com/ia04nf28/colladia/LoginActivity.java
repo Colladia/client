@@ -105,6 +105,9 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
+
+            Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
+
             sendSimpleRequest(address);
         }
     }
@@ -185,7 +188,7 @@ public class LoginActivity extends AppCompatActivity {
         String userLogin = mUserLoginView.getText().toString();
         String address = mServerAddressView.getText().toString();
 
-        Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
+
 
         Intent intent = new Intent(this, DrawActivity.class);
         startActivity(intent);
