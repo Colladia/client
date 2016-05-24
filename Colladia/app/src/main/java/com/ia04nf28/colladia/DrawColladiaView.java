@@ -19,9 +19,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.ia04nf28.colladia.model.Elements.CircleElement;
+import com.ia04nf28.colladia.model.Elements.ContainerElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Manager;
+import com.ia04nf28.colladia.model.TypeModification;
 
 import java.util.HashSet;
 import java.util.Observable;
@@ -444,6 +446,15 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             // First finger on screen
             case MotionEvent.ACTION_DOWN:
                 startTouch(x, y);
+                //TODO remove this for test only
+                Element circ = new CircleElement();
+                circ.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                String result = circ.serializeJSON();
+                Log.d(TAG, "Serialisation : "+result);
+                Element ct2 = Element.deserializeJSON(result);
+                Log.d(TAG, "DeSerialisation id     : "+ct2.getId());
+                Log.d(TAG, "DeSerialisation x      : "+ct2.getxMin());
+                Log.d(TAG, "DeSerialisation radius : " + ((CircleElement) ct2).getRadius());
                 break;
 
             // Finger moved while pressed on screen

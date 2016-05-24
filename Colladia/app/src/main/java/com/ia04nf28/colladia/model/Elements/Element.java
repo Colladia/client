@@ -8,12 +8,22 @@ import android.graphics.PointF;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
  * Created by Mar on 17/05/2016.
  */
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property="type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = CircleElement.class, name = "CircleElement"),
+        @JsonSubTypes.Type(value = SquareElement.class, name = "SquareElement"),
+        @JsonSubTypes.Type(value = LineElement.class, name = "LineElement") })
 public abstract class Element extends BaseObservable {
 
     // Directions
@@ -255,11 +265,60 @@ public abstract class Element extends BaseObservable {
         this.text = text;
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getSelectColor() {
+        return selectColor;
+    }
+
+    public void setSelectColor(int selectColor) {
+        this.selectColor = selectColor;
+    }
+
     public boolean isActive() {
         return active;
     }
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    /**
+     * Method to serialize the Element into a String
+     * @return
+     */
+    public String serializeJSON () {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+
+        try {
+            jsonString = mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return jsonString;
+    }
+
+    /**
+     * Method to get a serialized Element from a String
+     * @param serialized
+     * @return
+     */
+    public static Element deserializeJSON (String serialized) {
+        ObjectMapper mapper = new ObjectMapper();
+        Element elemnt = null;
+
+        try {
+            elemnt = mapper.readValue(serialized, Element.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return elemnt;
     }
 }
