@@ -2,6 +2,7 @@ package com.ia04nf28.colladia.model;
 
 import android.content.Context;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
 import com.android.volley.Response;
 import org.json.JSONArray;
@@ -26,7 +27,12 @@ public class Manager {
     private final ObservableList<String> diagrams;
     private Diagram currentDiagram;
     private User user;
-    private State state;
+
+    public ObservableBoolean getLogged() {
+        return logged;
+    }
+
+    private final ObservableBoolean logged;
     private Timer requestTimer = new Timer();
     private TimerTask getDiagramsTask = new TimerTask() {
         @Override
@@ -46,7 +52,7 @@ public class Manager {
         context = ctx;
         diagrams = new ObservableArrayList<>();
         currentDiagram = null;
-        state = State.START;
+        logged = new ObservableBoolean(false);
         user = null;
     }
 
@@ -55,7 +61,6 @@ public class Manager {
 
         // TODO check url
         // TODO if url valid
-        state = State.LOGGED;
         requestTimer.schedule(getDiagramsTask, 0, 5000);
         // end of if url valid
     }
@@ -70,6 +75,12 @@ public class Manager {
                     String status = mainObject.getString("status");
 
                     if (status.equalsIgnoreCase("ok")) {
+                        // if first response
+                        if (!logged.get())
+                        {
+                            logged.set(true);
+                        }
+
                         String dList = mainObject.getString("diagram-list");
 
                         JSONArray jArray = new JSONArray(dList);
@@ -182,10 +193,5 @@ public class Manager {
                 }
             }
         });
-    }
-
-    private enum State {
-        START, // Just created
-        LOGGED // User logged in with valid url
     }
 }

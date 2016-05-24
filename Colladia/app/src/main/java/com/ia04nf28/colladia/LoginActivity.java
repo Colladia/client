@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.databinding.Observable;
+import android.databinding.ObservableList;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -106,9 +108,15 @@ public class LoginActivity extends AppCompatActivity {
             // perform the user login attempt.
             showProgress(true);
 
-            Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
+            Manager.instance(this.getApplicationContext()).getLogged().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+                @Override
+                public void onPropertyChanged(Observable sender, int propertyId) {
+                    showProgress(false);
+                    startDrawActivity();
+                }
+            });
 
-            sendSimpleRequest(address);
+            Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
         }
     }
 
@@ -158,38 +166,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void sendSimpleRequest(String address) {
-        /*RequestQueue rq = Volley.newRequestQueue(this);
-
-        StringRequest request = new StringRequest(Request.Method.GET, address,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        showProgress(false);
-                        startDrawActivity();
-                        //finish();
-                    }
-                }
-                , new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        showProgress(false);
-                        validationFail(error);
-                    }
-                });
-
-        // Add the request to the RequestQueue.
-        rq.add(request);*/
-        startDrawActivity();
-    }
-
     private void startDrawActivity() {
-
-        String userLogin = mUserLoginView.getText().toString();
-        String address = mServerAddressView.getText().toString();
-
-
-
         Intent intent = new Intent(this, DrawActivity.class);
         startActivity(intent);
     }
