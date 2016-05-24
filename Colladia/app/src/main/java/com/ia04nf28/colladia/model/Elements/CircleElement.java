@@ -44,13 +44,22 @@ public class CircleElement extends Element {
     @Override
     public void drawElement(Canvas canvas)
     {
-        Paint p = new Paint();
-        p.setColor(Color.GRAY);
-        p.setStrokeWidth(8);
-        p.setStyle(Paint.Style.STROKE);
-
-        canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), p);
         canvas.drawCircle(center.x, center.y, this.getRadius(), this.getPaint());
+
+        if(active)
+        {
+            Paint p = new Paint();
+            p.setColor(Color.GRAY);
+            p.setStrokeWidth(5);
+            p.setStyle(Paint.Style.STROKE);
+
+            canvas.drawCircle(top.x, top.y, 4, p);
+            canvas.drawCircle(bottom.x, bottom.y, 4, p);
+            canvas.drawCircle(right.x, right.y, 4, p);
+            canvas.drawCircle(left.x, left.y, 4, p);
+
+            canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), p);
+        }
     }
 
     @Override
@@ -60,14 +69,16 @@ public class CircleElement extends Element {
     }
 
     @Override
-    public void set(PointF first, PointF second) {
+    public void set(PointF first, PointF second)
+    {
         super.set(first, second);
 
-        // Min or max, we have to choose
-        //this.radius = Math.min(Math.round( (getxMax() - getxMin()) / 2 ), Math.round( (getyMax() - getyMin()) / 2 ));
         this.radius = Math.max(Math.round((getxMax() - getxMin()) / 2), Math.round((getyMax() - getyMin()) / 2));
 
-        Log.d("radius", String.valueOf(radius));
+        // Resize the square to match circle size
+        this.xMax = this.xMin + 2 * this.radius;
+        this.yMax = this.yMin + 2 * this.radius;
+
     }
 
     public int getRadius() {

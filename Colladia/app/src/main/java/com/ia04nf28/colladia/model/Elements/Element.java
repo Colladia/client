@@ -31,6 +31,10 @@ public abstract class Element {
     protected float yMax;
     protected Paint paint;
 
+    // Element's lines size
+    protected float thickness = 20;
+    protected boolean active = false;
+
     // Link point
     protected PointF center = new PointF();
     protected PointF top = new PointF();
@@ -44,7 +48,7 @@ public abstract class Element {
     {
         paint = new Paint();
         paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(20);
+        paint.setStrokeWidth(thickness);
         paint.setStyle(Paint.Style.STROKE);
     }
 
@@ -93,10 +97,10 @@ public abstract class Element {
         this.xMax = xMax;
         this.yMax = yMax;
 
-        this.top.set( (xMin + xMax) / 2, yMin );
-        this.bottom.set((xMin + xMax) / 2, yMax);
-        this.left.set(xMin, (yMin + yMax) / 2);
-        this.right.set(xMax, (yMin + yMax) / 2);
+        this.top.set( (this.xMin + this.xMax) / 2, this.yMin - thickness );
+        this.bottom.set((this.xMin + this.xMax) / 2, this.yMax + thickness);
+        this.left.set(this.xMin - thickness, (this.yMin + this.yMax) / 2);
+        this.right.set(this.xMax + thickness, (this.yMin + this.yMax) / 2);
 
         this.center.set( (this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
     }
@@ -104,8 +108,6 @@ public abstract class Element {
     public void set(PointF first, PointF second)
     {
         int DIR = getDirection(first, second);
-
-        Log.d("aa", String.valueOf(DIR));
 
         switch(DIR)
         {
@@ -129,14 +131,10 @@ public abstract class Element {
 
     public void move(PointF newPosition)
     {
-        PointF translate =  new PointF(newPosition.x - center.x, newPosition.y - center.y);
+        float translateX = newPosition.x - center.x;
+        float translateY = newPosition.y - center.y;
 
-        xMin += translate.x;
-        yMin += translate.y;
-        xMax += translate.x;
-        yMax += translate.y;
-
-        center.set(newPosition.x, newPosition.y);
+        this.set(xMin + translateX, yMin + translateY, xMax + translateX, yMax + translateY);
     }
 
     public boolean isTouch(PointF finger)
@@ -149,10 +147,12 @@ public abstract class Element {
 
     public void selectElement(){
         paint.setColor(Color.RED);
+        setActive(true);
     }
 
     public void deselectElement(){
         paint.setColor(Color.BLUE);
+        setActive(false);
     }
 
     public String getId() {
@@ -249,5 +249,13 @@ public abstract class Element {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
     }
 }

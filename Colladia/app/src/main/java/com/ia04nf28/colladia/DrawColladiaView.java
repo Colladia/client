@@ -229,14 +229,16 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         // We check if an element was touched
         selected = getTouchedElement(currAbsolutePoint);
 
+        if(prevSelected != null)
+        {
+            prevSelected.deselectElement();
+            prevSelected = null;
+        }
+
         // No element touched
         if(selected == null)
         {
-            if(prevSelected != null)
-            {
-                prevSelected.deselectElement();
-                prevSelected = null;
-            }
+
         }
         // Element touched
         else
@@ -286,7 +288,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         {
             case INSERT:
                 mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
-                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);//TODO issue if iPointAbsolutePoint > mPointAbsolutePoint and so on do a test
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
                 break;
 
             case SCROLL:
@@ -307,8 +309,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             case MOVE:
                 if(selected != null)
                 {
-                    // à modifier, ne pas prendre le centre mais la différence entre le point touché et le centre
-
                     PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
 
                     selected.move(p);
@@ -321,7 +321,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 {
                     mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
                     selected.set(iPointAbsolutePoint, mPointAbsolutePoint);
-                    //selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
                 }
                 break;
         }
@@ -333,8 +332,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         prevTranslateX = translateX;
         prevTranslateY = translateY;
-
-        //if(selected != null) selected.deselectElement();
 
         switch(mode)
         {
