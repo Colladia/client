@@ -22,11 +22,13 @@ import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 
 import java.util.HashSet;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback {
+public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback , Observer{
     private static final String TAG = "DrawColladiaView";
 
     private Paint paint;
@@ -141,6 +143,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         paint.setStrokeWidth(20f);
 
 
+    }
+
+
+    @Override
+    public void update(Observable observable, Object data) {
+        invalidate();
     }
 
     /** Surface methods **/
@@ -481,6 +489,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         return (float) Math.sqrt(x * x + y * y);
     }
 
+    public void insertNewElement(Element newElement){
+        drawElem = newElement;
+        mode = DrawColladiaView.INSERT;
+    }
 
     public class SimpleScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override

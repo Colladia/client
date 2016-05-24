@@ -4,14 +4,16 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
-import android.util.Log;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.Observable;
 import java.util.UUID;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-public abstract class Element {
+public abstract class Element extends Observable {
 
     // Directions
     protected static final int TOP_LEFT = 1;
@@ -29,9 +31,12 @@ public abstract class Element {
     protected float yMin;
     protected float xMax;
     protected float yMax;
+    @JsonIgnore
     protected Paint paint;
 
-    // Element's lines size
+    // Element's lines size and color
+    protected int color = Color.BLUE;
+    protected int selectColor = Color.RED;
     protected float thickness = 20;
     protected boolean active = false;
 
@@ -47,7 +52,7 @@ public abstract class Element {
     public Element()
     {
         paint = new Paint();
-        paint.setColor(Color.BLUE);
+        paint.setColor(color);
         paint.setStrokeWidth(thickness);
         paint.setStyle(Paint.Style.STROKE);
     }
@@ -146,12 +151,12 @@ public abstract class Element {
     }
 
     public void selectElement(){
-        paint.setColor(Color.RED);
+        paint.setColor(selectColor);
         setActive(true);
     }
 
     public void deselectElement(){
-        paint.setColor(Color.BLUE);
+        paint.setColor(color);
         setActive(false);
     }
 

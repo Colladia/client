@@ -45,6 +45,7 @@ public class DrawActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         drawView = (DrawColladiaView) findViewById(R.id.draw_view);
 
+
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -122,7 +123,7 @@ public class DrawActivity extends AppCompatActivity
         listDataHeader.add(item2);
 
         ExpandedMenuModel item3 = new ExpandedMenuModel();
-        item3.setIconName("Picture");
+        item3.setIconName("Text");
         item3.setIconImg(R.drawable.ic_menu_share);
         listDataHeader.add(item3);
 
@@ -139,7 +140,7 @@ public class DrawActivity extends AppCompatActivity
         heading2.add(getString(R.string.doubleArrow));
 
         List<String> heading3 = new ArrayList<String>();
-        heading2.add("Person");
+        heading3.add(getString(R.string.text));
 
         listDataChild.put(listDataHeader.get(0), formes);// Header, Child data
         listDataChild.put(listDataHeader.get(1), heading2);
@@ -177,10 +178,9 @@ public class DrawActivity extends AppCompatActivity
 
                 //TODO need to change with the model
                 Element newElement = ElementFactory.createElement(getApplicationContext(), listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString());
-                if (newElement!=null)
-                {
-                    drawView.drawElem = newElement;
-                    drawView.mode = DrawColladiaView.INSERT;
+
+                if (newElement!=null){
+                    drawView.insertNewElement(newElement);
                 }
 
                 Toast.makeText(DrawActivity.this, "clicked " + listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString(), Toast.LENGTH_SHORT).show();
