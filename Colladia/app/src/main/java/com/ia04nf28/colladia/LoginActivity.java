@@ -156,7 +156,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void sendSimpleRequest(String address) {
-        RequestQueue rq = Volley.newRequestQueue(this);
+        /*RequestQueue rq = Volley.newRequestQueue(this);
 
         StringRequest request = new StringRequest(Request.Method.GET, address,
                 new Response.Listener<String>() {
@@ -176,7 +176,8 @@ public class LoginActivity extends AppCompatActivity {
                 });
 
         // Add the request to the RequestQueue.
-        rq.add(request);
+        rq.add(request);*/
+        startDrawActivity();
     }
 
     private void startDrawActivity() {

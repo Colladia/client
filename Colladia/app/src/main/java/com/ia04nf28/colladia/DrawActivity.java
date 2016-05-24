@@ -45,15 +45,6 @@ public class DrawActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         drawView = (DrawColladiaView) findViewById(R.id.draw_view);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -136,10 +127,11 @@ public class DrawActivity extends AppCompatActivity
         listDataHeader.add(item3);
 
         // Adding child data
-        List<String> heading1 = new ArrayList<String>();
-        heading1.add(getString(R.string.square));
-        heading1.add(getString(R.string.circle));
-        heading1.add(getString(R.string.triangle));
+        List<String> formes = new ArrayList<String>();
+        formes.add(getString(R.string.square));
+        formes.add(getString(R.string.circle));
+        formes.add(getString(R.string.triangle));
+        formes.add(getString(R.string.classe));
 
         List<String> heading2 = new ArrayList<String>();
         heading2.add(getString(R.string.line));
@@ -149,7 +141,7 @@ public class DrawActivity extends AppCompatActivity
         List<String> heading3 = new ArrayList<String>();
         heading2.add("Person");
 
-        listDataChild.put(listDataHeader.get(0), heading1);// Header, Child data
+        listDataChild.put(listDataHeader.get(0), formes);// Header, Child data
         listDataChild.put(listDataHeader.get(1), heading2);
         listDataChild.put(listDataHeader.get(2), heading3);
 
@@ -185,7 +177,8 @@ public class DrawActivity extends AppCompatActivity
 
                 //TODO need to change with the model
                 Element newElement = ElementFactory.createElement(getApplicationContext(), listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString());
-                if (newElement!=null){
+                if (newElement!=null)
+                {
                     drawView.drawElem = newElement;
                     drawView.mode = DrawColladiaView.INSERT;
                 }

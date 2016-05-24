@@ -11,15 +11,28 @@ import com.ia04nf28.colladia.R;
 public class ElementFactory {
     private static final String TAG = "ElementFactory";
 
-    public static Element createElement(Context ctx, String typeElement){
+    public static Element createElement(Context ctx, String typeElement)
+    {
         Element newElement = null;
-        if(typeElement.equals(ctx.getString(R.string.circle))){
+
+        if(typeElement.equals(ctx.getString(R.string.circle)))
+        {
             newElement = new CircleElement();
-        } else if(typeElement.equals(ctx.getString(R.string.square))){
+        }
+        else if(typeElement.equals(ctx.getString(R.string.square)))
+        {
             newElement = new SquareElement();
-        }else if(typeElement.equals(ctx.getString(R.string.line))){
+        }
+        else if(typeElement.equals(ctx.getString(R.string.line)))
+        {
             newElement = new LineElement();
-        }else{
+        }
+        else if(typeElement.equals(ctx.getString(R.string.classe)))
+        {
+            newElement = new ClassElement();
+        }
+        else
+        {
             Log.d(TAG, "No such element");
         }
         return newElement;

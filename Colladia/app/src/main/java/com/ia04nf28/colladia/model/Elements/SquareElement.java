@@ -1,6 +1,7 @@
 package com.ia04nf28.colladia.model.Elements;
 
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.PointF;
 
 /**
@@ -8,42 +9,26 @@ import android.graphics.PointF;
  */
 public class SquareElement extends Element{
 
-    public SquareElement() {
+    public SquareElement()
+    {
         super();
     }
 
-    public SquareElement(float x, float y, int radius) {
-        super(x, y);
-    }
-
-    public SquareElement(float x, float y) {
-        super(x, y);
-    }
-
-    @Override
-    public void drawElement(Canvas canvas) {
-        canvas.drawRect(getX(), getY(), getWidth(), getHeight(), getPaint());
-    }
-
-    @Override
-    public boolean isTouch(PointF finger) {
-        return (((getX() < finger.x) && (finger.x < getWidth()) && (getY() < finger.y) && (finger.y < getHeight()))
-                || ((getX() > finger.x) && (finger.x > getWidth()) && (getY() > finger.y) && (finger.y > getHeight()))
-                || ((getX() > finger.x) && (finger.x > getWidth()) && (getY() < finger.y) && (finger.y < getHeight()))
-                || ((getX() < finger.x) && (finger.x < getWidth()) && (getY() > finger.y) && (finger.y > getHeight())));
-    }
-
-    @Override
-    public void resize(float resizeFactor) {
-        setWidth(getWidth() * resizeFactor);
-        setHeight(getHeight() * resizeFactor);
-        center.set((getX() + getWidth()) / 2, (getY() + getHeight()) / 2);
-    }
-
-
-    @Override
-    public void set(PointF topLeftCorner, PointF bottomRightCorner)
+    public SquareElement(float xMin, float yMin, float xMax, float yMax)
     {
-        super.set(topLeftCorner,bottomRightCorner);
+        super(xMin, yMin, xMax, yMax);
+    }
+
+    public SquareElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
+    {
+        super(xMin, yMin, xMax, yMax, paint);
+    }
+
+    @Override
+    public void drawElement(Canvas canvas)
+    {
+        canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), getPaint());
+
+        if(!text.equals("")) canvas.drawText(text, center.x, center.y, getPaint());
     }
 }
