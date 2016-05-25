@@ -44,6 +44,7 @@ public class DrawActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         drawView = (DrawColladiaView) findViewById(R.id.draw_view);
+        drawView.setApplicationCtx(getApplicationContext());
 
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

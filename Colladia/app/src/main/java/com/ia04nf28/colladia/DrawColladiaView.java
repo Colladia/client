@@ -1,6 +1,7 @@
 package com.ia04nf28.colladia;
 
 import android.content.Context;
+import android.databinding.ObservableMap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -20,6 +21,7 @@ import android.view.inputmethod.InputMethodManager;
 import com.ia04nf28.colladia.model.Elements.CircleElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
+import com.ia04nf28.colladia.model.Manager;
 
 import java.util.HashSet;
 import java.util.Observable;
@@ -28,7 +30,7 @@ import java.util.Observer;
 /**
  * Created by Mar on 17/05/2016.
  */
-public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback , Observer{
+public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback{
     private static final String TAG = "DrawColladiaView";
 
     private Paint paint;
@@ -78,7 +80,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     private SurfaceHolder mHolder;
     private DrawThread mThread;
-    private Context ctx;
+    private Context applicationCtx = null;//need to initialise it
+    private Context ctx;//need to initialise it
 
     private RectF screen;
     private Element selected;
@@ -93,41 +96,71 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private boolean scrolled = false;
 
 
+    private android.databinding.Observable.OnPropertyChangedCallback elementCallback = new android.databinding.Observable.OnPropertyChangedCallback(){
+        @Override
+        public void onPropertyChanged(android.databinding.Observable sender, int propertyId) {
+            invalidate();
+        }
+    };
+    private ObservableMap.OnMapChangedCallback diagramCallback = new ObservableMap.OnMapChangedCallback<ObservableMap<String,Element>,String, Element>(){
+        @Override
+        public void onMapChanged(ObservableMap<String, Element> sender, String key){
+            Element changedElement = sender.get(key);
+            if(changedElement!=null){
+                changedElement.addOnPropertyChangedCallback(elementCallback);
+            }
+            invalidate();
+        }
+
+    };
+
+
     /*** Constructors **/
     public DrawColladiaView(Context c)
     {
         super(c);
-        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
-        gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
         init(c);
     }
 
     public DrawColladiaView(Context c, AttributeSet attrs)
     {
         super(c, attrs);
-        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
-        gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
         init(c);
     }
 
     public DrawColladiaView(Context c, AttributeSet attrs, int defStyle)
     {
         super(c, attrs, defStyle);
-        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
-        gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
         init(c);
+    }
+
+
+    private Manager getManager(){
+        return Manager.instance(getApplicationCtx());
+    }
+
+    public Context getApplicationCtx() {
+        return applicationCtx;
+    }
+
+    public void setApplicationCtx(Context applicationCtx) {
+        this.applicationCtx = applicationCtx;
     }
 
     public void init(Context c)
     {
-        mHolder = getHolder();
-        mHolder.addCallback(this);
+        //add a callback to the list of elements of the diagram
+        getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
+        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
+        gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
 
         ctx = c;
 
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+
         mThread = new DrawThread();
         screen = new RectF();
-
         setFocusable(true);
 
         border = new Paint();
@@ -146,10 +179,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     }
 
 
-    @Override
-    public void update(Observable observable, Object data) {
-        invalidate();
-    }
+
 
     /** Surface methods **/
     @Override

@@ -1,19 +1,20 @@
 package com.ia04nf28.colladia.model.Elements;
 
+import android.databinding.BaseObservable;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import java.util.Observable;
 import java.util.UUID;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-public abstract class Element extends Observable {
+public abstract class Element extends BaseObservable {
 
     // Directions
     protected static final int TOP_LEFT = 1;
@@ -60,14 +61,12 @@ public abstract class Element extends Observable {
     public Element(float xMin, float yMin, float xMax, float yMax)
     {
         this();
-
         this.set(xMin, yMin, xMax, yMax);
     }
 
     public Element(float xMin, float yMin, float xMax, float yMax, Paint paint)
     {
         this(xMin, yMin, xMax, yMax);
-
         this.paint = paint;
     }
 

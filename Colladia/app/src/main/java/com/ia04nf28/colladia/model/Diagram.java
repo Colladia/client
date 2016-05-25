@@ -63,4 +63,13 @@ public class Diagram {
             return null;
         }
     }
+
+
+    /**
+     * Listen to the changes affecting the list of available elements names
+     * @param callback the callback to execute when a change occurs
+     */
+    public void addOnElementsChangeCallback(ObservableMap.OnMapChangedCallback<ObservableMap<String,Element>,String, Element> callback){
+        listElement.addOnMapChangedCallback(callback);
+    }
 }
