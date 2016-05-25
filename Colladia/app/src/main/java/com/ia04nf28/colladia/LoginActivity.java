@@ -30,6 +30,8 @@ import com.android.volley.toolbox.Volley;
 import com.ia04nf28.colladia.model.Manager;
 import com.ia04nf28.colladia.model.User;
 
+import java.util.regex.Pattern;
+
 /**
  * A login screen for Colladia
  */
@@ -126,8 +128,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isAddressValid(String s) {
-        //TODO: Replace this with your own logic
-        return !s.isEmpty();
+        return Pattern.matches("^(http://)?((?:\\d{1,3}.?){4}:8182)/?$", s);
     }
 
     /**

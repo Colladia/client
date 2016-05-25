@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.regex.Pattern;
 
 
 /**
@@ -57,6 +58,11 @@ public class Manager {
     }
 
     public void login(User user, String url) {
+        if (!Pattern.matches("^http://", url))
+        {
+            url = "http://" + url;
+        }
+
         Requestator.instance(context).setUrl(url);
 
         // TODO check url
