@@ -7,9 +7,12 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,7 +26,10 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CircleElement.class, name = "CircleElement"),
         @JsonSubTypes.Type(value = SquareElement.class, name = "SquareElement"),
+        @JsonSubTypes.Type(value = SquareElement.class, name = "ClassElement"),
         @JsonSubTypes.Type(value = LineElement.class, name = "LineElement") })
+@JsonPropertyOrder(alphabetic=true)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public abstract class Element extends BaseObservable {
 
     // Directions

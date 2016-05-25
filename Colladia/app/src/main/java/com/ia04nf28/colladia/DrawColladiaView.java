@@ -22,6 +22,8 @@ import com.ia04nf28.colladia.model.Elements.CircleElement;
 import com.ia04nf28.colladia.model.Elements.ContainerElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
+import com.ia04nf28.colladia.model.Elements.LineElement;
+import com.ia04nf28.colladia.model.Elements.SquareElement;
 import com.ia04nf28.colladia.model.Manager;
 import com.ia04nf28.colladia.model.TypeModification;
 
@@ -74,8 +76,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private float translateY = 0f;
     private float prevTranslateX = 0f;
     private float prevTranslateY = 0f;
-    private float oldDistanceFingerSpace = 0f;
-    private float newDistanceFingerSpace = 0f;
+
 
 
     private PointF root = new PointF(0f, 0f);
@@ -152,7 +153,11 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     public void init(Context c)
     {
         //add a callback to the list of elements of the diagram
-        getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
+        /*TODO tp put back for server request getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
+        for (Element elem : getManager().getCurrentDiagram().getListElement().values()){//if there is already elements on the diagram
+            elem.addOnPropertyChangedCallback(elementCallback);
+        }*/
+
         scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
 
@@ -446,15 +451,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             // First finger on screen
             case MotionEvent.ACTION_DOWN:
                 startTouch(x, y);
-                //TODO remove this for test only
-                Element circ = new CircleElement();
-                circ.set(iPointAbsolutePoint, mPointAbsolutePoint);
-                String result = circ.serializeJSON();
-                Log.d(TAG, "Serialisation : "+result);
-                Element ct2 = Element.deserializeJSON(result);
-                Log.d(TAG, "DeSerialisation id     : "+ct2.getId());
-                Log.d(TAG, "DeSerialisation x      : "+ct2.getxMin());
-                Log.d(TAG, "DeSerialisation radius : " + ((CircleElement) ct2).getRadius());
                 break;
 
             // Finger moved while pressed on screen
@@ -522,13 +518,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     }
 
 
-    /** Determine the space between the first two fingers */
-    private float spacing(MotionEvent event) {
-        // ...
-        float x = event.getX(0) - event.getX(1);
-        float y = event.getY(0) - event.getY(1);
-        return (float) Math.sqrt(x * x + y * y);
-    }
 
     public void insertNewElement(Element newElement){
         drawElem = newElement;
