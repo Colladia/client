@@ -185,7 +185,7 @@ public class LoginActivity extends AppCompatActivity {
 
         Manager.instance(this.getApplicationContext()).login(userLogin, address);
 
-        Intent intent = new Intent(this, DrawActivity.class);
+        Intent intent = new Intent(this, WorkspacesListActivity.class);
         startActivity(intent);
     }
 

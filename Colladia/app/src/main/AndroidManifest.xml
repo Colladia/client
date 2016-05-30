@@ -24,6 +24,11 @@
             android:label="@string/title_activity_draw"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <activity
+            android:name=".WorkspacesListActivity"
+            android:label="@string/title_activity_worspaces_list"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
