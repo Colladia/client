@@ -19,13 +19,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.ia04nf28.colladia.model.Elements.CircleElement;
-import com.ia04nf28.colladia.model.Elements.ContainerElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Elements.LineElement;
 import com.ia04nf28.colladia.model.Elements.SquareElement;
 import com.ia04nf28.colladia.model.Manager;
-import com.ia04nf28.colladia.model.TypeModification;
 
 import java.util.HashSet;
 import java.util.Observable;
