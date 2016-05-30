@@ -4,7 +4,12 @@ import android.content.Context;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
+import android.graphics.PointF;
+
 import com.android.volley.Response;
+import com.ia04nf28.colladia.Utils.Json;
+import com.ia04nf28.colladia.model.Elements.Element;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +18,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.util.regex.Pattern;
@@ -70,6 +76,7 @@ public class Manager {
         requestTimer.schedule(getDiagramsTask, 0, 5000);
         // end of if url valid
     }
+
 
     private void requestDiagrams() {
         // get diagrams list
@@ -199,5 +206,64 @@ public class Manager {
                 }
             }
         });
+    }
+
+
+    public void addElement(final Element newElement) {
+        // get diagrams list
+        Requestator.instance(this.context).putElement("1", newElement.getId(), newElement.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                System.out.println("Response Server : " + s);
+                //TODO temporary, wait for method jean
+                Element receiveElement = Element.deserializeJSON(Json.deserializeStringMap(Json.deserializeStringMap(s).get("description")).get(newElement.getId()));
+                System.out.println("Receive Element Add"+receiveElement.getxMin());
+
+            }
+        });
+    }
+
+    public void updatePositionElement(Element originalElement, PointF first, PointF second){
+        final Element elementToServer = originalElement.clone();
+        elementToServer.set(first,second);
+        Requestator.instance(this.context).postElement("1", elementToServer.getId(), elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                System.out.println("Response Server : " + s);
+                Element receiveElement = Element.deserializeJSON(Json.deserializeStringMap(Json.deserializeStringMap(s).get("description")).get(elementToServer.getId()));
+                System.out.println("Receive Element Update "+receiveElement.getxMin());
+            }
+        });
+    }
+
+    public void moveElement(Element originalElement, PointF newPosition){
+        final Element elementToServer = originalElement.clone();
+        elementToServer.move(newPosition);
+        Requestator.instance(this.context).postElement("1", elementToServer.getId(), elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                System.out.println("Response Server : " + s);
+                Element receiveElement = Element.deserializeJSON(Json.deserializeStringMap(Json.deserializeStringMap(s).get("description")).get(elementToServer.getId()));
+                System.out.println("Receive Element Update " + receiveElement.getxMin());
+                //TODO  need a diag currentDiagram.getListElement().remove(receiveElement.getId());
+                //currentDiagram.getListElement().put(receiveElement.getId(),receiveElement);
+            }
+        });
+    }
+
+    //TODO use color user
+    public void selectElement(Element originalElement){
+        Element elementToServer = originalElement.clone();
+        elementToServer.selectElement();
+
+    }
+    public void deselectElement(Element originalElement){
+        Element elementToServer = originalElement.clone();
+        elementToServer.deselectElement();
+    }
+
+    public void changeText(Element originalElement, String textInput){
+        Element elementToServer = originalElement.clone();
+        elementToServer.setText(textInput);
     }
 }

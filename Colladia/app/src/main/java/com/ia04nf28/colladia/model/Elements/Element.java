@@ -30,7 +30,7 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = LineElement.class, name = "LineElement") })
 @JsonPropertyOrder(alphabetic=true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public abstract class Element extends BaseObservable {
+public abstract class Element extends BaseObservable implements Cloneable {
 
     // Directions
     protected static final int TOP_LEFT = 1;
@@ -326,5 +326,21 @@ public abstract class Element extends BaseObservable {
             e.printStackTrace();
         }
         return elemnt;
+    }
+
+
+    public Element clone() {
+        Element clone = null;
+        try {
+            // On récupère l'instance à renvoyer par l'appel de la
+            // méthode super.clone()
+            clone = (Element) super.clone();
+        } catch(CloneNotSupportedException cnse) {
+            // Ne devrait jamais arriver car nous implémentons
+            // l'interface Cloneable
+            cnse.printStackTrace(System.err);
+        }
+        // on renvoie le clone
+        return clone;
     }
 }
