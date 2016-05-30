@@ -2,6 +2,7 @@ package com.ia04nf28.colladia.model;
 
 import android.content.Context;
 import android.databinding.ObservableArrayList;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
 import com.android.volley.Response;
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.regex.Pattern;
 
 
 /**
@@ -24,8 +26,14 @@ public class Manager {
 
     private final Context context;
     private final ObservableList<String> diagrams;
+    private Diagram currentDiagram;
     private User user;
-    private State state;
+
+    public ObservableBoolean getLogged() {
+        return logged;
+    }
+
+    private final ObservableBoolean logged;
     private Timer requestTimer = new Timer();
     private TimerTask getDiagramsTask = new TimerTask() {
         @Override
@@ -44,16 +52,21 @@ public class Manager {
     private Manager(Context ctx) {
         context = ctx;
         diagrams = new ObservableArrayList<>();
-        state = State.START;
+        currentDiagram = null;
+        logged = new ObservableBoolean(false);
         user = null;
     }
 
-    public void login(String user, String url) {
+    public void login(User user, String url) {
+        if (!Pattern.matches("^http://", url))
+        {
+            url = "http://" + url;
+        }
+
         Requestator.instance(context).setUrl(url);
 
         // TODO check url
         // TODO if url valid
-        state = State.LOGGED;
         requestTimer.schedule(getDiagramsTask, 0, 5000);
         // end of if url valid
     }
@@ -68,6 +81,12 @@ public class Manager {
                     String status = mainObject.getString("status");
 
                     if (status.equalsIgnoreCase("ok")) {
+                        // if first response
+                        if (!logged.get())
+                        {
+                            logged.set(true);
+                        }
+
                         String dList = mainObject.getString("diagram-list");
 
                         JSONArray jArray = new JSONArray(dList);
@@ -138,6 +157,22 @@ public class Manager {
         });
     }
 
+    public final Diagram getCurrentDiagram() {
+        // TODO wait for diagram selection if null
+        return currentDiagram == null ? new Diagram() : currentDiagram;
+    }
+
+    public void setCurrentDiagram(String diaId) {
+        // TODO get diagram from server and load it
+        Requestator.instance(context).getDiagram(diaId, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+
+            }
+        });
+
+    }
+
     /**
      * Remove a diagram from the model
      * @param name
@@ -164,10 +199,5 @@ public class Manager {
                 }
             }
         });
-    }
-
-    private enum State {
-        START, // Just created
-        LOGGED // User logged in with valid url
     }
 }

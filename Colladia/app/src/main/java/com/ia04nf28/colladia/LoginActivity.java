@@ -4,6 +4,8 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.databinding.Observable;
+import android.databinding.ObservableList;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -26,6 +28,9 @@ import com.android.volley.toolbox.Volley;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.ia04nf28.colladia.model.Manager;
+import com.ia04nf28.colladia.model.User;
+
+import java.util.regex.Pattern;
 
 /**
  * A login screen for Colladia
@@ -104,7 +109,16 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            sendSimpleRequest(address);
+
+            Manager.instance(this.getApplicationContext()).getLogged().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+                @Override
+                public void onPropertyChanged(Observable sender, int propertyId) {
+                    showProgress(false);
+                    startDrawActivity();
+                }
+            });
+
+            Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
         }
     }
 
@@ -114,8 +128,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isAddressValid(String s) {
-        //TODO: Replace this with your own logic
-        return !s.isEmpty();
+        return Pattern.matches("^(http://)?((?:\\d{1,3}.?){4}:8182)/?$", s);
     }
 
     /**
@@ -154,37 +167,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void sendSimpleRequest(String address) {
-        RequestQueue rq = Volley.newRequestQueue(this);
-
-        StringRequest request = new StringRequest(Request.Method.GET, address,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        showProgress(false);
-                        startDrawActivity();
-                        //finish();
-                    }
-                }
-                , new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        showProgress(false);
-                        validationFail(error);
-                    }
-                });
-
-        // Add the request to the RequestQueue.
-        rq.add(request);
-    }
-
     private void startDrawActivity() {
-
-        String userLogin = mUserLoginView.getText().toString();
-        String address = mServerAddressView.getText().toString();
-
-        Manager.instance(this.getApplicationContext()).login(userLogin, address);
-
         Intent intent = new Intent(this, WorkspacesListActivity.class);
         startActivity(intent);
     }

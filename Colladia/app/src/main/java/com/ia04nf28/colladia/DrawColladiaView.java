@@ -1,6 +1,7 @@
 package com.ia04nf28.colladia;
 
 import android.content.Context;
+import android.databinding.ObservableMap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -8,21 +9,32 @@ import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.ia04nf28.colladia.model.Elements.CircleElement;
+import com.ia04nf28.colladia.model.Elements.ContainerElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
+import com.ia04nf28.colladia.model.Elements.LineElement;
+import com.ia04nf28.colladia.model.Elements.SquareElement;
+import com.ia04nf28.colladia.model.Manager;
+import com.ia04nf28.colladia.model.TypeModification;
 
 import java.util.HashSet;
+import java.util.Observable;
+import java.util.Observer;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback {
+public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback{
     private static final String TAG = "DrawColladiaView";
 
     private Paint paint;
@@ -31,14 +43,16 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private static float TOLERANCE = 5;
 
     // We can be in one of these states
-    static final int NONE   = 0;
-    static final int SCROLL = 1;
-    static final int ZOOM   = 2;
-    static final int MOVE = 3;
-    static final int INSERT = 4;
-    static final int RESIZE = 5;
+    static final int NONE   = 0;    // No action
+    static final int SCROLL = 1;    // Scroll the view
+    static final int ZOOM   = 2;    // Zoom the view
+    static final int MOVE   = 3;    // Move an element
+    static final int INSERT = 4;    // Insert an element
+    static final int RESIZE = 5;    // Resize an element
 
     int mode = NONE;
+
+    private PointF touchFromCenter = null;
 
     /** All available elements */
     private HashSet<Element> listElement = new HashSet<>();
@@ -62,58 +76,98 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private float translateY = 0f;
     private float prevTranslateX = 0f;
     private float prevTranslateY = 0f;
-    private float oldDistanceFingerSpace = 0f;
-    private float newDistanceFingerSpace = 0f;
+
 
 
     private PointF root = new PointF(0f, 0f);
 
     private SurfaceHolder mHolder;
     private DrawThread mThread;
-    private Context ctx;
+    private Context applicationCtx = null;//need to initialise it
+    private Context ctx;//need to initialise it
 
     private RectF screen;
     private Element selected;
     private Element prevSelected;
     public Element drawElem;
 
+    private String userTextInput = "";
+
     ScaleGestureDetector scaleDetector;
+    GestureDetector gestureDetector;
 
     private boolean scrolled = false;
+
+
+    private android.databinding.Observable.OnPropertyChangedCallback elementCallback = new android.databinding.Observable.OnPropertyChangedCallback(){
+        @Override
+        public void onPropertyChanged(android.databinding.Observable sender, int propertyId) {
+            invalidate();
+        }
+    };
+    private ObservableMap.OnMapChangedCallback diagramCallback = new ObservableMap.OnMapChangedCallback<ObservableMap<String,Element>,String, Element>(){
+        @Override
+        public void onMapChanged(ObservableMap<String, Element> sender, String key){
+            Element changedElement = sender.get(key);
+            if(changedElement!=null){
+                changedElement.addOnPropertyChangedCallback(elementCallback);
+            }
+            invalidate();
+        }
+
+    };
 
 
     /*** Constructors **/
     public DrawColladiaView(Context c)
     {
         super(c);
-        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         init(c);
     }
 
     public DrawColladiaView(Context c, AttributeSet attrs)
     {
         super(c, attrs);
-        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         init(c);
     }
 
     public DrawColladiaView(Context c, AttributeSet attrs, int defStyle)
     {
         super(c, attrs, defStyle);
-        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         init(c);
+    }
+
+
+    private Manager getManager(){
+        return Manager.instance(getApplicationCtx());
+    }
+
+    public Context getApplicationCtx() {
+        return applicationCtx;
+    }
+
+    public void setApplicationCtx(Context applicationCtx) {
+        this.applicationCtx = applicationCtx;
     }
 
     public void init(Context c)
     {
-        mHolder = getHolder();
-        mHolder.addCallback(this);
+        //add a callback to the list of elements of the diagram
+        /*TODO tp put back for server request getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
+        for (Element elem : getManager().getCurrentDiagram().getListElement().values()){//if there is already elements on the diagram
+            elem.addOnPropertyChangedCallback(elementCallback);
+        }*/
+
+        scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
+        gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
 
         ctx = c;
 
+        mHolder = getHolder();
+        mHolder.addCallback(this);
+
         mThread = new DrawThread();
         screen = new RectF();
-
         setFocusable(true);
 
         border = new Paint();
@@ -123,13 +177,16 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.RED);
+        paint.setColor(Color.BLACK);
         paint.setStyle(Paint.Style.STROKE);
         paint.setStrokeJoin(Paint.Join.ROUND);
-        paint.setStrokeWidth(5f);
+        paint.setStrokeWidth(20f);
 
 
     }
+
+
+
 
     /** Surface methods **/
     @Override
@@ -179,46 +236,59 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     {
         super.onDraw(canvas);
 
-        canvas.save();
+        if(canvas != null)
+        {
+            canvas.save();
 
-        //Log.d(TAG, Integer.toString(mode));
+            //Log.d(TAG, Integer.toString(mode));
 
-        //canvas.scale(scaleFactor, scaleFactor, scaleDetector.getFocusX(), scaleDetector.getFocusY());
-        canvas.scale(scaleFactor, scaleFactor, 0, 0);
-        canvas.translate(translateX / scaleFactor, translateY / scaleFactor);
+            //canvas.scale(scaleFactor, scaleFactor, scaleDetector.getFocusX(), scaleDetector.getFocusY());
+            canvas.scale(scaleFactor, scaleFactor, 0, 0);
+            canvas.translate(translateX / scaleFactor, translateY / scaleFactor);
 
 
-        canvas.drawColor(Color.WHITE);
-        canvas.drawRect(0, 0, 2000, 2000, border);
+            canvas.drawColor(Color.WHITE);
+            canvas.drawLine(-10, 0, 10, 0, paint);
+            canvas.drawLine(0, -10, 0, 10, paint);
 
-        for (Element elem : listElement) {
-            elem.drawElement(canvas);
+            for (Element elem : listElement)
+            {
+                elem.drawElement(canvas);
+            }
+
+            canvas.restore();
         }
-
-        canvas.restore();
-
     }
 
-    // Possible modes
-    // --> INSERT
-    // --> NONE
+
+
     private void startTouch(float x, float y)
     {
+        Log.d(TAG, "Start touch : " + String.valueOf(mode));
+
         xPos = x - prevTranslateX;
         yPos = y - prevTranslateY;
 
-        // Default mode is scroll
-        //mode = SCROLL;
+        prevSelected = selected;
 
         // We check if an element was touched
         selected = getTouchedElement(currAbsolutePoint);
 
-        if(prevSelected!=null){
+        if(prevSelected != null)
+        {
             prevSelected.deselectElement();
             prevSelected = null;
         }
-        if(selected!=null){
-            Log.d(TAG, "Element found x : "+selected.getCenter().x+" y : "+selected.getCenter().y);
+
+        // No element touched
+        if(selected == null)
+        {
+
+        }
+        // Element touched
+        else
+        {
+            //Log.d(TAG, "Element found x : "+selected.getCenter().x+" y : "+selected.getCenter().y);
             selected.selectElement();
             prevSelected = selected;
         }
@@ -227,14 +297,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                // Get the position where we create the element
+                // Get the start position where we create the element
                 iPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
                 mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
 
                 // We add the selected element from the menu to the canvas
-                //drawElem = new CircleElement();
                 drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
-
                 listElement.add(drawElem);
 
                 mode = INSERT;
@@ -243,21 +311,29 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             case NONE:
                 // We touched an object on the screen
                 if(selected != null)
+                {
                     mode = MOVE;
-                else //or we touch any object on the screen
-                    mode = SCROLL;
+
+                    touchFromCenter = new PointF(selected.getCenter().x - currAbsolutePoint.x, selected.getCenter().y - currAbsolutePoint.y);
+
+                    iPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
+                    mPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
+                }
+                // we did not touch any object on the screen
+                else mode = SCROLL;
                 break;
         }
     }
 
     private void moveTouch(float x, float y)
     {
+        Log.d(TAG, "Move touch : " + String.valueOf(mode));
 
         switch(mode)
         {
             case INSERT:
                 mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
-                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);//TODO issue if iPointAbsolutePoint > mPointAbsolutePoint and so on do a test
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
                 break;
 
             case SCROLL:
@@ -276,13 +352,20 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 break;
 
             case MOVE:
-                if(selected!=null){
-                    selected.move(currAbsolutePoint);
+                if(selected != null)
+                {
+                    PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
+
+                    selected.move(p);
+                    iPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
                 }
                 break;
+
             case RESIZE:
-                if(selected!=null){
-                    selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
+                if(selected != null)
+                {
+                    mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
+                    selected.set(iPointAbsolutePoint, mPointAbsolutePoint);
                 }
                 break;
         }
@@ -290,6 +373,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     private void upTouch(float x, float y)
     {
+        Log.d(TAG, "Up touch : " + String.valueOf(mode));
+
         prevTranslateX = translateX;
         prevTranslateY = translateY;
 
@@ -311,8 +396,14 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     private void pointerDownTouch(float x, float y)
     {
-        if(selected!= null)
-            mode = RESIZE;
+
+        if(mode != INSERT)
+        {
+            if(selected != null) mode = RESIZE;
+            else mode = ZOOM;
+        }
+
+        Log.d(TAG, "Pointer down : " + String.valueOf(mode));
 
         switch(mode)
         {
@@ -326,20 +417,19 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 prevTranslateX = translateX;
                 prevTranslateY = translateY;
                 break;
-            case RESIZE:
-                selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
-                break;
         }
+
+
     }
 
     private void pointerUpTouch(float x, float y){
         switch(mode)
         {
             case RESIZE:
-                if(selected!=null){
-                    selected.resize(newDistanceFingerSpace/oldDistanceFingerSpace);
+                if(selected != null)
+                {
+                    selected.set(iPointAbsolutePoint, mPointAbsolutePoint);
                 }
-                mode = NONE;
                 break;
         }
 
@@ -353,10 +443,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         currAbsolutePoint = ChangementBase.WindowToAbsolute(x, y, root.x, root.y, scaleFactor);
         long time = System.currentTimeMillis();
 
-        Log.d(TAG, "Point         x : "+x+" y : "+y);
-        Log.d(TAG, "Point absolue x : "+currAbsolutePoint.x+" y : "+currAbsolutePoint.y);
-        Log.d(TAG, "Point root    x : "+root.x+" y : "+root.y);
-        switch(evt.getAction())
+        //Log.d(TAG, "Point         x : "+x+" y : "+y);
+        //Log.d(TAG, "Point absolue x : "+currAbsolutePoint.x+" y : "+currAbsolutePoint.y);
+        //Log.d(TAG, "Point root    x : "+root.x+" y : "+root.y);
+        switch(evt.getAction() & MotionEvent.ACTION_MASK)
         {
             // First finger on screen
             case MotionEvent.ACTION_DOWN:
@@ -365,8 +455,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
             // Finger moved while pressed on screen
             case MotionEvent.ACTION_MOVE:
-                if(evt.getPointerCount()>1)
-                    newDistanceFingerSpace = spacing(evt);
                 moveTouch(x, y);
                 break;
 
@@ -377,8 +465,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
             // Second finger on screen
             case MotionEvent.ACTION_POINTER_DOWN:
-                oldDistanceFingerSpace = spacing(evt);
-                newDistanceFingerSpace = spacing(evt);
                 pointerDownTouch(x, y);
                 break;
 
@@ -389,9 +475,33 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         }
 
         scaleDetector.onTouchEvent(evt);
+        gestureDetector.onTouchEvent(evt);
 
         invalidate();
 
+        return true;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent evt) {
+
+        Log.d(TAG, "Text: " + userTextInput);
+
+        if(selected == null) return true;
+
+        switch(keyCode)
+        {
+            // Hide keyboard when enter
+            case KeyEvent.KEYCODE_ENTER:
+                selected.setText(userTextInput);
+                userTextInput = "";
+                ((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getWindowToken(), 0);
+                break;
+
+            default:
+                userTextInput += (char) evt.getUnicodeChar();
+                return false;
+        }
         return true;
     }
 
@@ -408,23 +518,43 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     }
 
 
-    /** Determine the space between the first two fingers */
-    private float spacing(MotionEvent event) {
-        // ...
-        float x = event.getX(0) - event.getX(1);
-        float y = event.getY(0) - event.getY(1);
-        return (float) Math.sqrt(x * x + y * y);
-    }
 
+    public void insertNewElement(Element newElement){
+        drawElem = newElement;
+        mode = DrawColladiaView.INSERT;
+    }
 
     public class SimpleScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
         @Override
         public boolean onScale(ScaleGestureDetector sg)
         {
-            scaleFactor *= sg.getScaleFactor();
+            Log.d(TAG, "Scale : " + String.valueOf(mode));
+            if(mode == ZOOM)
+            {
+                scaleFactor *= sg.getScaleFactor();
 
-            scaleFactor = Math.max(ZOOM_MIN, Math.min(scaleFactor, ZOOM_MAX));
+                scaleFactor = Math.max(ZOOM_MIN, Math.min(scaleFactor, ZOOM_MAX));
+            }
             return true;
+        }
+    }
+
+    public class SimpleGestureListener extends GestureDetector.SimpleOnGestureListener {
+        @Override
+        public boolean onDoubleTap(MotionEvent e) {
+
+            if(selected != null)
+            {
+                ((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+            }
+            //Log.d(TAG, "Double tap");
+            //Toast.makeText(context, "onDoubleTap", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            // Menu contextuel
         }
     }
 

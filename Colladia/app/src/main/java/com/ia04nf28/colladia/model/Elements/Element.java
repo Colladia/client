@@ -1,104 +1,218 @@
 package com.ia04nf28.colladia.model.Elements;
 
+import android.databinding.BaseObservable;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import java.io.IOException;
 import java.util.UUID;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-public abstract class Element {
+@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property="type")
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = CircleElement.class, name = "CircleElement"),
+        @JsonSubTypes.Type(value = SquareElement.class, name = "SquareElement"),
+        @JsonSubTypes.Type(value = SquareElement.class, name = "ClassElement"),
+        @JsonSubTypes.Type(value = LineElement.class, name = "LineElement") })
+@JsonPropertyOrder(alphabetic=true)
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+public abstract class Element extends BaseObservable {
 
-    private String idElement = UUID.randomUUID().toString();
-    private float x;
-    private float y;
-    private float width;
-    private float height;
-    private Paint paint;
-    protected PointF center;
+    // Directions
+    protected static final int TOP_LEFT = 1;
+    protected static final int TOP_RIGHT = 2;
+    protected static final int BOTTOM_LEFT = 3;
+    protected static final int BOTTOM_RIGHT = 4;
+
+    // Distance to link point tolerance
+    // Touch tolerance (for lines)
+    public static final float TOLERANCE = 20f;
+
+    protected String id = UUID.randomUUID().toString();
+    protected String text = "";
+    protected float xMin;
+    protected float yMin;
+    protected float xMax;
+    protected float yMax;
+    @JsonIgnore
+    protected Paint paint;
+
+    // Element's lines size and color
+    protected int color = Color.BLUE;
+    protected int selectColor = Color.RED;
+    protected float thickness = 20;
+    protected boolean active = false;
+
+    // Link point
+    protected PointF center = new PointF();
+    protected PointF top = new PointF();
+    protected PointF bottom = new PointF();
+    protected PointF left = new PointF();
+    protected PointF right = new PointF();
+
+    public abstract void drawElement(Canvas canvas);
 
     public Element()
     {
-        center = new PointF();
-
         paint = new Paint();
-        paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(40);
+        paint.setColor(color);
+        paint.setStrokeWidth(thickness);
         paint.setStyle(Paint.Style.STROKE);
     }
 
-    public Element(float x, float y, Paint paint) {
-        this.x = x;
-        this.y = y;
+    public Element(float xMin, float yMin, float xMax, float yMax)
+    {
+        this();
+        this.set(xMin, yMin, xMax, yMax);
+    }
+
+    public Element(float xMin, float yMin, float xMax, float yMax, Paint paint)
+    {
+        this(xMin, yMin, xMax, yMax);
         this.paint = paint;
     }
-    public Element(float x, float y) {
-        this.x = x;
-        this.y = y;
 
-        paint = new Paint();
-        paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(40);
-        paint.setStyle(Paint.Style.STROKE);
-    }
-
-    public void set(PointF topLeftCorner, PointF bottomRightCorner)
+    public static int getDirection(PointF first, PointF second)
     {
-        //TODO issue topleftCorner is not alaways the topleftcorner
-        if(topLeftCorner.x > bottomRightCorner.x || topLeftCorner.y > bottomRightCorner.y){//case where the two corner are in the wrong order then inverse them
-            PointF tempPoint = topLeftCorner;
-            topLeftCorner = bottomRightCorner;
-            bottomRightCorner = tempPoint;
+        // LEFT DIRECTION
+        if(first.x > second.x)
+        {
+            // TOP DIRECTION
+            if(first.y > second.y)
+            {
+                return TOP_LEFT;
+            }
+            else return BOTTOM_LEFT;
         }
-
-        this.x = topLeftCorner.x;
-        this.y = topLeftCorner.y;
-        this.width = bottomRightCorner.x;
-        this.height = bottomRightCorner.y;
-        center.set((this.x + this.width) / 2, (this.y + this.height) / 2);
+        // RIGHT DIRECTION
+        else
+        {
+            // TOP DIRECTION
+            if(first.y > second.y)
+            {
+                return TOP_RIGHT;
+            }
+            else return BOTTOM_RIGHT;
+        }
     }
 
-    public float getX() {
-        return x;
+    public void set(float xMin, float yMin, float xMax, float yMax)
+    {
+        this.xMin = xMin;
+        this.yMin = yMin;
+        this.xMax = xMax;
+        this.yMax = yMax;
+
+        this.top.set( (this.xMin + this.xMax) / 2, this.yMin - thickness );
+        this.bottom.set((this.xMin + this.xMax) / 2, this.yMax + thickness);
+        this.left.set(this.xMin - thickness, (this.yMin + this.yMax) / 2);
+        this.right.set(this.xMax + thickness, (this.yMin + this.yMax) / 2);
+
+        this.center.set( (this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
     }
 
-    public float getY() {
-        return y;
+    public void set(PointF first, PointF second)
+    {
+        int DIR = getDirection(first, second);
+
+        switch(DIR)
+        {
+            case TOP_LEFT:
+                this.set(second.x, second.y, first.x, first.y);
+                break;
+
+            case TOP_RIGHT:
+                this.set(first.x, second.y, second.x, first.y);
+                break;
+
+            case BOTTOM_LEFT:
+                this.set(second.x, first.y, first.x, second.y);
+                break;
+
+            case BOTTOM_RIGHT:
+                this.set(first.x, first.y, second.x, second.y);
+                break;
+        }
     }
 
-    public float getWidth() {
-        return width;
+    public void move(PointF newPosition)
+    {
+        float translateX = newPosition.x - center.x;
+        float translateY = newPosition.y - center.y;
+
+        this.set(xMin + translateX, yMin + translateY, xMax + translateX, yMax + translateY);
     }
 
-    public float getHeight() {
-        return height;
+    public boolean isTouch(PointF finger)
+    {
+        return (((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() < finger.y) && (finger.y < getyMax()))
+                || ((getxMin() > finger.x) && (finger.x > getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax()))
+                || ((getxMin() > finger.x) && (finger.x > getxMax()) && (getyMin() < finger.y) && (finger.y < getyMax()))
+                || ((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax())));
     }
 
-    public void setX(float x) {
-        this.x = x;
+    public void selectElement(){
+        paint.setColor(selectColor);
+        setActive(true);
     }
 
-    public void setY(float y) {
-        this.y = y;
+    public void deselectElement(){
+        paint.setColor(color);
+        setActive(false);
     }
 
-    public void setWidth(float width) {
-        this.width = width;
+    public String getId() {
+        return id;
     }
 
-    public void setHeight(float height) {
-        this.height = height;
+    public void setId(String id) {
+        this.id = id;
     }
 
-    public PointF getCenter() {
-        return center;
+    public float getxMin() {
+        return xMin;
     }
 
-    public void setCenter(PointF center) {
-        this.center = center;
+    public void setxMin(float xMin) {
+        this.xMin = xMin;
+    }
+
+    public float getyMin() {
+        return yMin;
+    }
+
+    public void setyMin(float yMin) {
+        this.yMin = yMin;
+    }
+
+    public float getxMax() {
+        return xMax;
+    }
+
+    public void setxMax(float xMax) {
+        this.xMax = xMax;
+    }
+
+    public float getyMax() {
+        return yMax;
+    }
+
+    public void setyMax(float yMax) {
+        this.yMax = yMax;
     }
 
     public Paint getPaint() {
@@ -109,28 +223,108 @@ public abstract class Element {
         this.paint = paint;
     }
 
-    public String getIdElement() {
-        return idElement;
+    public PointF getCenter() {
+        return center;
     }
 
-    public abstract void drawElement(Canvas canvas);
-    public abstract boolean isTouch(PointF finger);
-    public abstract void resize(float resizeFactor);
-
-    public  void move(PointF newPosition){
-        PointF translate =  new PointF(newPosition.x - center.x, newPosition.y - center.y);
-        x += translate.x;
-        y += translate.y;
-        width += translate.x;
-        height += translate.y;
-        center.set(newPosition.x, newPosition.y);
+    public void setCenter(PointF center) {
+        this.center = center;
     }
 
-
-    public void selectElement(){
-        paint.setColor(Color.RED);
+    public PointF getTop() {
+        return top;
     }
-    public void deselectElement(){
-        paint.setColor(Color.BLUE);
+
+    public void setTop(PointF top) {
+        this.top = top;
+    }
+
+    public PointF getBottom() {
+        return bottom;
+    }
+
+    public void setBottom(PointF bottom) {
+        this.bottom = bottom;
+    }
+
+    public PointF getLeft() {
+        return left;
+    }
+
+    public void setLeft(PointF left) {
+        this.left = left;
+    }
+
+    public PointF getRight() {
+        return right;
+    }
+
+    public void setRight(PointF right) {
+        this.right = right;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getSelectColor() {
+        return selectColor;
+    }
+
+    public void setSelectColor(int selectColor) {
+        this.selectColor = selectColor;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    /**
+     * Method to serialize the Element into a String
+     * @return
+     */
+    public String serializeJSON () {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+
+        try {
+            jsonString = mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return jsonString;
+    }
+
+    /**
+     * Method to get a serialized Element from a String
+     * @param serialized
+     * @return
+     */
+    public static Element deserializeJSON (String serialized) {
+        ObjectMapper mapper = new ObjectMapper();
+        Element elemnt = null;
+
+        try {
+            elemnt = mapper.readValue(serialized, Element.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return elemnt;
     }
 }
