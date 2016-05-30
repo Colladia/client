@@ -1,6 +1,8 @@
 package com.ia04nf28.colladia;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.databinding.ObservableMap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -10,26 +12,18 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
-import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.Toast;
 
-import com.ia04nf28.colladia.model.Elements.CircleElement;
-import com.ia04nf28.colladia.model.Elements.ContainerElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
-import com.ia04nf28.colladia.model.Elements.LineElement;
-import com.ia04nf28.colladia.model.Elements.SquareElement;
 import com.ia04nf28.colladia.model.Manager;
-import com.ia04nf28.colladia.model.TypeModification;
 
 import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by Mar on 17/05/2016.
@@ -91,7 +85,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private Element prevSelected;
     public Element drawElem;
 
-    private String userTextInput = "";
+
+    private EditText userTextInput;
 
     ScaleGestureDetector scaleDetector;
     GestureDetector gestureDetector;
@@ -109,7 +104,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         @Override
         public void onMapChanged(ObservableMap<String, Element> sender, String key){
             Element changedElement = sender.get(key);
-            if(changedElement!=null){
+            if(changedElement != null){
                 changedElement.addOnPropertyChangedCallback(elementCallback);
             }
             invalidate();
@@ -184,9 +179,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
 
     }
-
-
-
 
     /** Surface methods **/
     @Override
@@ -482,29 +474,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         return true;
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent evt) {
-
-        Log.d(TAG, "Text: " + userTextInput);
-
-        if(selected == null) return true;
-
-        switch(keyCode)
-        {
-            // Hide keyboard when enter
-            case KeyEvent.KEYCODE_ENTER:
-                selected.setText(userTextInput);
-                userTextInput = "";
-                ((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getWindowToken(), 0);
-                break;
-
-            default:
-                userTextInput += (char) evt.getUnicodeChar();
-                return false;
-        }
-        return true;
-    }
-
     private Element getTouchedElement(final PointF pointTouch)
     {
         for (Element elem : listElement)
@@ -545,7 +514,27 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
             if(selected != null)
             {
-                ((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+                String value;
+                //((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                userTextInput = new EditText(getContext());
+
+                if(!selected.getText().isEmpty()) userTextInput.setText(selected.getText());
+
+                builder.setTitle("Entrez votre texte").setView(userTextInput);
+                builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface di, int i) {
+                        selected.setText(userTextInput.getText().toString());
+                    }
+                });
+
+                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface di, int i) {
+
+                    }
+                });
+
+                builder.create().show();
             }
             //Log.d(TAG, "Double tap");
             //Toast.makeText(context, "onDoubleTap", Toast.LENGTH_SHORT).show();

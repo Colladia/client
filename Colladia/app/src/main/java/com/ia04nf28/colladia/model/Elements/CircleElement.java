@@ -44,22 +44,8 @@ public class CircleElement extends Element {
     @Override
     public void drawElement(Canvas canvas)
     {
+        super.drawElement(canvas);
         canvas.drawCircle(center.x, center.y, this.getRadius(), this.getPaint());
-
-        if(active)
-        {
-            Paint p = new Paint();
-            p.setColor(Color.GRAY);
-            p.setStrokeWidth(5);
-            p.setStyle(Paint.Style.STROKE);
-
-            canvas.drawCircle(top.x, top.y, 4, p);
-            canvas.drawCircle(bottom.x, bottom.y, 4, p);
-            canvas.drawCircle(right.x, right.y, 4, p);
-            canvas.drawCircle(left.x, left.y, 4, p);
-
-            canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), p);
-        }
     }
 
     @Override

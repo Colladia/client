@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
@@ -31,18 +32,22 @@ public class DrawActivity extends AppCompatActivity
     private static final String TAG = "DrawActivity";
 
     private DrawerLayout drawer;
-    ExpandableListAdapter mMenuAdapter;
-    ExpandableListView expandableList;
-    List<ExpandedMenuModel> listDataHeader;
-    HashMap<ExpandedMenuModel, List<String>> listDataChild;
+    private ExpandableListAdapter mMenuAdapter;
+    private ExpandableListView expandableList;
+    private List<ExpandedMenuModel> listDataHeader;
+    private HashMap<ExpandedMenuModel, List<String>> listDataChild;
     private DrawColladiaView drawView;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_draw);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         drawView = (DrawColladiaView) findViewById(R.id.draw_view);
         drawView.setApplicationCtx(getApplicationContext());
 
