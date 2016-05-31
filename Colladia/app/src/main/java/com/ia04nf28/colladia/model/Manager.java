@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
 import java.util.Timer;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
@@ -98,7 +99,9 @@ public class Manager {
     }
 
     public void login(User user, String url) {
-        if (!Pattern.matches("^http://", url))
+        Pattern p = Pattern.compile("^http://");
+        Matcher m = p.matcher(url) ;
+        if (!m.lookingAt())
         {
             url = "http://" + url;
         }
@@ -303,6 +306,7 @@ public class Manager {
 
                     if (status.equalsIgnoreCase("ok")) {
                         diagrams.add(name);
+                        Collections.sort(diagrams);
                     }
 
                 } catch (JSONException e) {
@@ -340,17 +344,7 @@ public class Manager {
         Requestator.instance(context).deleteDiagram(name, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                try {
-                    JSONObject mainObject = new JSONObject(s);
-                    String status = mainObject.getString("status");
-
-                    if (status.equalsIgnoreCase("ok")) {
-                        diagrams.remove(name);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                responseRequestHandler(s);
             }
         });
     }

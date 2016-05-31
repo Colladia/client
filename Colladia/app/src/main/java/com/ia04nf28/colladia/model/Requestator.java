@@ -74,6 +74,8 @@ class Requestator {
     void deleteDiagram(String diaId, Response.Listener<String> responseListener) {
         StringRequest request = new StringRequest(Request.Method.DELETE, this.url + "/" + diaId,
                 responseListener, defaultErrorListener);
+
+        getRequestQueue().add(request);
     }
 
     /**

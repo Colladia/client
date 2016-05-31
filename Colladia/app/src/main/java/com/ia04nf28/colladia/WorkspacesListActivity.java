@@ -1,7 +1,9 @@
 package com.ia04nf28.colladia;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.content.DialogInterface;
 import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
@@ -21,6 +24,9 @@ import java.util.List;
 import com.ia04nf28.colladia.model.Manager;
 
 public class WorkspacesListActivity extends ListActivity {
+
+    private EditText userTextInput;
+    String diagramSelected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +84,23 @@ public class WorkspacesListActivity extends ListActivity {
         addBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
+                userTextInput = new EditText(WorkspacesListActivity.this);
+
+                builder.setTitle("Entrez votre texte").setView(userTextInput);
+                builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface di, int i) {
+                        Manager.instance(getApplicationContext()).addDiagram(userTextInput.getText().toString());
+                    }
+                });
+
+                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface di, int i) {
+
+                    }
+                });
+
+                builder.create().show();
             }
         });
     }
@@ -87,11 +108,51 @@ public class WorkspacesListActivity extends ListActivity {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Do something when a list item is clicked
-        String diagramSelected = l.getAdapter().getItem(position).toString();
+        ///String diagramSelected = l.getAdapter().getItem(position).toString();
+
+        Object o = l.getItemAtPosition(position);
+        diagramSelected = o.toString();
+
         Toast.makeText(getApplicationContext() ,"clicked " +diagramSelected, Toast.LENGTH_SHORT).show();
-        Manager.instance(getApplicationContext()).setCurrentDiagram(diagramSelected);
-        Intent intent = new Intent(this, DrawActivity.class);
-        startActivity(intent);
+        AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
+
+        builder.setPositiveButton("Accéder", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface di, int i) {
+                Manager.instance(getApplicationContext()).setCurrentDiagram(diagramSelected);
+                Intent intent = new Intent(WorkspacesListActivity.this, DrawActivity.class);
+                startActivity(intent);
+            }
+        });
+
+        builder.setNeutralButton("Supprimer", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface di, int i) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
+
+                builder.setTitle("Supprimer le diagramme " + diagramSelected + " ?");
+
+                builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface di, int i) {
+                        Manager.instance(getApplicationContext()).removeDiagram(diagramSelected);
+                    }
+                });
+
+                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface di, int i) {
+
+                    }
+                });
+
+                builder.create().show();
+            }
+        });
+
+        builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface di, int i) {
+
+            }
+        });
+
+        builder.create().show();
     }
 
     private void updateAdapter(List<String> list){

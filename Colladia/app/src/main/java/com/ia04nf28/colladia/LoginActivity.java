@@ -120,6 +120,7 @@ public class LoginActivity extends AppCompatActivity {
 
             Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
         }
+        //startDrawActivity();
     }
 
     private boolean isUserLoginValid(String s) {
@@ -169,6 +170,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void startDrawActivity() {
         Intent intent = new Intent(this, WorkspacesListActivity.class);
+        //Intent intent = new Intent(this, DrawActivity.class);
         startActivity(intent);
     }
 
