@@ -169,13 +169,8 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startDrawActivity() {
-<<<<<<< HEAD
         //Intent intent = new Intent(this, WorkspacesListActivity.class);
         Intent intent = new Intent(this, DrawActivity.class);
-=======
-        Intent intent = new Intent(this, WorkspacesListActivity.class);
-        //Intent intent = new Intent(this, DrawActivity.class);
->>>>>>> ed7aceeddad7a074ffa4b280adc076215441803f
         startActivity(intent);
     }
 
