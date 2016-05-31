@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
+import android.graphics.Rect;
 
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -50,11 +51,15 @@ public abstract class Element extends BaseObservable {
     protected float yMax;
     @JsonIgnore
     protected Paint paint;
+    @JsonIgnore
+    protected static Paint textPaint;
+    @JsonIgnore
+    protected static Paint anchorPaint;
 
     // Element's lines size and color
-    protected int color = Color.BLUE;
+    protected int color = Color.BLACK;
     protected int selectColor = Color.RED;
-    protected float thickness = 20;
+    protected float thickness = 15;
     protected boolean active = false;
 
     // Link point
@@ -64,14 +69,28 @@ public abstract class Element extends BaseObservable {
     protected PointF left = new PointF();
     protected PointF right = new PointF();
 
-    public abstract void drawElement(Canvas canvas);
-
     public Element()
     {
         paint = new Paint();
         paint.setColor(color);
         paint.setStrokeWidth(thickness);
         paint.setStyle(Paint.Style.STROKE);
+
+        // Instanciate TextPaint only once
+        if(textPaint == null)
+        {
+            textPaint = new Paint();
+            textPaint.setColor(Color.BLACK);
+            textPaint.setTextSize(30);
+        }
+
+        if(anchorPaint == null)
+        {
+            anchorPaint = new Paint();
+            anchorPaint.setColor(Color.GRAY);
+            anchorPaint.setStrokeWidth(5);
+            anchorPaint.setStyle(Paint.Style.STROKE);
+        }
     }
 
     public Element(float xMin, float yMin, float xMax, float yMax)
@@ -165,6 +184,36 @@ public abstract class Element extends BaseObservable {
                 || ((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax())));
     }
 
+    public void drawAnchor(Canvas canvas)
+    {
+        if(isActive())
+        {
+            canvas.drawCircle(top.x, top.y, 4, anchorPaint);
+            canvas.drawCircle(bottom.x, bottom.y, 4, anchorPaint);
+            canvas.drawCircle(right.x, right.y, 4, anchorPaint);
+            canvas.drawCircle(left.x, left.y, 4, anchorPaint);
+
+            // DEBUG
+            canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), anchorPaint);
+        }
+    }
+
+    public void drawElement(Canvas canvas)
+    {
+        if(!text.isEmpty())
+        {
+            float size = 0f, y = 0f;
+            for(String sub : text.split("\n"))
+            {
+                size = (textPaint.measureText(sub) / 2);
+                canvas.drawText(sub, center.x - size, center.y + y, Element.textPaint);
+                y += textPaint.descent() - textPaint.ascent();
+            }
+        }
+
+        drawAnchor(canvas);
+    }
+
     public void selectElement(){
         paint.setColor(selectColor);
         setActive(true);
@@ -173,6 +222,39 @@ public abstract class Element extends BaseObservable {
     public void deselectElement(){
         paint.setColor(color);
         setActive(false);
+    }
+
+    /**
+     * Method to serialize the Element into a String
+     * @return
+     */
+    public String serializeJSON () {
+        ObjectMapper mapper = new ObjectMapper();
+        String jsonString = null;
+
+        try {
+            jsonString = mapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        return jsonString;
+    }
+
+    /**
+     * Method to get a serialized Element from a String
+     * @param serialized
+     * @return
+     */
+    public static Element deserializeJSON (String serialized) {
+        ObjectMapper mapper = new ObjectMapper();
+        Element elemnt = null;
+
+        try {
+            elemnt = mapper.readValue(serialized, Element.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return elemnt;
     }
 
     public String getId() {
@@ -293,38 +375,5 @@ public abstract class Element extends BaseObservable {
 
     public void setActive(boolean active) {
         this.active = active;
-    }
-
-    /**
-     * Method to serialize the Element into a String
-     * @return
-     */
-    public String serializeJSON () {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = null;
-
-        try {
-            jsonString = mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return jsonString;
-    }
-
-    /**
-     * Method to get a serialized Element from a String
-     * @param serialized
-     * @return
-     */
-    public static Element deserializeJSON (String serialized) {
-        ObjectMapper mapper = new ObjectMapper();
-        Element elemnt = null;
-
-        try {
-            elemnt = mapper.readValue(serialized, Element.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return elemnt;
     }
 }

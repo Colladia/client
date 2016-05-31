@@ -28,21 +28,7 @@ public class SquareElement extends Element{
     @Override
     public void drawElement(Canvas canvas)
     {
+        super.drawElement(canvas);
         canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), getPaint());
-
-        if(active)
-        {
-            Paint p = new Paint();
-            p.setColor(Color.GRAY);
-            p.setStrokeWidth(5);
-            p.setStyle(Paint.Style.STROKE);
-
-            canvas.drawCircle(top.x, top.y, 4, p);
-            canvas.drawCircle(bottom.x, bottom.y, 4, p);
-            canvas.drawCircle(right.x, right.y, 4, p);
-            canvas.drawCircle(left.x, left.y, 4, p);
-        }
-
-        if(!text.equals("")) canvas.drawText(text, center.x, center.y, getPaint());
     }
 }

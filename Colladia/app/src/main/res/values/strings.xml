@@ -26,5 +26,6 @@
     <string name="line">Simple</string>
     <string name="arrow">Arrow</string>
     <string name="doubleArrow">Double Arrow</string>
+    <string name="title_activity_worspaces_list">WorkspacesListActivity</string>
     <string name="text">Text</string>
 </resources>
