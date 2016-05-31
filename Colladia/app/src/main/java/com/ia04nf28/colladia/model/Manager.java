@@ -52,6 +52,13 @@ public class Manager {
             requestDiagrams();
         }
     };
+    private Timer requestTimerElements = new Timer();
+    private TimerTask getElementsTask = new TimerTask() {
+        @Override
+        public void run() {
+            requestElements();
+        }
+    };
 
 
 
@@ -76,7 +83,7 @@ public class Manager {
     private final static String PROPERTIES_FIELD = "properties";
 
 
-    private final static String LAST_CLOCK_INPUT_FIELD = "last-clock";//not for first GET
+    public final static String LAST_CLOCK_INPUT_FIELD = "last-clock";//not for first GET
 
 
 
@@ -114,8 +121,10 @@ public class Manager {
         // end of if url valid
     }
 
+    public void joinWorkspace(){
+        requestTimerElements.schedule(getElementsTask, 0, 1000);
+    }
 
-    //TODO  POST element and PERIODIC GET for element
     private void responseRequestHandler(String responseRequest){
         try {
             JSONObject mainObject = new JSONObject(responseRequest);
@@ -137,19 +146,17 @@ public class Manager {
                     }
 
                 }else if(mainObject.has(DESCRIPTION_FIELD)){//case for the first get or if the clock is not valid then update everything
-                    if(currentDiagram==null)
-                        currentDiagram = new Diagram();
-
                     getCurrentDiagram().getListElement().clear();
 
                     JSONObject descArray = new JSONObject(mainObject.getString(DESCRIPTION_FIELD));
                     Iterator<?> keys = descArray.keys();
+                    Log.d(TAG, "desc size "+ descArray.length());
                     while( keys.hasNext() ) {
                         String key = (String)keys.next();
-                        if ( descArray.get(key) instanceof JSONObject ) {
-                            getCurrentDiagram().getListElement().put(key, Element.deserializeJSON(descArray.getString(key)));
-                        }
+                        //TODO may be test if not element expected, or keep it for the exceptions
+                        getCurrentDiagram().getListElement().put(key, Element.deserializeJSON(descArray.getString(key)));
                     }
+
 
                 }else if(mainObject.has(DIAGRAM_LIST_FIELD)){//for a get without anything list of all diagram
                     JSONArray jArray = new JSONArray(mainObject.getString(DIAGRAM_LIST_FIELD));
@@ -207,7 +214,8 @@ public class Manager {
                         getCurrentDiagram().getListElement().put(idElement, Element.deserializeJSON(modification.getString(PROPERTIES_FIELD)));
                         break;
                     case TYPE_REQUEST_POST :
-                        //TODO still need to be done
+                        Element elementUpdated = getCurrentDiagram().getListElement().get(idElement);
+                        elementUpdated.updateElement(Element.deserializeJSON(modification.getString(PROPERTIES_FIELD)));
                         break;
                     case TYPE_REQUEST_DEL :
                         getCurrentDiagram().getListElement().remove(idElement);
@@ -233,40 +241,6 @@ public class Manager {
                 responseRequestHandler(s);
                 for(String dia : diagrams)
                     Log.d(TAG, dia);
-                /*try {
-                    JSONObject mainObject = new JSONObject(s);
-                    String status = mainObject.getString("status");
-
-                    if (status.equalsIgnoreCase("ok")) {
-                        // if first response
-                        if (!logged.get())
-                        {
-                            logged.set(true);
-                        }
-
-                        String dList = mainObject.getString("diagram-list");
-
-                        JSONArray jArray = new JSONArray(dList);
-
-                        List<String> res = new ArrayList<String>();
-
-                        // add items not already in the stored list
-                        for (int i = 0; i<jArray.length(); i++){
-                            String item = jArray.getString(i);
-                            res.add(item);
-                            if (!diagrams.contains(item)) {
-                                diagrams.add(item);
-                            }
-                        }
-
-                        // remove the items that were stored but that were not in the response list
-                        diagrams.retainAll(res);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }*/
-
             }
         });
     }
@@ -321,11 +295,14 @@ public class Manager {
         return currentDiagram == null ? new Diagram() : currentDiagram;
     }
 
-    public void setCurrentDiagram(String diaId) {
+    public void setCurrentDiagram(final String diaId) {
         // TODO get diagram from server and load it
         Requestator.instance(context).getDiagram(diaId, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
+                //TODO urgent not gonna work if request error
+                currentDiagram = new Diagram();
+                currentDiagram.setName(diaId);
                 responseRequestHandler(s);
             }
         });
@@ -352,27 +329,32 @@ public class Manager {
 
     public void addElement(final Element newElement) {
         // get diagrams list
-        Requestator.instance(this.context).putElement(getCurrentDiagram().getName(), newElement.getId(), newElement.serializeJSON(), new Response.Listener<String>() {
+        Requestator.instance(this.context).putElement(getCurrentDiagram().getName(), newElement.getId(), lastClock, newElement.serializeJSON(), new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 System.out.println("Response Server : " + s);
-                //TODO temporary, wait for method jean
-                Element receiveElement = Element.deserializeJSON(Json.deserializeStringMap(Json.deserializeStringMap(s).get("description")).get(newElement.getId()));
-                System.out.println("Receive Element Add"+receiveElement.getxMin());
+                responseRequestHandler(s);
 
             }
         });
     }
-
-    public void updatePositionElement(Element originalElement, PointF first, PointF second){
-        final Element elementToServer = originalElement.clone();
-        elementToServer.set(first,second);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), elementToServer.serializeJSON(), new Response.Listener<String>() {
+    public void requestElements(){
+        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock,new Response.Listener<String>(){
             @Override
             public void onResponse(String s) {
                 System.out.println("Response Server : " + s);
-                Element receiveElement = Element.deserializeJSON(Json.deserializeStringMap(Json.deserializeStringMap(s).get("description")).get(elementToServer.getId()));
-                System.out.println("Receive Element Update "+receiveElement.getxMin());
+                responseRequestHandler(s);
+            }
+        });
+    }
+    public void updatePositionElement(Element originalElement, PointF first, PointF second){
+        final Element elementToServer = originalElement.clone();
+        elementToServer.set(first,second);
+        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                System.out.println("Response Server : " + s);
+                responseRequestHandler(s);
             }
         });
     }
@@ -380,14 +362,11 @@ public class Manager {
     public void moveElement(Element originalElement, PointF newPosition){
         final Element elementToServer = originalElement.clone();
         elementToServer.move(newPosition);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), elementToServer.serializeJSON(), new Response.Listener<String>() {
+        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 System.out.println("Response Server : " + s);
-                Element receiveElement = Element.deserializeJSON(Json.deserializeStringMap(Json.deserializeStringMap(s).get("description")).get(elementToServer.getId()));
-                System.out.println("Receive Element Update " + receiveElement.getxMin());
-                //TODO  need a diag currentDiagram.getListElement().remove(receiveElement.getId());
-                //currentDiagram.getListElement().put(receiveElement.getId(),receiveElement);
+                responseRequestHandler(s);
             }
         });
     }

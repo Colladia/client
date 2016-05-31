@@ -15,19 +15,13 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
-import com.ia04nf28.colladia.model.Elements.CircleElement;
+
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
-import com.ia04nf28.colladia.model.Elements.LineElement;
-import com.ia04nf28.colladia.model.Elements.SquareElement;
 import com.ia04nf28.colladia.model.Manager;
 
-import java.util.HashSet;
-import java.util.Observable;
-import java.util.Observer;
 
 /**
  * Created by Mar on 17/05/2016.
