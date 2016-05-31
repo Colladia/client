@@ -1,6 +1,7 @@
 package com.ia04nf28.colladia;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.databinding.ObservableList;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +14,8 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+
 import java.lang.String;
 import java.util.List;
 import com.ia04nf28.colladia.model.Manager;
@@ -45,23 +48,29 @@ public class WorkspacesListActivity extends ListActivity {
 
             @Override
             public void onItemRangeChanged(ObservableList<String> sender, int positionStart, int itemCount) {
-
+                updateAdapter(sender);
+                System.out.println("onItemRangeChanged");
             }
 
             @Override
             public void onItemRangeInserted(ObservableList<String> sender, int positionStart, int itemCount) {
-
+                updateAdapter(sender);
+                System.out.println("onItemRangeInserted");
             }
+
 
             @Override
             public void onItemRangeMoved(ObservableList<String> sender, int fromPosition, int toPosition, int itemCount) {
-
+                updateAdapter(sender);
+                System.out.println("onItemRangeMoved");
             }
 
             @Override
             public void onItemRangeRemoved(ObservableList<String> sender, int positionStart, int itemCount) {
-
+                updateAdapter(sender);
+                System.out.println("onItemRangeRemoved");
             }
+
         });
 
 
@@ -78,9 +87,15 @@ public class WorkspacesListActivity extends ListActivity {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Do something when a list item is clicked
+        String diagramSelected = l.getAdapter().getItem(position).toString();
+        Toast.makeText(getApplicationContext() ,"clicked " +diagramSelected, Toast.LENGTH_SHORT).show();
+        Manager.instance(getApplicationContext()).setCurrentDiagram(diagramSelected);
+        Intent intent = new Intent(this, DrawActivity.class);
+        startActivity(intent);
     }
 
     private void updateAdapter(List<String> list){
         setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
+
     }
 }

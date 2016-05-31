@@ -3,6 +3,7 @@ package com.ia04nf28.colladia.model;
 import android.content.Context;
 import android.databinding.ObservableArrayMap;
 import android.databinding.ObservableMap;
+import android.util.Log;
 
 import com.android.volley.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -52,13 +53,19 @@ public class Diagram {
 
     public void insertElement(Element elementToInsert){
         if(listElement.containsKey(elementToInsert.getId())){
-            listElement.remove(elementToInsert.getId());
-            listElement.put(elementToInsert.getId(), elementToInsert);
+            System.out.println("Error cannot insert element in diagram. Element already existing!");
         }else
             listElement.put(elementToInsert.getId(), elementToInsert);
 
     }
 
+    public void updateElement(Element elementToUpdate){
+        if(listElement.containsKey(elementToUpdate.getId())){
+
+        }else
+            System.out.println("Error cannot update element in diagram. Element doesn't exist!");
+
+    }
     public static String toJson(Diagram d){
         ObjectMapper mapper = new ObjectMapper();
         //Object to JSON in String

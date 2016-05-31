@@ -55,7 +55,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private PointF touchFromCenter = null;
 
     /** All available elements */
-    private HashSet<Element> listElement = new HashSet<>();
+    //private HashSet<Element> listElement = new HashSet<>();
 
 
     private static final float ZOOM_MIN = 0.1f;
@@ -153,10 +153,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     public void init(Context c)
     {
         //add a callback to the list of elements of the diagram
-        /*TODO tp put back for server request getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
+        getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
         for (Element elem : getManager().getCurrentDiagram().getListElement().values()){//if there is already elements on the diagram
             elem.addOnPropertyChangedCallback(elementCallback);
-        }*/
+        }
 
         scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
@@ -251,7 +251,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             canvas.drawLine(-10, 0, 10, 0, paint);
             canvas.drawLine(0, -10, 0, 10, paint);
 
-            for (Element elem : listElement)
+            for (Element elem : getManager().getCurrentDiagram().getListElement().values())
             {
                 elem.drawElement(canvas);
             }
@@ -303,8 +303,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
                 // We add the selected element from the menu to the canvas
                 drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
-                listElement.add(drawElem);
-                Manager.instance(applicationCtx).addElement( drawElem);//TODO change this
+                Manager.instance(applicationCtx).addElement(drawElem);
                 mode = INSERT;
                 break;
 
@@ -333,8 +332,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         {
             case INSERT:
                 mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
-                Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);//TODO change this
-                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
 
                 break;
 
@@ -357,8 +355,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if(selected != null)
                 {
                     PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
-                    Manager.instance(applicationCtx).moveElement(selected, p);//TODO change this
-                    selected.move(p);
+                    Manager.instance(applicationCtx).moveElement(selected, p);
 
                     iPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
                 }
@@ -368,7 +365,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if(selected != null)
                 {
                     mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
-                    selected.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                    Manager.instance(applicationCtx).updatePositionElement(selected, iPointAbsolutePoint, mPointAbsolutePoint);
                 }
                 break;
         }
@@ -384,7 +381,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
                 drawElem = null;
                 break;
 
@@ -411,7 +408,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iPointAbsolutePoint,mPointAbsolutePoint);
+                Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
                 drawElem = null;
                 break;
 
@@ -431,7 +428,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             case RESIZE:
                 if(selected != null)
                 {
-                    selected.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                    Manager.instance(applicationCtx).updatePositionElement(selected, iPointAbsolutePoint, mPointAbsolutePoint);
                 }
                 break;
         }
@@ -496,7 +493,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         {
             // Hide keyboard when enter
             case KeyEvent.KEYCODE_ENTER:
-                selected.setText(userTextInput);
+                Manager.instance(applicationCtx).changeText(selected,userTextInput);
                 userTextInput = "";
                 ((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(this.getWindowToken(), 0);
                 break;
@@ -510,7 +507,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     private Element getTouchedElement(final PointF pointTouch)
     {
-        for (Element elem : listElement)
+        for (Element elem : getManager().getCurrentDiagram().getListElement().values())
         {
             if (elem.isTouch(pointTouch))
             {
