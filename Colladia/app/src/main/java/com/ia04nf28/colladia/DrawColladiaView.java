@@ -1,5 +1,6 @@
 package com.ia04nf28.colladia;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -9,18 +10,18 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.*;
 import android.widget.EditText;
 
+import android.widget.RelativeLayout;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Manager;
+import com.ia04nf28.colladia.rotatemenu.view.CoverRingImageView;
+import com.ia04nf28.colladia.rotatemenu.view.RingOperationLayout;
 
 import java.util.HashSet;
 
@@ -486,7 +487,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     }
 
 
-
     public void insertNewElement(Element newElement){
         drawElem = newElement;
         mode = DrawColladiaView.INSERT;
@@ -542,7 +542,13 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         @Override
         public void onLongPress(MotionEvent e) {
-            // Menu contextuel
+            // pop contextual menu
+            RelativeLayout rel = (RelativeLayout) ((Activity) ctx).findViewById(R.id.rel);
+            RingOperationLayout rol = new RingOperationLayout(ctx);
+            //rol.setId(5);
+            RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+            rol.setLayoutParams(p);
+            rel.addView(rol);
         }
     }
 

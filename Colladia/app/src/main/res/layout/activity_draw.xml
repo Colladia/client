@@ -7,10 +7,17 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
-    <com.ia04nf28.colladia.DrawColladiaView
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/draw_view" />
+        android:id="@+id/rel">
+
+        <com.ia04nf28.colladia.DrawColladiaView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/draw_view" />
+
+    </RelativeLayout>
     <include
         layout="@layout/app_bar_draw"
         android:layout_width="match_parent"

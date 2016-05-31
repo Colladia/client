@@ -96,12 +96,12 @@
             android:background="@mipmap/ic_custom_ring_menu_channel7" />
     </RelativeLayout>
 
-    <com.example.yy.rotatemenu.view.CoverRingImageView
+    <com.ia04nf28.colladia.rotatemenu.view.CoverRingImageView
         android:id="@+id/drawImageView"
         android:layout_width="270dip"
         android:layout_height="270dip"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" >
-    </com.example.yy.rotatemenu.view.CoverRingImageView>
+    </com.ia04nf28.colladia.rotatemenu.view.CoverRingImageView>
 
 </RelativeLayout>

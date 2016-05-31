@@ -21,7 +21,7 @@ import android.widget.ImageView;
  */
 public class CoverRingImageView extends ImageView {
 
-	private final Paint paint;
+	private final Paint paint = new Paint();
 
 	private Canvas mCanvas = null;
 
@@ -99,12 +99,22 @@ public class CoverRingImageView extends ImageView {
 	 * @author yaoy
 	 * @date 2013-9-26
 	 */
+	public CoverRingImageView(Context context) {
+		super(context);
+		construct();
+	}
+
 	public CoverRingImageView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		construct();
+	}
 
-		// TODO Auto-generated constructor stub
-		this.paint = new Paint();
+	public CoverRingImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+		construct();
+	}
 
+	private void construct() {
 		// 消除锯齿
 		this.paint.setAntiAlias(true);
 
@@ -120,6 +130,7 @@ public class CoverRingImageView extends ImageView {
 		mRemoveInsideCircleIsDone = false;
 		mDrawInsideCircleIsDone = true;
 	}
+
 
 	@Override
 	protected void onDraw(Canvas canvas) {

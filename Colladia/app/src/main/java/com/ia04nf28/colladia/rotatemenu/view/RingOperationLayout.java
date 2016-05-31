@@ -73,8 +73,26 @@ public class RingOperationLayout extends LinearLayout {
 
 	private static final int WANT_TO_GET_MUNU_WIDTH_MESSAGE = 1;
 
-	public RingOperationLayout(Context context, AttributeSet attrs) {
+	public RingOperationLayout(Context context) {
 		super(context);
+
+		construct(context);
+
+	}
+
+	public RingOperationLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+		super(context, attrs, defStyleAttr);
+
+		construct(context);
+	}
+
+	public RingOperationLayout(Context context, AttributeSet attrs) {
+		super(context, attrs);
+
+		construct(context);
+	}
+
+	private void construct(Context context) {
 		//初始化
 		initialize(context);
 
@@ -90,12 +108,12 @@ public class RingOperationLayout extends LinearLayout {
 						// mMenuButton.setClickable(false);
 						// 隐藏3级导航菜单
 						mDrawImageView.hideOutsideCircle();
-						RotateAnimations.startAnimation(mLevel3, 3500, 0);
+						RotateAnimations.startAnimation(mLevel3, 1000, 0);
 					} else {
 						// 显示3级导航菜单
 						// showCircleLevelOne();
 						mDrawImageView.showOutsideCircle();
-						RotateAnimations.startAnimation(mLevel3, 3500, 0);
+						RotateAnimations.startAnimation(mLevel3, 1000, 0);
 					}
 
 					mIsLevel3Show = !mIsLevel3Show;
@@ -114,20 +132,20 @@ public class RingOperationLayout extends LinearLayout {
 					if (!mIsLevel2Show) {
 						// 显示2级导航菜单
 						mDrawImageView.showInsideCircle();
-						RotateAnimations.startAnimation(mLevel2, 2000, 0);
+						RotateAnimations.startAnimation(mLevel2, 1000, 0);
 					} else {
 						if (mIsLevel3Show) {
 							// 隐藏3级导航菜单
 							mDrawImageView.hideOutsideCircle();
-							RotateAnimations.startAnimation(mLevel3, 3500, 0);
+							RotateAnimations.startAnimation(mLevel3, 1000, 0);
 							// 隐藏2级导航菜单
 							mDrawImageView.hideInsideCircle();
-							RotateAnimations.startAnimation(mLevel2, 2000, 500);
+							RotateAnimations.startAnimation(mLevel2, 1000, 500);
 							mIsLevel3Show = !mIsLevel3Show;
 						} else {
 							// 隐藏2级导航菜单
 							mDrawImageView.hideInsideCircle();
-							RotateAnimations.startAnimation(mLevel2, 2000, 0);
+							RotateAnimations.startAnimation(mLevel2, 1000, 0);
 						}
 					}
 					mIsLevel2Show = !mIsLevel2Show;
