@@ -140,9 +140,9 @@ public class Manager {
 
                 if(mainObject.has(MODIFICATION_LIST_FIELD)){//for any other kind of request with a correct clock in input, for a specific diagram
 
-                    JSONArray descArray = mainObject.getJSONArray(MODIFICATION_LIST_FIELD);
+                    JSONArray descArray = new JSONArray(mainObject.getString(MODIFICATION_LIST_FIELD));
                     for (int indexModif = 0;  indexModif < descArray.length() ; indexModif++){
-                        typeModificationTraitement(descArray.getJSONObject(indexModif));
+                        typeModificationTraitement(new JSONObject(descArray.getString(indexModif)));
                     }
 
                 }else if(mainObject.has(DESCRIPTION_FIELD)){//case for the first get or if the clock is not valid then update everything
@@ -204,8 +204,9 @@ public class Manager {
 
     private void typeModificationTraitement(JSONObject modification){
         try {
-            if(modification.getJSONArray(PATH_FIELD).length() == 2){
-                String idElement = modification.getJSONArray(PATH_FIELD).getString(modification.getJSONArray(PATH_FIELD).length()-1);
+            JSONArray pathJsonArray = new JSONArray(modification.getString(PATH_FIELD));
+            if(pathJsonArray.length() == 2){
+                String idElement = pathJsonArray.getString(pathJsonArray.length() - 1);
                 String typeRequest = modification.getString(TYPE_REQUEST_FIELD);
                 switch (typeRequest){
                     case TYPE_REQUEST_GET ://nothing
