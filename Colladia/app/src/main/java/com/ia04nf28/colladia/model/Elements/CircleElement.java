@@ -6,6 +6,9 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Mar on 17/05/2016.
  */
@@ -83,5 +86,43 @@ public class CircleElement extends Element {
 
     public int getRadius() {
         return radius;
+    }
+
+    public void setRadius(int radius) {
+        this.radius = radius;
+    }
+
+    @Override
+    public String serializeJSON() {
+        String elementSerialized = super.serializeJSON();
+        try {
+
+            JSONObject json = new JSONObject(elementSerialized);
+            json.put("radius",""+getRadius());
+            elementSerialized = json.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return elementSerialized;
+    }
+
+    @Override
+    public void jsonToElement(String serializedElement) {
+        try {
+            JSONObject json = new JSONObject(serializedElement);
+            setRadius(new Integer(json.getString("radius")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Override
+    public void updateElement(Element updatedElement) {
+        super.updateElement(updatedElement);
+        if(this.getRadius() != ((CircleElement)updatedElement).getRadius()) this.setRadius(((CircleElement)updatedElement).getRadius());
+
     }
 }

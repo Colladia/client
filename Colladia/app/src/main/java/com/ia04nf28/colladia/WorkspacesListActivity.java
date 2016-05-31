@@ -108,7 +108,6 @@ public class WorkspacesListActivity extends ListActivity {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // Do something when a list item is clicked
-        ///String diagramSelected = l.getAdapter().getItem(position).toString();
 
         Object o = l.getItemAtPosition(position);
         diagramSelected = o.toString();
@@ -119,6 +118,7 @@ public class WorkspacesListActivity extends ListActivity {
         builder.setPositiveButton("Accéder", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface di, int i) {
                 Manager.instance(getApplicationContext()).setCurrentDiagram(diagramSelected);
+                Manager.instance(getApplicationContext()).joinWorkspace();
                 Intent intent = new Intent(WorkspacesListActivity.this, DrawActivity.class);
                 startActivity(intent);
             }

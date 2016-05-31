@@ -16,20 +16,15 @@ import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.UUID;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property="type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = CircleElement.class, name = "CircleElement"),
-        @JsonSubTypes.Type(value = SquareElement.class, name = "SquareElement"),
-        @JsonSubTypes.Type(value = SquareElement.class, name = "ClassElement"),
-        @JsonSubTypes.Type(value = LineElement.class, name = "LineElement") })
-@JsonPropertyOrder(alphabetic=true)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public abstract class Element extends BaseObservable implements Cloneable {
 
     // Directions
@@ -48,7 +43,6 @@ public abstract class Element extends BaseObservable implements Cloneable {
     protected float yMin;
     protected float xMax;
     protected float yMax;
-    @JsonIgnore
     protected Paint paint;
 
     // Element's lines size and color
@@ -300,14 +294,33 @@ public abstract class Element extends BaseObservable implements Cloneable {
      * @return
      */
     public String serializeJSON () {
+        JSONObject json = new JSONObject();
         ObjectMapper mapper = new ObjectMapper();
-        String jsonString = null;
 
         try {
-            jsonString = mapper.writeValueAsString(this);
+            json.put("type",this.getClass().getSimpleName());
+            json.put("id",getId());
+            json.put("text",getText());
+            json.put("xMin",""+getxMin());
+            json.put("yMin",""+getyMin());
+            json.put("xMax",""+getxMax());
+            json.put("yMax",""+getyMax());
+            json.put("color",""+getColor());//TODO not good need the real color
+            json.put("active",""+isActive());
+            json.put("center", "" + mapper.writeValueAsString(getCenter()));
+            json.put("top","" + mapper.writeValueAsString(getTop()));
+            json.put("bottom","" + mapper.writeValueAsString(getBottom()));
+            json.put("left","" + mapper.writeValueAsString(getLeft()));
+            json.put("right","" + mapper.writeValueAsString(getRight()));
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
+
+        String jsonString = json.toString();
         return jsonString;
     }
 
@@ -318,14 +331,52 @@ public abstract class Element extends BaseObservable implements Cloneable {
      */
     public static Element deserializeJSON (String serialized) {
         ObjectMapper mapper = new ObjectMapper();
-        Element elemnt = null;
+        Element element = null;
 
         try {
-            elemnt = mapper.readValue(serialized, Element.class);
+            JSONObject json = new JSONObject(serialized);
+            element = ElementFactory.createElementSerialized(json.getString("type"));
+            element.setId(json.getString("id"));
+            element.setText(json.getString("text"));
+            element.setxMin(new Float(json.getString("xMin")));
+            element.setyMin(new Float(json.getString("yMin")));
+            element.setxMax(new Float(json.getString("xMax")));
+            element.setyMax(new Float(json.getString("yMax")));
+            element.setColor(new Integer(json.getString("color")));
+            element.setActive(new Boolean(json.getString("active")));
+            element.setCenter(mapper.readValue(json.getString("center"), PointF.class));
+            element.setTop(mapper.readValue(json.getString("top"), PointF.class));
+            element.setBottom(mapper.readValue(json.getString("bottom"), PointF.class));
+            element.setLeft(mapper.readValue(json.getString("left"), PointF.class));
+            element.setRight(mapper.readValue(json.getString("right"), PointF.class));
+            element.jsonToElement(serialized);
+
         } catch (IOException e) {
             e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return elemnt;
+        return element;
+    }
+
+    public abstract void jsonToElement(String serializedElement);
+
+
+
+
+    public void updateElement(Element updatedElement){
+        if(this.getText().equals(updatedElement.getText())) this.setText(updatedElement.getText());
+        if(this.getxMin() != updatedElement.getxMin()) this.setxMin(updatedElement.getxMin());
+        if(this.getyMin() != updatedElement.getyMin()) this.setyMin(updatedElement.getyMin());
+        if(this.getxMax() != updatedElement.getxMax()) this.setxMax(updatedElement.getxMax());
+        if(this.getyMax() != updatedElement.getyMax()) this.setyMax(updatedElement.getyMax());
+        if(this.getColor() != updatedElement.getColor()) this.setColor(updatedElement.getColor());
+        if(this.isActive() != updatedElement.isActive()) this.setActive(updatedElement.isActive());
+        if(this.getCenter().equals(updatedElement.getCenter())) this.setCenter(updatedElement.getCenter());
+        if(this.getTop().equals(updatedElement.getTop())) this.setTop(updatedElement.getTop());
+        if(this.getBottom().equals(updatedElement.getBottom())) this.setBottom(updatedElement.getBottom());
+        if(this.getLeft().equals(updatedElement.getLeft())) this.setLeft(updatedElement.getLeft());
+        if(this.getRight().equals(updatedElement.getRight())) this.setRight(updatedElement.getRight());
     }
 
 

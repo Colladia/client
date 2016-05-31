@@ -7,6 +7,9 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.util.Log;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 /**
  * Created by Mar on 21/05/2016.
  */
@@ -64,6 +67,7 @@ public class LineElement extends Element {
                 || (( (getxMin() - TOLERANCE) < finger.x) && (finger.x < (getxMax() + TOLERANCE) ) && ( (getyMin() - TOLERANCE) > finger.y) && (finger.y > (getyMax() + TOLERANCE) )));
     }
 
+
     @Override
     public void set(PointF first, PointF second)
     {
@@ -71,5 +75,48 @@ public class LineElement extends Element {
 
         Log.d("Line element", "Set method");
         DIR = getDirection(first, second);
+    }
+
+
+    public int getDIR() {
+        return DIR;
+    }
+
+    public void setDIR(int DIR) {
+        this.DIR = DIR;
+    }
+
+    @Override
+    public String serializeJSON() {
+        String elementSerialized = super.serializeJSON();
+        try {
+
+            JSONObject json = new JSONObject(elementSerialized);
+            json.put("dir",""+getDIR());
+            elementSerialized = json.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return elementSerialized;
+    }
+
+    @Override
+    public void jsonToElement(String serializedElement) {
+        try {
+            JSONObject json = new JSONObject(serializedElement);
+            setDIR(new Integer(json.getString("dir")));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+    @Override
+    public void updateElement(Element updatedElement) {
+        super.updateElement(updatedElement);
+        if(this.getDIR() != ((LineElement)updatedElement).getDIR()) this.setDIR(((LineElement)updatedElement).getDIR());
     }
 }

@@ -45,4 +45,18 @@ public class SquareElement extends Element{
 
         if(!text.equals("")) canvas.drawText(text, center.x, center.y, getPaint());
     }
+
+    @Override
+    public String serializeJSON() {
+        return super.serializeJSON();
+    }
+
+    @Override
+    public void jsonToElement(String serializedElement) {
+    }
+
+    @Override
+    public void updateElement(Element updatedElement) {
+        super.updateElement(updatedElement);
+    }
 }

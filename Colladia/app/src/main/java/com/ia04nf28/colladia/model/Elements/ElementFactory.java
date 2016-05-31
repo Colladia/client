@@ -37,4 +37,32 @@ public class ElementFactory {
         }
         return newElement;
     }
+
+
+    public static Element createElementSerialized( String typeElement)
+    {
+        Element newElement = null;
+
+        if(typeElement.equals(CircleElement.class.getSimpleName()))
+        {
+            newElement = new CircleElement();
+        }
+        else if(typeElement.equals(SquareElement.class.getSimpleName()))
+        {
+            newElement = new SquareElement();
+        }
+        else if(typeElement.equals(LineElement.class.getSimpleName()))
+        {
+            newElement = new LineElement();
+        }
+        else if(typeElement.equals(ClassElement.class.getSimpleName()))
+        {
+            newElement = new ClassElement();
+        }
+        else
+        {
+            Log.d(TAG, "No such element");
+        }
+        return newElement;
+    }
 }
