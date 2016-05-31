@@ -175,7 +175,7 @@ public class Manager {
                 // s contains the elements of the diagram
 
 
-                Diagram.toObject(diaJson);
+                //Diagram.toObject(diaJson);
             }
         });
 
