@@ -20,6 +20,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import java.lang.String;
+import java.util.Collections;
 import java.util.List;
 import com.ia04nf28.colladia.model.Manager;
 
@@ -41,7 +42,6 @@ public class WorkspacesListActivity extends ListActivity {
         // Must add the progress bar to the root of the layout
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
-
 
         setContentView(R.layout.activity_workspaces_list);
 
@@ -157,6 +157,5 @@ public class WorkspacesListActivity extends ListActivity {
 
     private void updateAdapter(List<String> list){
         setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
-
     }
 }

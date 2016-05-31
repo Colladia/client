@@ -26,8 +26,7 @@
         </activity>
         <activity
             android:name=".WorkspacesListActivity"
-            android:label="@string/title_activity_worspaces_list"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/title_activity_worspaces_list">
         </activity>
     </application>
 
