@@ -1,4 +1,4 @@
-package com.example.yy.rotatemenu.view;
+package com.ia04nf28.colladia.rotatemenu.view;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -163,7 +163,6 @@ public class CoverRingImageView extends ImageView {
 	/**
 	 * 方法描述 给其他类调用的接口函数，用于显示里菜单
 	 *
-	 * @param 无
 	 * @return 无
 	 * @throws
 	 * @since 1.0
@@ -180,7 +179,6 @@ public class CoverRingImageView extends ImageView {
 	/**
 	 * 方法描述 给其他类调用的接口函数，用于隐藏里菜单
 	 *
-	 * @param 无
 	 * @return 无
 	 * @throws
 	 * @since 1.0
@@ -197,7 +195,6 @@ public class CoverRingImageView extends ImageView {
 	/**
 	 * 方法描述 给其他类调用的接口函数，用于显示外菜单
 	 *
-	 * @param 无
 	 * @return 无
 	 * @throws
 	 * @since 1.0
@@ -214,7 +211,6 @@ public class CoverRingImageView extends ImageView {
 	/**
 	 * 方法描述 给其他类调用的接口函数，用于隐藏外菜单
 	 *
-	 * @param 无
 	 * @return 无
 	 * @throws
 	 * @since 1.0

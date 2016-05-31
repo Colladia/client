@@ -5,7 +5,7 @@
     android:background="#ffffff"
     tools:context=".CircleRunActivity" >
 
-    <com.example.yy.rotatemenu.view.RingOperationLayout
+    <com.ia04nf28.colladia.rotatemenu.view.RingOperationLayout
         android:layout_width="270dip"
         android:layout_height="270dip"
         android:layout_centerHorizontal="true"

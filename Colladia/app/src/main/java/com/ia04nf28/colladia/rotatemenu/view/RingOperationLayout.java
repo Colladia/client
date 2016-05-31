@@ -1,4 +1,4 @@
-package com.example.yy.rotatemenu.view;
+package com.ia04nf28.colladia.rotatemenu.view;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -16,8 +16,8 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
-import com.example.yy.rotatemenu.R;
-import com.example.yy.rotatemenu.RotateAnimations;
+import com.ia04nf28.colladia.R;
+import com.ia04nf28.colladia.rotatemenu.RotateAnimations;
 
 /**
  *

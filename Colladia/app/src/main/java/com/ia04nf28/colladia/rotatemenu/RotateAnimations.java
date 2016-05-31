@@ -1,4 +1,4 @@
-package com.example.yy.rotatemenu;
+package com.ia04nf28.colladia.rotatemenu;
 
 import android.view.View;
 import android.view.ViewGroup;

@@ -1,9 +1,10 @@
-package com.example.yy.rotatemenu;
+package com.ia04nf28.colladia.rotatemenu;
 
 
 
 import android.os.Bundle;
 import android.app.Activity;
+import com.ia04nf28.colladia.R;
 
 public class CircleRunActivity extends Activity {
 
