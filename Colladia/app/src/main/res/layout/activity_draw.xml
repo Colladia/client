@@ -7,10 +7,62 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
-    <com.ia04nf28.colladia.DrawColladiaView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/draw_view" />
+        android:layout_height="match_parent">
+        <!-- Draw View -->
+        <com.ia04nf28.colladia.DrawColladiaView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/draw_view" />
+
+        <!-- Circular Menu -->
+        <com.szugyi.circlemenu.view.CircleLayout
+            android:id="@+id/contextual_menu"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_horizontal">
+            <!-- Menu items -->
+            <com.szugyi.circlemenu.view.CircleImageView
+                android:id="@+id/main_calendar_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home" />
+
+            <com.szugyi.circlemenu.view.CircleImageView
+                android:id="@+id/main_cloud_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home" />
+
+
+            <com.szugyi.circlemenu.view.CircleImageView
+                android:id="@+id/main_mail_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home" />
+
+            <com.szugyi.circlemenu.view.CircleImageView
+                android:id="@+id/main_key_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home" />
+
+            <com.szugyi.circlemenu.view.CircleImageView
+                android:id="@+id/main_profile_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home" />
+
+            <com.szugyi.circlemenu.view.CircleImageView
+                android:id="@+id/main_tap_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_home" />
+
+        </com.szugyi.circlemenu.view.CircleLayout>
+    </RelativeLayout>
+
     <include
         layout="@layout/app_bar_draw"
         android:layout_width="match_parent"
@@ -35,5 +87,4 @@
             android:listSelector="@color/colorGrey">
         </ExpandableListView>
     </android.support.design.widget.NavigationView>
-
 </android.support.v4.widget.DrawerLayout>
