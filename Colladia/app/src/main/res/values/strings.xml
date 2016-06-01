@@ -28,4 +28,9 @@
     <string name="doubleArrow">Double Arrow</string>
     <string name="title_activity_worspaces_list">Workspaces</string>
     <string name="text">Text</string>
+
+    <string name="access_button">Access</string>
+    <string name="delete_button">Delete</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="delete_title">Delete diagram </string>
 </resources>

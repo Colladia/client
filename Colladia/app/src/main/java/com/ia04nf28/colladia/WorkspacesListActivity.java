@@ -115,7 +115,8 @@ public class WorkspacesListActivity extends ListActivity {
         Toast.makeText(getApplicationContext() ,"clicked " +diagramSelected, Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
-        builder.setPositiveButton("Accéder", new DialogInterface.OnClickListener() {
+        // Neutral button is on center
+        builder.setNegativeButton(R.string.access_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface di, int i) {
                 Manager.instance(getApplicationContext()).setCurrentDiagram(diagramSelected);
                 Manager.instance(getApplicationContext()).joinWorkspace();
@@ -123,20 +124,20 @@ public class WorkspacesListActivity extends ListActivity {
                 startActivity(intent);
             }
         });
-
-        builder.setNeutralButton("Supprimer", new DialogInterface.OnClickListener() {
+        // Negative button is on the left
+        builder.setNeutralButton(R.string.delete_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface di, int i) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
-                builder.setTitle("Supprimer le diagramme " + diagramSelected + " ?");
+                builder.setTitle(getString(R.string.delete_title) + diagramSelected + " ?");
 
-                builder.setPositiveButton("Supprimer", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(R.string.delete_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
                         Manager.instance(getApplicationContext()).removeDiagram(diagramSelected);
                     }
                 });
 
-                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
 
                     }
@@ -146,7 +147,8 @@ public class WorkspacesListActivity extends ListActivity {
             }
         });
 
-        builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+        // Positive button is on the right
+        builder.setPositiveButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface di, int i) {
 
             }
