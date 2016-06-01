@@ -20,15 +20,10 @@ public class SquareElement extends Element{
         super(xMin, yMin, xMax, yMax);
     }
 
-    public SquareElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        super(xMin, yMin, xMax, yMax, paint);
-    }
-
     @Override
     public void drawElement(Canvas canvas)
     {
-        canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), getPaint());
+        canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), this.getElementPaint());
 
         if(active)
         {
@@ -43,7 +38,7 @@ public class SquareElement extends Element{
             canvas.drawCircle(left.x, left.y, 4, p);
         }
 
-        if(!text.equals("")) canvas.drawText(text, center.x, center.y, getPaint());
+        if(!text.equals("")) canvas.drawText(text, center.x, center.y, this.getElementPaint());
     }
 
     @Override
@@ -58,5 +53,9 @@ public class SquareElement extends Element{
     @Override
     public void updateElement(Element updatedElement) {
         super.updateElement(updatedElement);
+    }
+
+    public SquareElement(Element originalElement) {
+        super(originalElement);
     }
 }

@@ -4,12 +4,13 @@ import android.content.Context;
 import android.databinding.ObservableArrayList;
 import android.databinding.ObservableBoolean;
 import android.databinding.ObservableList;
+import android.graphics.Color;
 import android.graphics.PointF;
 import android.util.Log;
 
 import com.android.volley.Response;
-import com.ia04nf28.colladia.Utils.Json;
 import com.ia04nf28.colladia.model.Elements.Element;
+import com.ia04nf28.colladia.model.Elements.ElementFactory;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -20,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.TimerTask;
 import java.util.Timer;
 import java.util.regex.Matcher;
@@ -59,7 +59,8 @@ public class Manager {
             requestElements();
         }
     };
-
+    private final static long delayRequestDiagrams = 5000;
+    private final static long delayRequestElements = 1000;
 
 
     private final static String STATUS_FIELD = "status";
@@ -105,6 +106,10 @@ public class Manager {
         lastClock = "0";
     }
 
+    public User getUser() {
+        return user;
+    }
+
     public void login(User user, String url) {
         Pattern p = Pattern.compile("^http://");
         Matcher m = p.matcher(url) ;
@@ -114,22 +119,32 @@ public class Manager {
         }
 
         Requestator.instance(context).setUrl(url);
-
+        this.user = user;
         // TODO check url
         // TODO if url valid
-        requestTimer.schedule(getDiagramsTask, 0, 5000);
+        requestTimer.schedule(getDiagramsTask, 0, delayRequestDiagrams);
         // end of if url valid
     }
 
     public void joinWorkspace(){
-        requestTimerElements.schedule(getElementsTask, 0, 1000);
+        requestTimerElements.schedule(getElementsTask, 0, delayRequestElements);
     }
 
+
+
+
+
+
+
+    /**
+     * Method that handle every response from the server
+     * @param responseRequest
+     */
     private void responseRequestHandler(String responseRequest){
         try {
             JSONObject mainObject = new JSONObject(responseRequest);
             if (mainObject.getString(STATUS_FIELD).equalsIgnoreCase(STATUS_OK)){
-                Log.d(TAG, "Request success " );
+                Log.d(TAG, "Request success "+responseRequest );
                 // if first response
                 if (!logged.get())
                 {
@@ -158,7 +173,7 @@ public class Manager {
                     }
 
 
-                }else if(mainObject.has(DIAGRAM_LIST_FIELD)){//for a get without anything list of all diagram
+                }else if(mainObject.has(DIAGRAM_LIST_FIELD)){//for a get without anything(no parameter on input) --> list of all diagram
                     JSONArray jArray = new JSONArray(mainObject.getString(DIAGRAM_LIST_FIELD));
                     List<String> res = new ArrayList<>();
 
@@ -184,7 +199,7 @@ public class Manager {
 
                 }else if(mainObject.has(TYPE_REQUEST_FIELD)){//case where the user has changed the list of diagram
                     String typeRequest = mainObject.getString(TYPE_REQUEST_FIELD);
-                    String idDiagram = mainObject.getJSONArray(PATH_FIELD).getString(0);
+                    String idDiagram = new JSONArray(mainObject.getString(PATH_FIELD)).getString(0);
 
                     if(typeRequest.equals(TYPE_REQUEST_PUT)){//the user create a new diagram
                         diagrams.add(idDiagram);
@@ -240,8 +255,6 @@ public class Manager {
             @Override
             public void onResponse(String s) {
                 responseRequestHandler(s);
-                for(String dia : diagrams)
-                    Log.d(TAG, dia);
             }
         });
     }
@@ -275,18 +288,7 @@ public class Manager {
         Requestator.instance(context).putDiagram(name, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                try {
-                    JSONObject mainObject = new JSONObject(s);
-                    String status = mainObject.getString("status");
-
-                    if (status.equalsIgnoreCase("ok")) {
-                        diagrams.add(name);
-                        Collections.sort(diagrams);
-                    }
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                responseRequestHandler(s);
             }
         });
     }
@@ -297,14 +299,20 @@ public class Manager {
     }
 
     public void setCurrentDiagram(final String diaId) {
-        // TODO get diagram from server and load it
+        // get diagram from server and load it
         Requestator.instance(context).getDiagram(diaId, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                //TODO urgent not gonna work if request error
-                currentDiagram = new Diagram();
-                currentDiagram.setName(diaId);
-                responseRequestHandler(s);
+                try {
+                    JSONObject mainObject = new JSONObject(s);
+                    if (mainObject.getString(STATUS_FIELD).equalsIgnoreCase(STATUS_OK)) {
+                        currentDiagram = new Diagram();
+                        currentDiagram.setName(diaId);
+                    }
+                    responseRequestHandler(s);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -328,63 +336,79 @@ public class Manager {
     }
 
 
+
+
+
     public void addElement(final Element newElement) {
         // get diagrams list
         Requestator.instance(this.context).putElement(getCurrentDiagram().getName(), newElement.getId(), lastClock, newElement.serializeJSON(), new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                System.out.println("Response Server : " + s);
                 responseRequestHandler(s);
-
             }
         });
     }
+
     public void requestElements(){
-        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock,new Response.Listener<String>(){
+        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock, new Response.Listener<String>(){
             @Override
             public void onResponse(String s) {
-                System.out.println("Response Server : " + s);
                 responseRequestHandler(s);
             }
         });
     }
+
     public void updatePositionElement(Element originalElement, PointF first, PointF second){
-        final Element elementToServer = originalElement.clone();
+        Element elementToServer = ElementFactory.createCopyElement(originalElement);
         elementToServer.set(first,second);
         Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                System.out.println("Response Server : " + s);
                 responseRequestHandler(s);
             }
         });
     }
 
     public void moveElement(Element originalElement, PointF newPosition){
-        final Element elementToServer = originalElement.clone();
+        Element elementToServer = ElementFactory.createCopyElement(originalElement);
         elementToServer.move(newPosition);
         Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                System.out.println("Response Server : " + s);
                 responseRequestHandler(s);
             }
         });
     }
 
-    //TODO use color user
-    public void selectElement(Element originalElement){
-        Element elementToServer = originalElement.clone();
-        elementToServer.selectElement();
-
+    public void selectElement(Element originalElement, int userColor){
+        Element elementToServer = ElementFactory.createCopyElement(originalElement);
+        elementToServer.selectElement(userColor);
+        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                responseRequestHandler(s);
+            }
+        });
     }
     public void deselectElement(Element originalElement){
-        Element elementToServer = originalElement.clone();
+        Element elementToServer = ElementFactory.createCopyElement(originalElement);
         elementToServer.deselectElement();
+        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                responseRequestHandler(s);
+            }
+        });
     }
 
     public void changeText(Element originalElement, String textInput){
-        Element elementToServer = originalElement.clone();
+        Element elementToServer = ElementFactory.createCopyElement(originalElement);
         elementToServer.setText(textInput);
+        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                responseRequestHandler(s);
+            }
+        });
     }
 }

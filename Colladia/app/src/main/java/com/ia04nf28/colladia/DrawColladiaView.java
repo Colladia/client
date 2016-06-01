@@ -46,9 +46,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     private PointF touchFromCenter = null;
 
-    /** All available elements */
-    //private HashSet<Element> listElement = new HashSet<>();
-
 
     private static final float ZOOM_MIN = 0.1f;
     private static final float ZOOM_MAX = 10.f;
@@ -268,7 +265,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         if(prevSelected != null)
         {
-            prevSelected.deselectElement();
+            Manager.instance(applicationCtx).deselectElement(prevSelected);
             prevSelected = null;
         }
 
@@ -281,7 +278,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         else
         {
             //Log.d(TAG, "Element found x : "+selected.getCenter().x+" y : "+selected.getCenter().y);
-            selected.selectElement();
+            Manager.instance(applicationCtx).selectElement(selected, Manager.instance(applicationCtx).getUser().getColor());
             prevSelected = selected;
         }
 
@@ -324,7 +321,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         {
             case INSERT:
                 mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
-                Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
 
                 break;
 
@@ -347,7 +345,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if(selected != null)
                 {
                     PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
-                    Manager.instance(applicationCtx).moveElement(selected, p);
+                    selected.move(p);
+                    //Manager.instance(applicationCtx).moveElement(selected, p);
 
                     iPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
                 }
@@ -357,7 +356,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if(selected != null)
                 {
                     mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
-                    Manager.instance(applicationCtx).updatePositionElement(selected, iPointAbsolutePoint, mPointAbsolutePoint);
+                    selected.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                    //Manager.instance(applicationCtx).updatePositionElement(selected, iPointAbsolutePoint, mPointAbsolutePoint);
                 }
                 break;
         }
@@ -379,6 +379,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
             case SCROLL:
                 scrolled = false;
+                break;
+
+            case MOVE:
+                PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
+                Manager.instance(applicationCtx).moveElement(selected, p);
+                iPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
                 break;
         }
 

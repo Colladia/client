@@ -37,19 +37,28 @@ public abstract class Element extends BaseObservable implements Cloneable {
     // Touch tolerance (for lines)
     public static final float TOLERANCE = 20f;
 
+    private static final String JSON_TYPE = "type";
     protected String id = UUID.randomUUID().toString();
+    private static final String JSON_ID = "id";
     protected String text = "";
+    private static final String JSON_TEXT = "text";
     protected float xMin;
     protected float yMin;
     protected float xMax;
     protected float yMax;
-    protected Paint paint;
+    private static final String JSON_X_MIN = "xMin";
+    private static final String JSON_Y_MIN = "yMin";
+    private static final String JSON_X_MAX = "xMax";
+    private static final String JSON_Y_MAX = "yMax";
 
     // Element's lines size and color
-    protected int color = Color.BLUE;
-    protected int selectColor = Color.RED;
-    protected float thickness = 20;
+    protected int notSelectedColor = Color.BLUE;
+    protected int currentColor = notSelectedColor;
+    protected static final float thickness = 20;
     protected boolean active = false;
+    private static final String JSON_NOT_SELECTED_COLOR = "notSelectedColor";
+    private static final String JSON_CURRENT_COLOR = "currentColor";
+    private static final String JSON_ACTIVE = "active";
 
     // Link point
     protected PointF center = new PointF();
@@ -57,15 +66,15 @@ public abstract class Element extends BaseObservable implements Cloneable {
     protected PointF bottom = new PointF();
     protected PointF left = new PointF();
     protected PointF right = new PointF();
-
+    private static final String JSON_CENTER = "center";
+    private static final String JSON_TOP = "top";
+    private static final String JSON_BOTTOM  = "bottom";
+    private static final String JSON_LEFT = "left";
+    private static final String JSON_RIGHT = "right";
     public abstract void drawElement(Canvas canvas);
 
     public Element()
     {
-        paint = new Paint();
-        paint.setColor(color);
-        paint.setStrokeWidth(thickness);
-        paint.setStyle(Paint.Style.STROKE);
     }
 
     public Element(float xMin, float yMin, float xMax, float yMax)
@@ -74,10 +83,23 @@ public abstract class Element extends BaseObservable implements Cloneable {
         this.set(xMin, yMin, xMax, yMax);
     }
 
-    public Element(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        this(xMin, yMin, xMax, yMax);
-        this.paint = paint;
+
+    public Element(Element originalElement) {
+        this();
+        this.setId(originalElement.getId());
+        this.setText(originalElement.getText());
+        this.setxMin(originalElement.getxMin());
+        this.setyMin(originalElement.getyMin());
+        this.setxMax(originalElement.getxMax());
+        this.setyMax(originalElement.getyMax());
+        this.setNotSelectedColor(originalElement.getNotSelectedColor());
+        this.setCurrentColor(originalElement.getCurrentColor());
+        this.setActive(originalElement.isActive());
+        this.setCenter(new PointF(originalElement.getCenter().x, originalElement.getCenter().y));
+        this.setTop(new PointF(originalElement.getTop().x, originalElement.getTop().y));
+        this.setBottom(new PointF(originalElement.getBottom().x, originalElement.getBottom().y));
+        this.setLeft(new PointF(originalElement.getLeft().x, originalElement.getLeft().y));
+        this.setRight(new PointF(originalElement.getRight().x, originalElement.getRight().y));
     }
 
     public static int getDirection(PointF first, PointF second)
@@ -116,7 +138,7 @@ public abstract class Element extends BaseObservable implements Cloneable {
         this.left.set(this.xMin - thickness, (this.yMin + this.yMax) / 2);
         this.right.set(this.xMax + thickness, (this.yMin + this.yMax) / 2);
 
-        this.center.set( (this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
+        this.center.set((this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
     }
 
     public void set(PointF first, PointF second)
@@ -159,14 +181,19 @@ public abstract class Element extends BaseObservable implements Cloneable {
                 || ((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax())));
     }
 
-    public void selectElement(){
-        paint.setColor(selectColor);
+    public void selectElement(int usersColor){
+        currentColor = usersColor;
         setActive(true);
     }
 
     public void deselectElement(){
-        paint.setColor(color);
+        currentColor = notSelectedColor;
         setActive(false);
+    }
+
+    public void changeColor(int newColor){
+        notSelectedColor = newColor;
+        currentColor = notSelectedColor;
     }
 
     public String getId() {
@@ -209,12 +236,12 @@ public abstract class Element extends BaseObservable implements Cloneable {
         this.yMax = yMax;
     }
 
-    public Paint getPaint() {
+    public Paint getElementPaint() {
+        Paint paint = new Paint();
+        paint.setColor(currentColor);
+        paint.setStrokeWidth(thickness);
+        paint.setStyle(Paint.Style.STROKE);
         return paint;
-    }
-
-    public void setPaint(Paint paint) {
-        this.paint = paint;
     }
 
     public PointF getCenter() {
@@ -265,20 +292,20 @@ public abstract class Element extends BaseObservable implements Cloneable {
         this.text = text;
     }
 
-    public int getColor() {
-        return color;
+    public int getNotSelectedColor() {
+        return notSelectedColor;
     }
 
-    public void setColor(int color) {
-        this.color = color;
+    public void setNotSelectedColor(int notSelectedColor) {
+        this.notSelectedColor = notSelectedColor;
     }
 
-    public int getSelectColor() {
-        return selectColor;
+    public int getCurrentColor() {
+        return currentColor;
     }
 
-    public void setSelectColor(int selectColor) {
-        this.selectColor = selectColor;
+    public void setCurrentColor(int currentColor) {
+        this.currentColor = currentColor;
     }
 
     public boolean isActive() {
@@ -298,20 +325,22 @@ public abstract class Element extends BaseObservable implements Cloneable {
         ObjectMapper mapper = new ObjectMapper();
 
         try {
-            json.put("type",this.getClass().getSimpleName());
-            json.put("id",getId());
-            json.put("text",getText());
-            json.put("xMin",""+getxMin());
-            json.put("yMin",""+getyMin());
-            json.put("xMax",""+getxMax());
-            json.put("yMax",""+getyMax());
-            json.put("color",""+getColor());//TODO not good need the real color
-            json.put("active",""+isActive());
-            json.put("center", "" + mapper.writeValueAsString(getCenter()));
-            json.put("top","" + mapper.writeValueAsString(getTop()));
-            json.put("bottom","" + mapper.writeValueAsString(getBottom()));
-            json.put("left","" + mapper.writeValueAsString(getLeft()));
-            json.put("right","" + mapper.writeValueAsString(getRight()));
+            json.put(JSON_TYPE, this.getClass().getSimpleName());
+            json.put(JSON_ID, getId());
+            json.put(JSON_TEXT, getText());
+            json.put(JSON_X_MIN, "" + getxMin());
+            json.put(JSON_Y_MIN, "" + getyMin());
+            json.put(JSON_X_MAX, "" + getxMax());
+            json.put(JSON_Y_MAX, "" + getyMax());
+            json.put(JSON_CURRENT_COLOR, "" + getCurrentColor());
+            json.put(JSON_NOT_SELECTED_COLOR, "" + getNotSelectedColor());
+            json.put(JSON_ACTIVE, "" + isActive());
+            json.put(JSON_CENTER, "" + mapper.writeValueAsString(getCenter()));
+            System.out.println("Center serialisation x " + getCenter().x + " y " + getCenter().y);
+            json.put(JSON_TOP, "" + mapper.writeValueAsString(getTop()));
+            json.put(JSON_BOTTOM, "" + mapper.writeValueAsString(getBottom()));
+            json.put(JSON_LEFT, "" + mapper.writeValueAsString(getLeft()));
+            json.put(JSON_RIGHT, "" + mapper.writeValueAsString(getRight()));
 
 
         } catch (JSONException e) {
@@ -335,20 +364,22 @@ public abstract class Element extends BaseObservable implements Cloneable {
 
         try {
             JSONObject json = new JSONObject(serialized);
-            element = ElementFactory.createElementSerialized(json.getString("type"));
-            element.setId(json.getString("id"));
-            element.setText(json.getString("text"));
-            element.setxMin(new Float(json.getString("xMin")));
-            element.setyMin(new Float(json.getString("yMin")));
-            element.setxMax(new Float(json.getString("xMax")));
-            element.setyMax(new Float(json.getString("yMax")));
-            element.setColor(new Integer(json.getString("color")));
-            element.setActive(new Boolean(json.getString("active")));
-            element.setCenter(mapper.readValue(json.getString("center"), PointF.class));
-            element.setTop(mapper.readValue(json.getString("top"), PointF.class));
-            element.setBottom(mapper.readValue(json.getString("bottom"), PointF.class));
-            element.setLeft(mapper.readValue(json.getString("left"), PointF.class));
-            element.setRight(mapper.readValue(json.getString("right"), PointF.class));
+            element = ElementFactory.createElementSerialized(json.getString(JSON_TYPE));
+            element.setId(json.getString(JSON_ID));
+            element.setText(json.getString(JSON_TEXT));
+            element.setxMin(new Float(json.getString(JSON_X_MIN)));
+            element.setyMin(new Float(json.getString(JSON_Y_MIN)));
+            element.setxMax(new Float(json.getString(JSON_X_MAX)));
+            element.setyMax(new Float(json.getString(JSON_Y_MAX)));
+            element.setCurrentColor(new Integer(json.getString(JSON_CURRENT_COLOR)));
+            element.setNotSelectedColor(new Integer(json.getString(JSON_NOT_SELECTED_COLOR)));
+            element.setActive(new Boolean(json.getString(JSON_ACTIVE)));
+            element.setCenter(mapper.readValue(json.getString(JSON_CENTER), PointF.class));
+            System.out.println("Center deserialisation x " + element.getCenter().x + " y " + element.getCenter().y);
+            element.setTop(mapper.readValue(json.getString(JSON_TOP), PointF.class));
+            element.setBottom(mapper.readValue(json.getString(JSON_BOTTOM), PointF.class));
+            element.setLeft(mapper.readValue(json.getString(JSON_LEFT), PointF.class));
+            element.setRight(mapper.readValue(json.getString(JSON_RIGHT), PointF.class));
             element.jsonToElement(serialized);
 
         } catch (IOException e) {
@@ -370,28 +401,13 @@ public abstract class Element extends BaseObservable implements Cloneable {
         if(this.getyMin() != updatedElement.getyMin()) this.setyMin(updatedElement.getyMin());
         if(this.getxMax() != updatedElement.getxMax()) this.setxMax(updatedElement.getxMax());
         if(this.getyMax() != updatedElement.getyMax()) this.setyMax(updatedElement.getyMax());
-        if(this.getColor() != updatedElement.getColor()) this.setColor(updatedElement.getColor());
+        if(this.getCurrentColor() != updatedElement.getCurrentColor()) this.setCurrentColor(updatedElement.getCurrentColor());
+        if(this.getNotSelectedColor() != updatedElement.getNotSelectedColor()) this.setNotSelectedColor(updatedElement.getNotSelectedColor());
         if(this.isActive() != updatedElement.isActive()) this.setActive(updatedElement.isActive());
         if(this.getCenter().equals(updatedElement.getCenter())) this.setCenter(updatedElement.getCenter());
         if(this.getTop().equals(updatedElement.getTop())) this.setTop(updatedElement.getTop());
         if(this.getBottom().equals(updatedElement.getBottom())) this.setBottom(updatedElement.getBottom());
         if(this.getLeft().equals(updatedElement.getLeft())) this.setLeft(updatedElement.getLeft());
         if(this.getRight().equals(updatedElement.getRight())) this.setRight(updatedElement.getRight());
-    }
-
-
-    public Element clone() {
-        Element clone = null;
-        try {
-            // On récupère l'instance à renvoyer par l'appel de la
-            // méthode super.clone()
-            clone = (Element) super.clone();
-        } catch(CloneNotSupportedException cnse) {
-            // Ne devrait jamais arriver car nous implémentons
-            // l'interface Cloneable
-            cnse.printStackTrace(System.err);
-        }
-        // on renvoie le clone
-        return clone;
     }
 }

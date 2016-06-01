@@ -15,6 +15,7 @@ import org.json.JSONObject;
 public class CircleElement extends Element {
 
     private int radius;
+    private static final String JSON_RADIUS = "radius";
     private static final int DEFAULT_RADIUS = 15;
 
     public CircleElement()
@@ -28,26 +29,16 @@ public class CircleElement extends Element {
         this.radius = DEFAULT_RADIUS;
     }
 
-    public CircleElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        super(xMin, yMin, xMax, yMax, paint);
-        this.radius = DEFAULT_RADIUS;
-    }
-
     public CircleElement(float xMin, float yMin, float xMax, float yMax, int radius) {
         super(xMin, yMin, xMax, yMax);
         this.radius = radius;
     }
 
-    public CircleElement(float xMin, float yMin, float xMax, float yMax, int radius, Paint paint) {
-        super(xMin, yMin, xMax, yMax, paint);
-        this.radius = radius;
-    }
 
     @Override
     public void drawElement(Canvas canvas)
     {
-        canvas.drawCircle(center.x, center.y, this.getRadius(), this.getPaint());
+        canvas.drawCircle(center.x, center.y, this.getRadius(), this.getElementPaint());
 
         if(active)
         {
@@ -98,7 +89,7 @@ public class CircleElement extends Element {
         try {
 
             JSONObject json = new JSONObject(elementSerialized);
-            json.put("radius",""+getRadius());
+            json.put(JSON_RADIUS,""+getRadius());
             elementSerialized = json.toString();
 
         } catch (JSONException e) {
@@ -112,7 +103,7 @@ public class CircleElement extends Element {
     public void jsonToElement(String serializedElement) {
         try {
             JSONObject json = new JSONObject(serializedElement);
-            setRadius(new Integer(json.getString("radius")));
+            setRadius(new Integer(json.getString(JSON_RADIUS)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -124,5 +115,10 @@ public class CircleElement extends Element {
         super.updateElement(updatedElement);
         if(this.getRadius() != ((CircleElement)updatedElement).getRadius()) this.setRadius(((CircleElement)updatedElement).getRadius());
 
+    }
+
+    public CircleElement(Element originalElement) {
+        super(originalElement);
+        this.setRadius(((CircleElement)originalElement).getRadius());
     }
 }

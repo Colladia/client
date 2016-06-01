@@ -65,4 +65,33 @@ public class ElementFactory {
         }
         return newElement;
     }
+
+
+    public static Element createCopyElement( Element originalElement)
+    {
+        Element newElement = null;
+        String className = originalElement.getClass().getSimpleName();
+
+        if(className.equals(CircleElement.class.getSimpleName()))
+        {
+            newElement = new CircleElement(originalElement);
+        }
+        else if(className.equals(SquareElement.class.getSimpleName()))
+        {
+            newElement = new SquareElement(originalElement);
+        }
+        else if(className.equals(LineElement.class.getSimpleName()))
+        {
+            newElement = new LineElement(originalElement);
+        }
+        else if(className.equals(ClassElement.class.getSimpleName()))
+        {
+            newElement = new ClassElement(originalElement);
+        }
+        else
+        {
+            Log.d(TAG, "No such element");
+        }
+        return newElement;
+    }
 }

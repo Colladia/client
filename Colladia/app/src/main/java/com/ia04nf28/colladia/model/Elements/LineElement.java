@@ -19,7 +19,7 @@ public class LineElement extends Element {
     //private PointF stop = new PointF();
 
     private int DIR;
-
+    private static final String JSON_DIR = "dir";
     public LineElement()
     {
         super();
@@ -30,10 +30,6 @@ public class LineElement extends Element {
         super(xMin, yMin, xMax, yMax);
     }
 
-    public LineElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        super(xMin, yMin, xMax, yMax, paint);
-    }
 
     @Override
     public void drawElement(Canvas canvas)
@@ -48,12 +44,12 @@ public class LineElement extends Element {
         // Top left to bottom right
         if(DIR == TOP_LEFT || DIR == BOTTOM_RIGHT)
         {
-            canvas.drawLine(getxMin(), getyMin(), getxMax(), getyMax(), getPaint());
+            canvas.drawLine(getxMin(), getyMin(), getxMax(), getyMax(), getElementPaint());
         }
         // Bottom left to top right
         else if(DIR == TOP_RIGHT || DIR == BOTTOM_LEFT)
         {
-            canvas.drawLine(getxMin(), getyMax(), getxMax(), getyMin(), getPaint());
+            canvas.drawLine(getxMin(), getyMax(), getxMax(), getyMin(), getElementPaint());
         }
     }
 
@@ -92,7 +88,7 @@ public class LineElement extends Element {
         try {
 
             JSONObject json = new JSONObject(elementSerialized);
-            json.put("dir",""+getDIR());
+            json.put(JSON_DIR,""+getDIR());
             elementSerialized = json.toString();
 
         } catch (JSONException e) {
@@ -106,7 +102,7 @@ public class LineElement extends Element {
     public void jsonToElement(String serializedElement) {
         try {
             JSONObject json = new JSONObject(serializedElement);
-            setDIR(new Integer(json.getString("dir")));
+            setDIR(new Integer(json.getString(JSON_DIR)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -118,5 +114,11 @@ public class LineElement extends Element {
     public void updateElement(Element updatedElement) {
         super.updateElement(updatedElement);
         if(this.getDIR() != ((LineElement)updatedElement).getDIR()) this.setDIR(((LineElement)updatedElement).getDIR());
+    }
+
+
+    public LineElement(Element originalElement) {
+        super(originalElement);
+        this.setDIR(((LineElement) originalElement).getDIR());
     }
 }

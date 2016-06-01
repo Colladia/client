@@ -13,7 +13,7 @@ public class ClassElement extends SquareElement {
 
     // Header size
     private float header = 100f;
-
+    private static final String JSON_HEADER = "header";
     public ClassElement()
     {
         super();
@@ -24,10 +24,6 @@ public class ClassElement extends SquareElement {
         super(xMin, yMin, xMax, yMax);
     }
 
-    public ClassElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        super(xMin, yMin, xMax, yMax, paint);
-    }
 
     @Override
     public void drawElement(Canvas canvas)
@@ -36,7 +32,7 @@ public class ClassElement extends SquareElement {
         super.drawElement(canvas);
 
         // Draw the header separator
-        canvas.drawLine(xMin, yMin + header, xMax, yMin + header, paint);
+        canvas.drawLine(xMin, yMin + header, xMax, yMin + header, this.getElementPaint());
     }
 
 
@@ -54,7 +50,7 @@ public class ClassElement extends SquareElement {
         try {
 
             JSONObject json = new JSONObject(elementSerialized);
-            json.put("header",""+getHeader());
+            json.put(JSON_HEADER,""+getHeader());
             elementSerialized = json.toString();
 
         } catch (JSONException e) {
@@ -68,7 +64,7 @@ public class ClassElement extends SquareElement {
     public void jsonToElement(String serializedElement) {
         try {
             JSONObject json = new JSONObject(serializedElement);
-            setHeader(new Float(json.getString("header")));
+            setHeader(new Float(json.getString(JSON_HEADER)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -80,5 +76,11 @@ public class ClassElement extends SquareElement {
         super.updateElement(updatedElement);
         if(this.getHeader() != ((ClassElement)updatedElement).getHeader()) this.setHeader(((ClassElement)updatedElement).getHeader());
 
+    }
+
+
+    public ClassElement(Element originalElement) {
+        super(originalElement);
+        this.setHeader(((ClassElement) originalElement).getHeader());
     }
 }
