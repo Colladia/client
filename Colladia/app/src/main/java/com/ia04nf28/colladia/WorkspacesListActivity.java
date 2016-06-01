@@ -87,14 +87,14 @@ public class WorkspacesListActivity extends ListActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
                 userTextInput = new EditText(WorkspacesListActivity.this);
 
-                builder.setTitle("Entrez votre texte").setView(userTextInput);
-                builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
+                builder.setTitle(getString(R.string.add_diagram_title)).setView(userTextInput);
+                builder.setNegativeButton(R.string.add_diagram_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
                         Manager.instance(getApplicationContext()).addDiagram(userTextInput.getText().toString());
                     }
                 });
 
-                builder.setNegativeButton("Annuler", new DialogInterface.OnClickListener() {
+                builder.setPositiveButton(R.string.cancel_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
 
                     }
