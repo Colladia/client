@@ -165,7 +165,6 @@ public class Manager {
 
                     JSONObject descArray = new JSONObject(mainObject.getString(DESCRIPTION_FIELD));
                     Iterator<?> keys = descArray.keys();
-                    Log.d(TAG, "desc size "+ descArray.length());
                     while( keys.hasNext() ) {
                         String key = (String)keys.next();
                         //TODO may be test if not element expected, or keep it for the exceptions
@@ -231,7 +230,7 @@ public class Manager {
                         break;
                     case TYPE_REQUEST_POST :
                         Element elementUpdated = getCurrentDiagram().getListElement().get(idElement);
-                        elementUpdated.updateElement(Element.deserializeJSON(modification.getString(PROPERTIES_FIELD)));
+                        elementUpdated.updateElement(modification.getString(PROPERTIES_FIELD));
                         break;
                     case TYPE_REQUEST_DEL :
                         getCurrentDiagram().getListElement().remove(idElement);
@@ -348,9 +347,17 @@ public class Manager {
             }
         });
     }
-
+    public void removeElement(final Element newElement) {
+        // get diagrams list
+        Requestator.instance(this.context).deleteElement(getCurrentDiagram().getName(), newElement.getId(), lastClock, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                responseRequestHandler(s);
+            }
+        });
+    }
     public void requestElements(){
-        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock, new Response.Listener<String>(){
+        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 responseRequestHandler(s);
@@ -405,6 +412,15 @@ public class Manager {
         Element elementToServer = ElementFactory.createCopyElement(originalElement);
         elementToServer.setText(textInput);
         Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
+            @Override
+            public void onResponse(String s) {
+                responseRequestHandler(s);
+            }
+        });
+    }
+
+    public void autoPositioning(){
+        Requestator.instance(this.context).postAutoPositionElement(getCurrentDiagram().getName(), lastClock, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 responseRequestHandler(s);

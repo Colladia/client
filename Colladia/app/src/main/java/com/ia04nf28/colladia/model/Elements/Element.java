@@ -7,12 +7,6 @@ import android.graphics.Paint;
 import android.graphics.PointF;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,6 +14,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
@@ -323,7 +318,6 @@ public abstract class Element extends BaseObservable implements Cloneable {
     public String serializeJSON () {
         JSONObject json = new JSONObject();
         ObjectMapper mapper = new ObjectMapper();
-
         try {
             json.put(JSON_TYPE, this.getClass().getSimpleName());
             json.put(JSON_ID, getId());
@@ -336,21 +330,17 @@ public abstract class Element extends BaseObservable implements Cloneable {
             json.put(JSON_NOT_SELECTED_COLOR, "" + getNotSelectedColor());
             json.put(JSON_ACTIVE, "" + isActive());
             json.put(JSON_CENTER, "" + mapper.writeValueAsString(getCenter()));
-            System.out.println("Center serialisation x " + getCenter().x + " y " + getCenter().y);
             json.put(JSON_TOP, "" + mapper.writeValueAsString(getTop()));
             json.put(JSON_BOTTOM, "" + mapper.writeValueAsString(getBottom()));
             json.put(JSON_LEFT, "" + mapper.writeValueAsString(getLeft()));
             json.put(JSON_RIGHT, "" + mapper.writeValueAsString(getRight()));
-
 
         } catch (JSONException e) {
             e.printStackTrace();
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
-
-        String jsonString = json.toString();
-        return jsonString;
+        return json.toString();
     }
 
     /**
@@ -359,55 +349,96 @@ public abstract class Element extends BaseObservable implements Cloneable {
      * @return
      */
     public static Element deserializeJSON (String serialized) {
-        ObjectMapper mapper = new ObjectMapper();
         Element element = null;
-
         try {
             JSONObject json = new JSONObject(serialized);
             element = ElementFactory.createElementSerialized(json.getString(JSON_TYPE));
-            element.setId(json.getString(JSON_ID));
-            element.setText(json.getString(JSON_TEXT));
-            element.setxMin(new Float(json.getString(JSON_X_MIN)));
-            element.setyMin(new Float(json.getString(JSON_Y_MIN)));
-            element.setxMax(new Float(json.getString(JSON_X_MAX)));
-            element.setyMax(new Float(json.getString(JSON_Y_MAX)));
-            element.setCurrentColor(new Integer(json.getString(JSON_CURRENT_COLOR)));
-            element.setNotSelectedColor(new Integer(json.getString(JSON_NOT_SELECTED_COLOR)));
-            element.setActive(new Boolean(json.getString(JSON_ACTIVE)));
-            element.setCenter(mapper.readValue(json.getString(JSON_CENTER), PointF.class));
-            System.out.println("Center deserialisation x " + element.getCenter().x + " y " + element.getCenter().y);
-            element.setTop(mapper.readValue(json.getString(JSON_TOP), PointF.class));
-            element.setBottom(mapper.readValue(json.getString(JSON_BOTTOM), PointF.class));
-            element.setLeft(mapper.readValue(json.getString(JSON_LEFT), PointF.class));
-            element.setRight(mapper.readValue(json.getString(JSON_RIGHT), PointF.class));
-            element.jsonToElement(serialized);
+            element.parseElement(json);
+            element.jsonToSpecificElement(json);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
+        }  catch (JSONException e) {
             e.printStackTrace();
         }
         return element;
     }
 
-    public abstract void jsonToElement(String serializedElement);
 
 
+    public void updateElement(String serializedUpdateElement){
+        JSONObject json = null;
+        try {
+            json = new JSONObject(serializedUpdateElement);
+            this.parseElement(json);
+            this.jsonToSpecificElement(json);
 
-
-    public void updateElement(Element updatedElement){
-        if(this.getText().equals(updatedElement.getText())) this.setText(updatedElement.getText());
-        if(this.getxMin() != updatedElement.getxMin()) this.setxMin(updatedElement.getxMin());
-        if(this.getyMin() != updatedElement.getyMin()) this.setyMin(updatedElement.getyMin());
-        if(this.getxMax() != updatedElement.getxMax()) this.setxMax(updatedElement.getxMax());
-        if(this.getyMax() != updatedElement.getyMax()) this.setyMax(updatedElement.getyMax());
-        if(this.getCurrentColor() != updatedElement.getCurrentColor()) this.setCurrentColor(updatedElement.getCurrentColor());
-        if(this.getNotSelectedColor() != updatedElement.getNotSelectedColor()) this.setNotSelectedColor(updatedElement.getNotSelectedColor());
-        if(this.isActive() != updatedElement.isActive()) this.setActive(updatedElement.isActive());
-        if(this.getCenter().equals(updatedElement.getCenter())) this.setCenter(updatedElement.getCenter());
-        if(this.getTop().equals(updatedElement.getTop())) this.setTop(updatedElement.getTop());
-        if(this.getBottom().equals(updatedElement.getBottom())) this.setBottom(updatedElement.getBottom());
-        if(this.getLeft().equals(updatedElement.getLeft())) this.setLeft(updatedElement.getLeft());
-        if(this.getRight().equals(updatedElement.getRight())) this.setRight(updatedElement.getRight());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+
+
+
+
+    public abstract void jsonToSpecificElement(JSONObject jsonElement);
+
+    private void parseElement(JSONObject jsonElement){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            Iterator<String> keys = jsonElement.keys();
+            while(keys.hasNext()){
+                String currKey = keys.next();
+                String attribute = jsonElement.getString(currKey);
+                switch(currKey){
+                    case JSON_ID:
+                        this.setId(attribute);
+                        break;
+                    case JSON_TEXT:
+                        this.setText(attribute);
+                        break;
+                    case JSON_X_MIN:
+                        this.setxMin(new Float(attribute));
+                        break;
+                    case JSON_Y_MIN:
+                        this.setyMin(new Float(attribute));
+                        break;
+                    case JSON_X_MAX:
+                        this.setxMax(new Float(attribute));
+                        break;
+                    case JSON_Y_MAX:
+                        this.setyMax(new Float(attribute));
+                        break;
+                    case JSON_CURRENT_COLOR:
+                        this.setCurrentColor(new Integer(attribute));
+                        break;
+                    case JSON_NOT_SELECTED_COLOR:
+                        this.setNotSelectedColor(new Integer(attribute));
+                        break;
+                    case JSON_ACTIVE:
+                        this.setActive(new Boolean(attribute));
+                        break;
+                    case JSON_CENTER:
+                        this.setCenter(mapper.readValue(attribute, PointF.class));
+                        break;
+                    case JSON_TOP:
+                        this.setTop(mapper.readValue(attribute, PointF.class));
+                        break;
+                    case JSON_BOTTOM:
+                        this.setBottom(mapper.readValue(attribute, PointF.class));
+                        break;
+                    case JSON_LEFT:
+                        this.setLeft(mapper.readValue(attribute, PointF.class));
+                        break;
+                    case JSON_RIGHT:
+                        this.setRight(mapper.readValue(attribute, PointF.class));
+                        break;
+                }
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

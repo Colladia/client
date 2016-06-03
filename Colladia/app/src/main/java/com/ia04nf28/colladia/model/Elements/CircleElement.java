@@ -100,21 +100,13 @@ public class CircleElement extends Element {
     }
 
     @Override
-    public void jsonToElement(String serializedElement) {
+    public void jsonToSpecificElement(JSONObject jsonElement) {
         try {
-            JSONObject json = new JSONObject(serializedElement);
-            setRadius(new Integer(json.getString(JSON_RADIUS)));
+            if(jsonElement.has(JSON_RADIUS))
+                setRadius(new Integer(jsonElement.getString(JSON_RADIUS)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-    }
-
-    @Override
-    public void updateElement(Element updatedElement) {
-        super.updateElement(updatedElement);
-        if(this.getRadius() != ((CircleElement)updatedElement).getRadius()) this.setRadius(((CircleElement)updatedElement).getRadius());
-
     }
 
     public CircleElement(Element originalElement) {

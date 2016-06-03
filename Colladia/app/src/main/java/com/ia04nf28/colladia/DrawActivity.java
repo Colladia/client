@@ -21,6 +21,7 @@ import com.ia04nf28.colladia.model.Diagram;
 import com.ia04nf28.colladia.model.Elements.CircleElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
+import com.ia04nf28.colladia.model.Manager;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -132,7 +133,6 @@ public class DrawActivity extends AppCompatActivity
         List<String> formes = new ArrayList<String>();
         formes.add(getString(R.string.square));
         formes.add(getString(R.string.circle));
-        formes.add(getString(R.string.triangle));
         formes.add(getString(R.string.classe));
 
         List<String> heading2 = new ArrayList<String>();
@@ -157,7 +157,8 @@ public class DrawActivity extends AppCompatActivity
                         int id = menuItem.getItemId();
 
                         if (id == R.id.nav_contributor) {
-                            Toast.makeText(DrawActivity.this, "View collaborator", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(DrawActivity.this, "Auto", Toast.LENGTH_SHORT).show();
+                            Manager.instance(getApplicationContext()).autoPositioning();
 
                         } else if (id == R.id.nav_home) {
                             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);

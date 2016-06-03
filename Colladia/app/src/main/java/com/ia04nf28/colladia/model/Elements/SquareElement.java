@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 
+import org.json.JSONObject;
+
 /**
  * Created by Mar on 21/05/2016.
  */
@@ -46,14 +48,9 @@ public class SquareElement extends Element{
         return super.serializeJSON();
     }
 
-    @Override
-    public void jsonToElement(String serializedElement) {
-    }
 
     @Override
-    public void updateElement(Element updatedElement) {
-        super.updateElement(updatedElement);
-    }
+    public void jsonToSpecificElement(JSONObject jsonElement) {}
 
     public SquareElement(Element originalElement) {
         super(originalElement);

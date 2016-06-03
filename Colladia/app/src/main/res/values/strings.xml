@@ -17,7 +17,6 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
     <string name="action_settings">Settings</string>
-    <string name="nav_menu_contributor">Users</string>
     <string name="nav_menu_home_back">Back</string>
     <string name="square">Square</string>
     <string name="circle">Circle</string>
@@ -35,4 +34,5 @@
     <string name="delete_title">Delete diagram </string>
     <string name="add_diagram_button">Add</string>
     <string name="add_diagram_title">Add a new diagram</string>
+    <string name="nav_menu_auto_position">Auto</string>
 </resources>

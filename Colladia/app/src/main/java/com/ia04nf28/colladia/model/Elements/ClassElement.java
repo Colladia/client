@@ -61,23 +61,14 @@ public class ClassElement extends SquareElement {
     }
 
     @Override
-    public void jsonToElement(String serializedElement) {
+    public void jsonToSpecificElement(JSONObject jsonElement) {
         try {
-            JSONObject json = new JSONObject(serializedElement);
-            setHeader(new Float(json.getString(JSON_HEADER)));
+            if (jsonElement.has(JSON_HEADER))
+                setHeader(new Float(jsonElement.getString(JSON_HEADER)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
     }
-
-    @Override
-    public void updateElement(Element updatedElement) {
-        super.updateElement(updatedElement);
-        if(this.getHeader() != ((ClassElement)updatedElement).getHeader()) this.setHeader(((ClassElement)updatedElement).getHeader());
-
-    }
-
 
     public ClassElement(Element originalElement) {
         super(originalElement);
