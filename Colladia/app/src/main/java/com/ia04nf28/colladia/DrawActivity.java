@@ -14,12 +14,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
-import com.ia04nf28.colladia.model.Diagram;
-import com.ia04nf28.colladia.model.Elements.CircleElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
 
@@ -43,8 +40,10 @@ public class DrawActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
 
+        // Set the view
         setContentView(R.layout.activity_draw);
 
+        // Get toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -118,19 +117,14 @@ public class DrawActivity extends AppCompatActivity
         listDataChild = new HashMap<ExpandedMenuModel, List<String>>();
 
         ExpandedMenuModel item1 = new ExpandedMenuModel();
-        item1.setIconName("Basic");
-        item1.setIconImg(R.drawable.ic_menu_camera);
+        item1.setIconName("Forme");
+        item1.setIconImg(R.drawable.ic_menu_gallery);
         // Adding data header
         listDataHeader.add(item1);
 
-        ExpandedMenuModel item2 = new ExpandedMenuModel();
-        item2.setIconName("Link");
-        item2.setIconImg(R.drawable.ic_menu_gallery);
-        listDataHeader.add(item2);
-
         ExpandedMenuModel item3 = new ExpandedMenuModel();
-        item3.setIconName("Text");
-        item3.setIconImg(R.drawable.ic_menu_share);
+        item3.setIconName("Texte");
+        item3.setIconImg(R.drawable.ic_menu_send);
         listDataHeader.add(item3);
 
         // Adding child data
@@ -161,13 +155,14 @@ public class DrawActivity extends AppCompatActivity
                     public boolean onNavigationItemSelected(MenuItem menuItem) {
                         int id = menuItem.getItemId();
 
-                        if (id == R.id.nav_contributor) {
-                            Toast.makeText(DrawActivity.this, "View collaborator", Toast.LENGTH_SHORT).show();
+                        if (id == R.id.nav_contributor)
+                        {
 
-                        } else if (id == R.id.nav_home) {
+                        }
+                        else if (id == R.id.nav_home)
+                        {
                             Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
-                            Toast.makeText(DrawActivity.this, "Go back", Toast.LENGTH_SHORT).show();
                         }
                         menuItem.setChecked(true);
                         drawer.closeDrawers();
@@ -185,7 +180,7 @@ public class DrawActivity extends AppCompatActivity
                 //TODO need to change with the model
                 Element newElement = ElementFactory.createElement(getApplicationContext(), listDataChild.get(listDataHeader.get(groupPosition)).get(childPosition).toString());
 
-                if (newElement!=null){
+                if (newElement != null){
                     drawView.insertNewElement(newElement);
                 }
 

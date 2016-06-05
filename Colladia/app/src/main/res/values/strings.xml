@@ -26,6 +26,18 @@
     <string name="line">Simple</string>
     <string name="arrow">Arrow</string>
     <string name="doubleArrow">Double Arrow</string>
-    <string name="title_activity_worspaces_list">WorkspacesListActivity</string>
-    <string name="text">Text</string>
+    <string name="title_activity_workspaces_list">WorkspacesListActivity</string>
+    <string name="text">Texte</string>
+
+    <string-array name="menu_titles">
+        <item>Forme</item>
+        <item>Texte</item>
+        <item>Exemple</item>
+    </string-array>
+
+    <array name="icons">
+        <item></item>
+        <item></item>
+    </array>
+
 </resources>

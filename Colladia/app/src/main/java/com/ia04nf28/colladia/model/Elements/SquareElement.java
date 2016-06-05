@@ -28,7 +28,8 @@ public class SquareElement extends Element{
     @Override
     public void drawElement(Canvas canvas)
     {
-        super.drawElement(canvas);
         canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), getPaint());
+
+        super.drawElement(canvas);
     }
 }

@@ -52,22 +52,20 @@ public abstract class Element extends BaseObservable {
     @JsonIgnore
     protected Paint paint;
     @JsonIgnore
-    protected static Paint textPaint;
-    @JsonIgnore
-    protected static Paint anchorPaint;
+    public static Paint textPaint;
 
     // Element's lines size and color
     protected int color = Color.BLACK;
     protected int selectColor = Color.RED;
-    protected float thickness = 15;
+    protected float thickness = 12;
     protected boolean active = false;
 
-    // Link point
-    protected PointF center = new PointF();
-    protected PointF top = new PointF();
-    protected PointF bottom = new PointF();
-    protected PointF left = new PointF();
-    protected PointF right = new PointF();
+    // Link points
+    protected Anchor center = new Anchor(Anchor.CENTER);
+    protected Anchor top = new Anchor(Anchor.TOP);
+    protected Anchor bottom = new Anchor(Anchor.BOTTOM);
+    protected Anchor left = new Anchor(Anchor.LEFT);
+    protected Anchor right = new Anchor(Anchor.RIGHT);
 
     public Element()
     {
@@ -82,14 +80,6 @@ public abstract class Element extends BaseObservable {
             textPaint = new Paint();
             textPaint.setColor(Color.BLACK);
             textPaint.setTextSize(30);
-        }
-
-        if(anchorPaint == null)
-        {
-            anchorPaint = new Paint();
-            anchorPaint.setColor(Color.GRAY);
-            anchorPaint.setStrokeWidth(5);
-            anchorPaint.setStyle(Paint.Style.STROKE);
         }
     }
 
@@ -136,10 +126,10 @@ public abstract class Element extends BaseObservable {
         this.xMax = xMax;
         this.yMax = yMax;
 
-        this.top.set( (this.xMin + this.xMax) / 2, this.yMin - thickness );
-        this.bottom.set((this.xMin + this.xMax) / 2, this.yMax + thickness);
-        this.left.set(this.xMin - thickness, (this.yMin + this.yMax) / 2);
-        this.right.set(this.xMax + thickness, (this.yMin + this.yMax) / 2);
+        this.top.set((this.xMin + this.xMax) / 2, this.yMin /*- thickness*/ );
+        this.bottom.set((this.xMin + this.xMax) / 2, this.yMax /*+ thickness*/);
+        this.left.set(this.xMin /*- thickness*/, (this.yMin + this.yMax) / 2);
+        this.right.set(this.xMax /*+ thickness*/, (this.yMin + this.yMax) / 2);
 
         this.center.set( (this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
     }
@@ -178,24 +168,43 @@ public abstract class Element extends BaseObservable {
 
     public boolean isTouch(PointF finger)
     {
-        return (((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() < finger.y) && (finger.y < getyMax()))
+        return !( (finger.x < getxMin()) || (finger.x > getxMax()) || (finger.y < getyMin()) || (finger.y > getyMax()) );
+        /*return (((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() < finger.y) && (finger.y < getyMax()))
                 || ((getxMin() > finger.x) && (finger.x > getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax()))
                 || ((getxMin() > finger.x) && (finger.x > getxMax()) && (getyMin() < finger.y) && (finger.y < getyMax()))
-                || ((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax())));
+                || ((getxMin() < finger.x) && (finger.x < getxMax()) && (getyMin() > finger.y) && (finger.y > getyMax())));*/
+    }
+
+    public Anchor isAnchorTouch(PointF finger)
+    {
+        if(top.isTouch(finger)) return top;
+        if(bottom.isTouch(finger)) return bottom;
+        if(left.isTouch(finger)) return left;
+        if(right.isTouch(finger)) return right;
+
+        return null;
     }
 
     public void drawAnchor(Canvas canvas)
     {
         if(isActive())
         {
-            canvas.drawCircle(top.x, top.y, 4, anchorPaint);
-            canvas.drawCircle(bottom.x, bottom.y, 4, anchorPaint);
-            canvas.drawCircle(right.x, right.y, 4, anchorPaint);
-            canvas.drawCircle(left.x, left.y, 4, anchorPaint);
 
             // DEBUG
-            canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), anchorPaint);
+            //canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), Anchor.paint);
         }
+        /*else
+        {
+            if(top.isActive()) top.draw(canvas);
+            if(bottom.isActive()) bottom.draw(canvas);
+            if(left.isActive()) left.draw(canvas);
+            if(right.isActive()) right.draw(canvas);
+        }*/
+
+        top.draw(canvas);
+        bottom.draw(canvas);
+        left.draw(canvas);
+        right.draw(canvas);
     }
 
     public void drawElement(Canvas canvas)
@@ -222,6 +231,11 @@ public abstract class Element extends BaseObservable {
     public void deselectElement(){
         paint.setColor(color);
         setActive(false);
+    }
+
+    public boolean isLine()
+    {
+        return false;
     }
 
     /**
@@ -305,46 +319,6 @@ public abstract class Element extends BaseObservable {
         this.paint = paint;
     }
 
-    public PointF getCenter() {
-        return center;
-    }
-
-    public void setCenter(PointF center) {
-        this.center = center;
-    }
-
-    public PointF getTop() {
-        return top;
-    }
-
-    public void setTop(PointF top) {
-        this.top = top;
-    }
-
-    public PointF getBottom() {
-        return bottom;
-    }
-
-    public void setBottom(PointF bottom) {
-        this.bottom = bottom;
-    }
-
-    public PointF getLeft() {
-        return left;
-    }
-
-    public void setLeft(PointF left) {
-        this.left = left;
-    }
-
-    public PointF getRight() {
-        return right;
-    }
-
-    public void setRight(PointF right) {
-        this.right = right;
-    }
-
     public String getText() {
         return text;
     }
@@ -375,5 +349,45 @@ public abstract class Element extends BaseObservable {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Anchor getCenter() {
+        return center;
+    }
+
+    public void setCenter(Anchor center) {
+        this.center = center;
+    }
+
+    public Anchor getTop() {
+        return top;
+    }
+
+    public void setTop(Anchor top) {
+        this.top = top;
+    }
+
+    public Anchor getBottom() {
+        return bottom;
+    }
+
+    public void setBottom(Anchor bottom) {
+        this.bottom = bottom;
+    }
+
+    public Anchor getLeft() {
+        return left;
+    }
+
+    public void setLeft(Anchor left) {
+        this.left = left;
+    }
+
+    public Anchor getRight() {
+        return right;
+    }
+
+    public void setRight(Anchor right) {
+        this.right = right;
     }
 }

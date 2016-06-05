@@ -44,8 +44,9 @@ public class CircleElement extends Element {
     @Override
     public void drawElement(Canvas canvas)
     {
-        super.drawElement(canvas);
         canvas.drawCircle(center.x, center.y, this.getRadius(), this.getPaint());
+
+        super.drawElement(canvas);
     }
 
     @Override
@@ -55,8 +56,7 @@ public class CircleElement extends Element {
     }
 
     @Override
-    public void set(PointF first, PointF second)
-    {
+    public void set(PointF first, PointF second) {
         super.set(first, second);
 
         this.radius = Math.max(Math.round((getxMax() - getxMin()) / 2), Math.round((getyMax() - getyMin()) / 2));

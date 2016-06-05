@@ -8,8 +8,8 @@ import android.graphics.PointF;
 
 public class ClassElement extends SquareElement {
 
-    // Header size
-    private float header = 100f;
+    // Header size in %
+    private float header = 25;
 
     public ClassElement()
     {
@@ -33,7 +33,8 @@ public class ClassElement extends SquareElement {
         super.drawElement(canvas);
 
         // Draw the header separator
-        canvas.drawLine(xMin, yMin + header, xMax, yMin + header, paint);
+        float yPos = yMin + ((yMax - yMin)/100 * header);
+        canvas.drawLine(xMin, yPos, xMax, yPos, paint);
     }
 
 }
