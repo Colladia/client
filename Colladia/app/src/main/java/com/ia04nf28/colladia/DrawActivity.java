@@ -122,6 +122,11 @@ public class DrawActivity extends AppCompatActivity
         // Adding data header
         listDataHeader.add(item1);
 
+        ExpandedMenuModel item2 = new ExpandedMenuModel();
+        item2.setIconName("Lignes");
+        item2.setIconImg(R.drawable.ic_menu_send);
+        listDataHeader.add(item2);
+
         ExpandedMenuModel item3 = new ExpandedMenuModel();
         item3.setIconName("Texte");
         item3.setIconImg(R.drawable.ic_menu_send);

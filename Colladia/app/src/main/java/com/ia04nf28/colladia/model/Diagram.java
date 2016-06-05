@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.ObservableArrayMap;
 import android.databinding.ObservableMap;
 
+import com.android.volley.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ia04nf28.colladia.R;
@@ -35,12 +36,27 @@ public class Diagram {
         this.listElement = listElement;
     }
 
+    public Diagram() {
+        this.name = null;
+    }
+    public Diagram(String name) {
+        this.name = name;
+    }
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void insertElement(Element elementToInsert){
+        if(listElement.containsKey(elementToInsert.getId())){
+            listElement.remove(elementToInsert.getId());
+            listElement.put(elementToInsert.getId(), elementToInsert);
+        }else
+            listElement.put(elementToInsert.getId(), elementToInsert);
+
     }
 
     public static String toJson(Diagram d){
@@ -65,6 +81,8 @@ public class Diagram {
     }
 
 
+
+
     /**
      * Listen to the changes affecting the list of available elements names
      * @param callback the callback to execute when a change occurs
@@ -72,4 +90,7 @@ public class Diagram {
     public void addOnElementsChangeCallback(ObservableMap.OnMapChangedCallback<ObservableMap<String,Element>,String, Element> callback){
         listElement.addOnMapChangedCallback(callback);
     }
+
+
+
 }

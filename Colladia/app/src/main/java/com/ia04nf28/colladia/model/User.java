@@ -10,6 +10,7 @@ import java.util.Random;
 public class User {
     public String login;
     public int color;
+    public int clock = 0;
 
     public User(String l, int c) {
         login = l;

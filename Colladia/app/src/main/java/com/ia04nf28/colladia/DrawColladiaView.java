@@ -397,6 +397,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // We add the selected element from the menu to the canvas
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
                 toAdd.add(drawElem);
+                /*drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
+                listElement.add(drawElem);
+                Manager.instance(applicationCtx).addElement( drawElem);//TODO change this
+                mode = INSERT;*/
                 break;
 
             case NONE:
@@ -444,6 +448,9 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // Update last point and element
                 mAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
+                /*mPointAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
+                Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);//TODO change this
+                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);*/
                 break;
 
             case SCROLL:
@@ -468,6 +475,11 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
                     // Save initial element's top-left position
                     iAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
+                    /*PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
+                    Manager.instance(applicationCtx).moveElement(selected, p);//TODO change this
+                    selected.move(p);
+
+                    iPointAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());*/
                 }
                 break;
 
