@@ -172,7 +172,10 @@ public class Manager {
         Requestator.instance(context).getDiagram(diaId, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
+                // s contains the elements of the diagram
 
+
+                //Diagram.toObject(diaJson);
             }
         });
 
