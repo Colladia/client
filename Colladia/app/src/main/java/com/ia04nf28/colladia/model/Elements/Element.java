@@ -370,7 +370,7 @@ public abstract class Element extends BaseObservable implements Cloneable {
             json = new JSONObject(serializedUpdateElement);
             this.parseElement(json);
             this.jsonToSpecificElement(json);
-
+            this.set(this.getxMin(),this.getyMin(),this.getxMax(),this.getyMax());
         } catch (JSONException e) {
             e.printStackTrace();
         }
