@@ -10,7 +10,8 @@
     <RelativeLayout
         xmlns:circle="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/draw_layout">
         <!-- Draw View -->
         <com.ia04nf28.colladia.DrawColladiaView
             android:layout_width="match_parent"
@@ -18,57 +19,7 @@
             android:id="@+id/draw_view" />
 
         <!-- Circular Menu -->
-        <com.szugyi.circlemenu.view.CircleLayout
-            android:id="@+id/contextual_menu"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_horizontal"
-            circle:circleBackground="@drawable/bg" >
-            <!-- Menu items -->
-            <com.szugyi.circlemenu.view.CircleImageView
-                android:id="@+id/main_calendar_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_home"
-                android:background="@drawable/circle" />
-
-            <com.szugyi.circlemenu.view.CircleImageView
-                android:id="@+id/main_cloud_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_home"
-                android:background="@drawable/circle" />
-
-
-            <com.szugyi.circlemenu.view.CircleImageView
-                android:id="@+id/main_mail_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_home"
-                android:background="@drawable/circle" />
-
-            <com.szugyi.circlemenu.view.CircleImageView
-                android:id="@+id/main_key_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_home"
-                android:background="@drawable/circle" />
-
-            <com.szugyi.circlemenu.view.CircleImageView
-                android:id="@+id/main_profile_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_home"
-                android:background="@drawable/circle" />
-
-            <com.szugyi.circlemenu.view.CircleImageView
-                android:id="@+id/main_tap_image"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_home"
-                android:background="@drawable/circle" />
-
-        </com.szugyi.circlemenu.view.CircleLayout>
+        <include layout="@layout/contextual_main" />
     </RelativeLayout>
 
     <include

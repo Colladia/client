@@ -9,18 +9,16 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
+import android.transition.CircularPropagation;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.GestureDetector;
-import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
+import android.view.*;
 import android.widget.EditText;
 
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Manager;
+import com.szugyi.circlemenu.view.CircleLayout;
 
 import java.util.HashSet;
 
@@ -84,7 +82,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private Element prevSelected;
     public Element drawElem;
 
-
+    private CircleLayout mainContextualMenu;
     private EditText userTextInput;
 
     ScaleGestureDetector scaleDetector;
@@ -176,6 +174,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         paint.setStrokeJoin(Paint.Join.ROUND);
         paint.setStrokeWidth(20f);
 
+        // create circlemenu dynamically (with just labels for now)
 
     }
 
@@ -542,7 +541,14 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         @Override
         public void onLongPress(MotionEvent e) {
-            // Menu contextuel
+
+
+            if (mainContextualMenu.getVisibility() == GONE){
+                mainContextualMenu.setVisibility(VISIBLE);
+            }
+            else if (mainContextualMenu.getVisibility() == VISIBLE){
+                mainContextualMenu.setVisibility(GONE);
+            }
         }
     }
 
