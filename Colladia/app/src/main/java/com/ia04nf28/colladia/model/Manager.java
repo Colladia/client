@@ -264,7 +264,7 @@ public class Manager {
      * @return an unmodifiable list of String
      */
     public List<String> getDiagrams() {
-        return Collections.unmodifiableList(diagrams);
+        return diagrams;
     }
 
     /**
@@ -350,7 +350,7 @@ public class Manager {
     }
 
     public void requestElements(){
-        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock, new Response.Listener<String>(){
+        Requestator.instance(this.context).getDiagram(getCurrentDiagram().getName(), lastClock, new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
                 responseRequestHandler(s);

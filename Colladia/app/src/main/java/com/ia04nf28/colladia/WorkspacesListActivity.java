@@ -90,7 +90,9 @@ public class WorkspacesListActivity extends ListActivity {
                 builder.setTitle(getString(R.string.add_diagram_title)).setView(userTextInput);
                 builder.setNegativeButton(R.string.add_diagram_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
-                        Manager.instance(getApplicationContext()).addDiagram(userTextInput.getText().toString());
+                        String newDiagramFormatted = userTextInput.getText().toString();
+                        newDiagramFormatted = newDiagramFormatted.replaceAll(" ", "_");
+                        Manager.instance(getApplicationContext()).addDiagram(newDiagramFormatted);
                     }
                 });
 
@@ -115,7 +117,7 @@ public class WorkspacesListActivity extends ListActivity {
         Toast.makeText(getApplicationContext() ,"clicked " +diagramSelected, Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
-        // Neutral button is on center
+        // Negative button is on the left
         builder.setNegativeButton(R.string.access_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface di, int i) {
                 Manager.instance(getApplicationContext()).setCurrentDiagram(diagramSelected);
@@ -124,7 +126,7 @@ public class WorkspacesListActivity extends ListActivity {
                 startActivity(intent);
             }
         });
-        // Negative button is on the left
+        // Neutral button is on center
         builder.setNeutralButton(R.string.delete_button, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface di, int i) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
@@ -158,6 +160,7 @@ public class WorkspacesListActivity extends ListActivity {
     }
 
     private void updateAdapter(List<String> list){
+        //Collections.sort(list);
         setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
     }
 }
