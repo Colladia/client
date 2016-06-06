@@ -40,6 +40,9 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     static final int MOVE   = 3;    // Move an element
     static final int INSERT = 4;    // Insert an element
     static final int RESIZE = 5;    // Resize an element
+    static final int MAIN_CONTEXTUAL = 6;    //
+    static final int SELECT_CONTEXTUAL = 7;    //
+
 
     int mode = NONE;
 
@@ -93,9 +96,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     public void setMainContextualMenu(CircleLayout mainContextualMenu) {
         this.mainContextualMenu = mainContextualMenu;
     }
-
-    private boolean scrolled = false;
-
 
     private android.databinding.Observable.OnPropertyChangedCallback elementCallback = new android.databinding.Observable.OnPropertyChangedCallback(){
         @Override
@@ -318,6 +318,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // we did not touch any object on the screen
                 else mode = SCROLL;
                 break;
+
+            case MAIN_CONTEXTUAL:
+                // main contextual menu was visible
+                mainContextualMenu.setVisibility(GONE);
+                mode = NONE;
+                break;
         }
     }
 
@@ -339,7 +345,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
                 if(Math.abs(translateX) >= TOLERANCE || Math.abs(translateY) >= TOLERANCE)
                 {
-                    scrolled = true;
                     // Update our root point
                     root.x = translateX;
                     root.y = translateY;
@@ -374,19 +379,17 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         prevTranslateX = translateX;
         prevTranslateY = translateY;
 
-        switch(mode)
-        {
-            case INSERT:
-                drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
-                drawElem = null;
-                break;
-
-            case SCROLL:
-                scrolled = false;
-                break;
+        if (mode == INSERT) {
+            drawElem.set(iPointAbsolutePoint, mPointAbsolutePoint);
+            drawElem = null;
         }
 
-        mode = NONE;
+        if (mode == MAIN_CONTEXTUAL || mode == SELECT_CONTEXTUAL) {
+
+        }
+        else{
+            mode = NONE;
+        }
 
     }
 
@@ -409,7 +412,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 break;
 
             case SCROLL:
-                scrolled = false;
                 prevTranslateX = translateX;
                 prevTranslateY = translateY;
                 break;
@@ -547,10 +549,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         @Override
         public void onLongPress(MotionEvent e) {
-            if (mainContextualMenu.getVisibility() == GONE)
+            if (mainContextualMenu.getVisibility() == GONE && mode == SCROLL){
                 mainContextualMenu.setVisibility(View.VISIBLE);
-            else if (mainContextualMenu.getVisibility() == View.VISIBLE)
-                mainContextualMenu.setVisibility(GONE);
+                mode = MAIN_CONTEXTUAL;
+            }
         }
     }
 

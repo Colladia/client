@@ -18,8 +18,10 @@
             android:layout_height="match_parent"
             android:id="@+id/draw_view" />
 
-        <!-- Circular Menu -->
+        <!-- Circular Menu contextual main -->
         <include layout="@layout/contextual_main" />
+        <!-- Circular Menu for selected element -->
+        <include layout="@layout/contextual_select" />
     </RelativeLayout>
 
     <include
