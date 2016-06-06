@@ -20,6 +20,7 @@ import com.ia04nf28.colladia.model.Diagram;
 import com.ia04nf28.colladia.model.Elements.CircleElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
+import com.ia04nf28.colladia.model.Manager;
 import com.szugyi.circlemenu.view.CircleLayout;
 
 import java.util.ArrayList;
@@ -51,6 +52,7 @@ public class DrawActivity extends AppCompatActivity
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
 
         drawView = (DrawColladiaView) findViewById(R.id.draw_view);
         drawView.setApplicationCtx(getApplicationContext());
