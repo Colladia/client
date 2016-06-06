@@ -5,15 +5,13 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
-import android.view.View;
+import android.view.*;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
@@ -22,10 +20,13 @@ import com.ia04nf28.colladia.model.Diagram;
 import com.ia04nf28.colladia.model.Elements.CircleElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
+import com.szugyi.circlemenu.view.CircleLayout;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import static android.view.View.GONE;
 
 public class DrawActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -37,6 +38,8 @@ public class DrawActivity extends AppCompatActivity
     private List<ExpandedMenuModel> listDataHeader;
     private HashMap<ExpandedMenuModel, List<String>> listDataChild;
     private DrawColladiaView drawView;
+
+    private CircleLayout mainContextualMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,6 +73,9 @@ public class DrawActivity extends AppCompatActivity
 
         // setting list adapter
         expandableList.setAdapter(mMenuAdapter);
+
+        mainContextualMenu = (CircleLayout) findViewById(R.id.contextual_menu);
+        drawView.setMainContextualMenu(mainContextualMenu);
     }
 
     @Override

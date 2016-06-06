@@ -3,10 +3,11 @@
     xmlns:circle="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/contextual_menu"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     circle:circleBackground="@drawable/bg"
+    android:visibility="gone"
     tools:showIn="@layout/activity_draw">
     <!-- Menu items -->
     <com.szugyi.circlemenu.view.CircleImageView

@@ -82,11 +82,17 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private Element prevSelected;
     public Element drawElem;
 
-    private CircleLayout mainContextualMenu;
+
     private EditText userTextInput;
 
     ScaleGestureDetector scaleDetector;
     GestureDetector gestureDetector;
+
+    private CircleLayout mainContextualMenu;
+
+    public void setMainContextualMenu(CircleLayout mainContextualMenu) {
+        this.mainContextualMenu = mainContextualMenu;
+    }
 
     private boolean scrolled = false;
 
@@ -541,14 +547,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         @Override
         public void onLongPress(MotionEvent e) {
-
-
-            if (mainContextualMenu.getVisibility() == GONE){
-                mainContextualMenu.setVisibility(VISIBLE);
-            }
-            else if (mainContextualMenu.getVisibility() == VISIBLE){
+            if (mainContextualMenu.getVisibility() == GONE)
+                mainContextualMenu.setVisibility(View.VISIBLE);
+            else if (mainContextualMenu.getVisibility() == View.VISIBLE)
                 mainContextualMenu.setVisibility(GONE);
-            }
         }
     }
 
