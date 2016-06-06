@@ -24,6 +24,9 @@ class Requestator {
     private String url;
     private static final String PROPERTIES ="properties";
 
+    private static final String OPTIONS ="options";
+    private static final String OPTIONS_AUTO ="[\"auto-positioning\"]";
+
     private StringRequest request;
 
     private Requestator(Context ctx) {
@@ -74,16 +77,23 @@ class Requestator {
     void deleteDiagram(String diaId, Response.Listener<String> responseListener) {
         StringRequest request = new StringRequest(Request.Method.DELETE, this.url + "/" + diaId,
                 responseListener, defaultErrorListener);
+
+        getRequestQueue().add(request);
     }
 
-    /**
-     * Method PUT to ask the server to create an Element
-     * @param diaId
-     * @param elementId
-     * @param responseListener
-     * @param jsonElement parsed Element in a JSON String
-     */
-    void putElement(String diaId,String elementId, final String jsonElement, Response.Listener<String> responseListener) {
+
+    void getDiagram(String diaId,String lastClock, Response.Listener<String> responseListener) {
+        final String lastClockRequest = lastClock;
+        StringRequest request = new StringRequest(Request.Method.GET, this.url + "/" + diaId+"?"+Manager.LAST_CLOCK_INPUT_FIELD+"="+lastClockRequest,
+                responseListener, defaultErrorListener);
+        getRequestQueue().add(request);
+    }
+
+
+
+
+    void putElement(String diaId,String elementId,String lastClock, final String jsonElement, Response.Listener<String> responseListener) {
+        final String lastClockRequest = lastClock;
         StringRequest request = new StringRequest(Request.Method.PUT, this.url + "/" + diaId+ "/" + elementId,
                 responseListener, defaultErrorListener){
 
@@ -91,6 +101,7 @@ class Requestator {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(PROPERTIES, jsonElement);
+                params.put(Manager.LAST_CLOCK_INPUT_FIELD, lastClockRequest);
                 return params;
             }
         };
@@ -98,14 +109,24 @@ class Requestator {
         getRequestQueue().add(request);
     }
 
-    void deleteElement(String diaId,String elementId, Response.Listener<String> responseListener) {
+
+    void deleteElement(String diaId,String elementId,String lastClock, Response.Listener<String> responseListener) {
+        final String lastClockRequest = lastClock;
         StringRequest request = new StringRequest(Request.Method.DELETE, this.url + "/" + diaId + "/" + elementId,
-                responseListener, defaultErrorListener);
+                responseListener, defaultErrorListener){
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(Manager.LAST_CLOCK_INPUT_FIELD, lastClockRequest);
+                return params;
+            }
+        };
         getRequestQueue().add(request);
     }
 
-    void postElement(String diaId,String elementId, final String jsonElement, Response.Listener<String> responseListener) {
-
+    void postElement(String diaId,String elementId,String lastClock, final String jsonElement, Response.Listener<String> responseListener) {
+        final String lastClockRequest = lastClock;
         StringRequest request = new StringRequest(Request.Method.POST, this.url + "/" + diaId + "/" + elementId,
                 responseListener, defaultErrorListener){
 
@@ -113,12 +134,32 @@ class Requestator {
             protected Map<String, String> getParams() throws AuthFailureError {
                 Map<String, String> params = new HashMap<String, String>();
                 params.put(PROPERTIES, jsonElement);
+                params.put(Manager.LAST_CLOCK_INPUT_FIELD, lastClockRequest);
                 return params;
             }
         };
 
         getRequestQueue().add(request);
     }
+
+
+    void postAutoPositionElement(String diaId,String lastClock, Response.Listener<String> responseListener) {
+        final String lastClockRequest = lastClock;
+        StringRequest request = new StringRequest(Request.Method.POST, this.url + "/" + diaId ,
+                responseListener, defaultErrorListener){
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(OPTIONS, OPTIONS_AUTO);//TODO check if request working
+                params.put(Manager.LAST_CLOCK_INPUT_FIELD, lastClockRequest);
+                return params;
+            }
+        };
+
+        getRequestQueue().add(request);
+    }
+
 
     private Response.ErrorListener defaultErrorListener = new Response.ErrorListener() {
         @Override
