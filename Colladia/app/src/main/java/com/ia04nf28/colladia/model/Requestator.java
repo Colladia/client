@@ -23,6 +23,8 @@ class Requestator {
     private static Context ctx;
     private String url;
     private static final String PROPERTIES ="properties";
+    private static final String OPTIONS ="options";
+    private static final String OPTIONS_AUTO ="[\\\"auto-positioning\\\"]";
 
     private StringRequest request;
 
@@ -137,6 +139,26 @@ class Requestator {
 
         getRequestQueue().add(request);
     }
+
+
+    void postAutoPositionElement(String diaId,String lastClock, Response.Listener<String> responseListener) {
+        final String lastClockRequest = lastClock;
+        StringRequest request = new StringRequest(Request.Method.POST, this.url + "/" + diaId ,
+                responseListener, defaultErrorListener){
+
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put(OPTIONS, OPTIONS_AUTO);//TODO check if request working
+                params.put(Manager.LAST_CLOCK_INPUT_FIELD, lastClockRequest);
+                return params;
+            }
+        };
+
+        getRequestQueue().add(request);
+    }
+
+
 
     private Response.ErrorListener defaultErrorListener = new Response.ErrorListener() {
         @Override

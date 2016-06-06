@@ -98,22 +98,15 @@ public class LineElement extends Element {
         return elementSerialized;
     }
 
+
     @Override
-    public void jsonToElement(String serializedElement) {
+    public void jsonToSpecificElement(JSONObject jsonElement) {
         try {
-            JSONObject json = new JSONObject(serializedElement);
-            setDIR(new Integer(json.getString(JSON_DIR)));
+            if(jsonElement.has(JSON_DIR))
+                setDIR(new Integer(jsonElement.getString(JSON_DIR)));
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-    }
-
-
-    @Override
-    public void updateElement(Element updatedElement) {
-        super.updateElement(updatedElement);
-        if(this.getDIR() != ((LineElement)updatedElement).getDIR()) this.setDIR(((LineElement)updatedElement).getDIR());
     }
 
 
