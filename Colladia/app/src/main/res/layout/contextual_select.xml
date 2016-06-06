@@ -2,7 +2,7 @@
 <com.szugyi.circlemenu.view.CircleLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:circle="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/contextual_menu"
+    android:id="@+id/select_contextual_menu"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_centerVertical="true"

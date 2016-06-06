@@ -40,6 +40,7 @@ public class DrawActivity extends AppCompatActivity
     private DrawColladiaView drawView;
 
     private CircleLayout mainContextualMenu;
+    private CircleLayout selectContextualMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -74,8 +75,10 @@ public class DrawActivity extends AppCompatActivity
         // setting list adapter
         expandableList.setAdapter(mMenuAdapter);
 
-        mainContextualMenu = (CircleLayout) findViewById(R.id.contextual_menu);
+        mainContextualMenu = (CircleLayout) findViewById(R.id.main_contextual_menu);
+        selectContextualMenu = (CircleLayout) findViewById(R.id.select_contextual_menu);
         drawView.setMainContextualMenu(mainContextualMenu);
+        drawView.setSelectContextualMenu(selectContextualMenu);
     }
 
     @Override

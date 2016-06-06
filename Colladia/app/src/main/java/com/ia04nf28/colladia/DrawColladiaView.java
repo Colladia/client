@@ -92,9 +92,14 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     GestureDetector gestureDetector;
 
     private CircleLayout mainContextualMenu;
+    private CircleLayout selectContextualMenu;
 
-    public void setMainContextualMenu(CircleLayout mainContextualMenu) {
-        this.mainContextualMenu = mainContextualMenu;
+    public void setMainContextualMenu(CircleLayout cl) {
+        this.mainContextualMenu = cl;
+    }
+
+    public void setSelectContextualMenu(CircleLayout cl) {
+        this.selectContextualMenu = cl;
     }
 
     private android.databinding.Observable.OnPropertyChangedCallback elementCallback = new android.databinding.Observable.OnPropertyChangedCallback(){
@@ -324,6 +329,11 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 mainContextualMenu.setVisibility(GONE);
                 mode = NONE;
                 break;
+            case SELECT_CONTEXTUAL:
+                // select contextual menu was visible
+                selectContextualMenu.setVisibility(GONE);
+                mode = NONE;
+                break;
         }
     }
 
@@ -387,7 +397,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         if (mode == MAIN_CONTEXTUAL || mode == SELECT_CONTEXTUAL) {
 
         }
-        else{
+        else {
             mode = NONE;
         }
 
@@ -549,7 +559,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         @Override
         public void onLongPress(MotionEvent e) {
-            if (mainContextualMenu.getVisibility() == GONE && mode == SCROLL){
+            if (selected != null && selectContextualMenu.getVisibility() == GONE && mode == MOVE) {
+                selectContextualMenu.setVisibility(View.VISIBLE);
+                mode = SELECT_CONTEXTUAL;
+            } else if (mainContextualMenu.getVisibility() == GONE && mode == SCROLL){
                 mainContextualMenu.setVisibility(View.VISIBLE);
                 mode = MAIN_CONTEXTUAL;
             }
