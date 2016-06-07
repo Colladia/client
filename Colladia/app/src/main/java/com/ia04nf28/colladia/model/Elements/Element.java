@@ -1,11 +1,15 @@
 package com.ia04nf28.colladia.model.Elements;
 
+import android.content.Context;
 import android.databinding.BaseObservable;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.Rect;
+import android.text.Layout;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
@@ -27,8 +31,7 @@ import java.util.UUID;
 @JsonSubTypes({
         @JsonSubTypes.Type(value = CircleElement.class, name = "CircleElement"),
         @JsonSubTypes.Type(value = SquareElement.class, name = "SquareElement"),
-        @JsonSubTypes.Type(value = SquareElement.class, name = "ClassElement"),
-        @JsonSubTypes.Type(value = LineElement.class, name = "LineElement") })
+        @JsonSubTypes.Type(value = SquareElement.class, name = "ClassElement") })
 @JsonPropertyOrder(alphabetic=true)
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 public abstract class Element extends BaseObservable {
@@ -233,10 +236,31 @@ public abstract class Element extends BaseObservable {
         setActive(false);
     }
 
-    public boolean isLine()
+    public LinearLayout getTextEdit(Context ctx)
     {
-        return false;
+        LinearLayout ll = new LinearLayout(ctx);
+        ll.setOrientation(LinearLayout.VERTICAL);
+
+        final EditText content = new EditText(ctx);
+        content.setHint("Contenu");
+
+        if(!this.text.isEmpty()) content.setText(text);
+
+        ll.addView(content);
+
+        return ll;
     }
+
+    public void setTextFromLayout(LinearLayout layout)
+    {
+        if(layout.getChildCount() > 0)
+        {
+            EditText content = (EditText)layout.getChildAt(0);
+            this.setText(content.getText().toString());
+        }
+    }
+
+
 
     /**
      * Method to serialize the Element into a String

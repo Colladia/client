@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
-import android.nfc.Tag;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -18,13 +17,11 @@ import android.view.ScaleGestureDetector;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import com.ia04nf28.colladia.model.Elements.Anchor;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.Utils.ChangementBase;
-import com.ia04nf28.colladia.model.Elements.LineElement;
-import com.ia04nf28.colladia.model.Elements.Link;
 import com.ia04nf28.colladia.model.Manager;
 
 import java.util.ArrayList;
@@ -45,8 +42,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private static final float TOLERANCE = 5;
 
     // ZOOM LIMITS
-    private static final float ZOOM_MIN = 0.5f;
-    private static final float ZOOM_MAX = 4.0f;
+    private static final float ZOOM_MIN = 0.35f;
+    private static final float ZOOM_MAX = 2.0f;
 
     // ALLOWED MODES
     private static final int NONE   = 0;    // No action
@@ -105,7 +102,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private Element prevSelected;
     private Element drawElem;
 
-    private EditText userTextInput;
+    //private EditText userTextInput;
 
     ScaleGestureDetector scaleDetector;
     GestureDetector gestureDetector;
@@ -287,7 +284,9 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
             // Draw the center
             canvas.drawCircle(0f, 0f, 15, paint);
-            canvas.drawText("x:" + root.x + " y:" + root.y, 10f, 10f, textPaint );
+
+            // Debug
+            //canvas.drawText("x:" + root.x + " y:" + root.y, 10f, 10f, textPaint );
 
             // Draw elements
             for (Element elem : listElement)
@@ -517,6 +516,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 {
                     // Remove previous link
                     if(linkedTo != null) linkedTo.linkTo(null);
+                    if(elemAnchor.isConnected()) elemAnchor.getLink().linkTo(null);
 
                     // Connect in both sides
                     startAnchor.linkTo(elemAnchor);
@@ -686,14 +686,18 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 String value;
                 //((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                userTextInput = new EditText(getContext());
 
-                if(!selected.getText().isEmpty()) userTextInput.setText(selected.getText());
 
-                builder.setTitle("Entrez votre texte").setView(userTextInput);
+                //userTextInput = new EditText(getContext());
+
+                //if(!selected.getText().isEmpty()) userTextInput.setText(selected.getText());
+
+                final LinearLayout ll = selected.getTextEdit(getContext());
+
+                builder.setTitle("Edition du contenu").setView(ll);
                 builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
-                        selected.setText(userTextInput.getText().toString());
+                        selected.setTextFromLayout(ll);
                     }
                 });
 

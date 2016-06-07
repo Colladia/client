@@ -15,19 +15,15 @@ public class ElementFactory {
     {
         Element newElement = null;
 
-        if(typeElement.equals(ctx.getString(R.string.circle)))
+        if(typeElement.equals(ctx.getString(R.string.shape_circle)))
         {
             newElement = new CircleElement();
         }
-        else if(typeElement.equals(ctx.getString(R.string.square)))
+        else if(typeElement.equals(ctx.getString(R.string.shape_square)))
         {
             newElement = new SquareElement();
         }
-        else if(typeElement.equals(ctx.getString(R.string.line)))
-        {
-            newElement = new LineElement();
-        }
-        else if(typeElement.equals(ctx.getString(R.string.classe)))
+        else if(typeElement.equals(ctx.getString(R.string.shape_class)))
         {
             newElement = new ClassElement();
         }

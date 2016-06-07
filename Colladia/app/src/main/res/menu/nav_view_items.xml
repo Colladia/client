@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item android:title="Action">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:icon="@drawable/ic_home"
+                        android:title="@string/nav_menu_home_back" />
+                    <item
+                        android:icon="@drawable/ic_position"
+                        android:title="@string/nav_position" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                </group>
+            </menu>
+        </item>
+
+        <item android:title="Forme">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:icon="@drawable/ic_square"
+                        android:title="@string/shape_square" />
+                    <item
+                        android:icon="@drawable/ic_circle"
+                        android:title="@string/shape_circle" />
+                    <item
+                        android:icon="@drawable/ic_class"
+                        android:title="@string/shape_class" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/shape_text" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+                    <item
+                        android:icon="@drawable/ic_comment"
+                        android:title="@string/action_settings" />
+
+                </group>
+            </menu>
+        </item>
+
+
+
+    </group>
+
+</menu>
