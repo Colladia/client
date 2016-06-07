@@ -47,12 +47,15 @@ public class Manager {
 
     private final ObservableBoolean logged;
     private Timer requestTimer = new Timer();
-    private TimerTask getDiagramsTask = new TimerTask() {
-        @Override
-        public void run() {
-            requestDiagrams();
-        }
-    };
+    //private TimerTask getDiagramsTask;
+    private TimerTask createDiagramsTask () {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                requestDiagrams();
+            }
+        };
+    }
     private Timer requestTimerElements = new Timer();
     private TimerTask getElementsTask = new TimerTask() {
         @Override
@@ -124,13 +127,31 @@ public class Manager {
         this.user = user;
         // TODO check url
         // TODO if url valid
-        requestTimer.schedule(getDiagramsTask, 0, delayRequestDiagrams);
+
+        if(requestTimer!=null) {
+            requestTimer.cancel();
+            requestTimer = new Timer();
+        }
+        requestTimer.schedule(createDiagramsTask(), 0, delayRequestDiagrams);
         // end of if url valid
     }
 
 
     public void joinWorkspace(){
         requestTimerElements.schedule(getElementsTask, 0, delayRequestElements);
+    }
+
+    public void quitWorkspace(){
+        requestTimerElements.cancel();
+        requestTimerElements = new Timer();
+        lastClock = "0";
+        currentDiagram = null;
+    }
+
+    public void quitServer(){
+        //logged.set(false);
+        requestTimer.cancel();
+        requestTimer = new Timer();
     }
 
 
@@ -171,7 +192,6 @@ public class Manager {
                     while( keys.hasNext() ) {
                         String key = (String)keys.next();
                         //TODO may be test if not element expected, or keep it for the exceptions
-                        //getCurrentDiagram().getListElement().put(key, Element.deserializeJSON(descArray.getString(key)));
                         JSONObject jsonElement = new JSONObject(descArray.getString(key));
                         Element newElement = ElementFactory.createElementSerialized(jsonElement.getString(Element.JSON_TYPE));
                         newElement.updateElement(jsonElement, getCurrentDiagram().getListElement());
@@ -381,57 +401,102 @@ public class Manager {
     }
 
     public void updatePositionElement(Element originalElement, PointF first, PointF second){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.set(first, second);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            originalElement.set(first, second);
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_X_MIN, ""+originalElement.getxMin());
+            properties.put(Element.JSON_Y_MIN, ""+originalElement.getyMin());
+            properties.put(Element.JSON_X_MAX, ""+originalElement.getxMax());
+            properties.put(Element.JSON_Y_MAX, "" + originalElement.getyMax());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void moveElement(Element originalElement, PointF newPosition){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.move(newPosition);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            originalElement.move(newPosition);
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_X_MIN, ""+originalElement.getxMin());
+            properties.put(Element.JSON_Y_MIN, ""+originalElement.getyMin());
+            properties.put(Element.JSON_X_MAX, ""+originalElement.getxMax());
+            properties.put(Element.JSON_Y_MAX, ""+originalElement.getyMax());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void selectElement(Element originalElement, int userColor){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.selectElement(userColor);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE,originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_CURRENT_COLOR, ""+userColor);
+            properties.put(Element.JSON_ACTIVE, "true");
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+
     public void deselectElement(Element originalElement){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.deselectElement();
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE,originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_CURRENT_COLOR, ""+originalElement.getNotSelectedColor());
+            properties.put(Element.JSON_ACTIVE, "false");
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void changeText(Element originalElement, LinearLayout inputs){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.setTextFromLayout(inputs);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+
+            originalElement.setTextFromLayout(inputs);
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE,originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_TEXT, originalElement.getText());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void autoPositioning(){

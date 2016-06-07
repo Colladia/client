@@ -159,4 +159,7 @@ public class WorkspacesListActivity extends ListActivity {
     private void updateAdapter(List<String> list){
         setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
     }
+
+
+
 }

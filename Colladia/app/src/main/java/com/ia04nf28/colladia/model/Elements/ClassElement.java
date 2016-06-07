@@ -77,6 +77,7 @@ public class ClassElement extends Element {
         return ll;
     }
 
+    @Override
     public void setTextFromLayout(LinearLayout layout)
     {
         // Set text content
