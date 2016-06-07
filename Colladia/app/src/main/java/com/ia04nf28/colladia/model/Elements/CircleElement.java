@@ -51,7 +51,28 @@ public class CircleElement extends Element {
     }
 
     @Override
+    public void set(float xMin, float yMin, float xMax, float yMax)
+    {
+        float max = Math.max(xMax, yMax);
+
+        // We want a perfect square
+        this.xMin = xMin;
+        this.yMin = yMin;
+        this.xMax = max;
+        this.yMax = max;
+
+        this.top.set((this.xMin + this.xMax) / 2, this.yMin /*- thickness*/ );
+        this.bottom.set((this.xMin + this.xMax) / 2, this.yMax /*+ thickness*/);
+        this.left.set(this.xMin /*- thickness*/, (this.yMin + this.yMax) / 2);
+        this.right.set(this.xMax /*+ thickness*/, (this.yMin + this.yMax) / 2);
+
+        this.center.set((this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
+    }
+
+
+    @Override
     public void set(PointF first, PointF second) {
+
         super.set(first, second);
 
         this.radius = Math.max(Math.round((getxMax() - getxMin()) / 2), Math.round((getyMax() - getyMin()) / 2));
