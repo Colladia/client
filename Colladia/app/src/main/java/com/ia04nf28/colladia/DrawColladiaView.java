@@ -25,8 +25,8 @@ import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Manager;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
+
 
 /**
  * Created by Mar on 17/05/2016.
@@ -57,6 +57,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     // Current mode
     private int mode = NONE;
 
+
     // Current scale
     private float scaleFactor = 1.f;
 
@@ -72,15 +73,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private PointF root = new PointF(0f, 0f);
 
     private PointF touchFromCenter = null;
-
-    /** All available elements **/
-    private HashSet<Element> listElement = new HashSet<>();
-
-    // Temporary lists to avoid concurrency exceptions
-    private HashSet<Element> toRemove = new HashSet<>();
-    private HashSet<Element> toAdd = new HashSet<>();
-
-
 
 
     // Screen width and height in pixels
@@ -166,10 +158,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     public void init(Context c)
     {
         //add a callback to the list of elements of the diagram
-        /*TODO tp put back for server request getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
+        getManager().getCurrentDiagram().addOnElementsChangeCallback(diagramCallback);
         for (Element elem : getManager().getCurrentDiagram().getListElement().values()){//if there is already elements on the diagram
             elem.addOnPropertyChangedCallback(elementCallback);
-        }*/
+        }
 
         scaleDetector = new ScaleGestureDetector(getContext(), new SimpleScaleListener());
         gestureDetector = new GestureDetector(getContext(), new SimpleGestureListener());
@@ -252,20 +244,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
         if(canvas != null)
         {
-            for(Element e: toAdd)
-            {
-                listElement.add(e);
-            }
-
-            for(Element e: toRemove)
-            {
-                listElement.remove(e);
-                e = null;
-            }
-
-            toAdd.clear();
-            toRemove.clear();
-
             canvas.save();
 
             // Update scale
@@ -289,7 +267,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             //canvas.drawText("x:" + root.x + " y:" + root.y, 10f, 10f, textPaint );
 
             // Draw elements
-            for (Element elem : listElement)
+            for (Element elem : getManager().getCurrentDiagram().getListElement().values())
             {
                 elem.drawElement(canvas);
             }
@@ -369,7 +347,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         // Deselect previous selected element
         if(prevSelected != null)
         {
-            prevSelected.deselectElement();
+            Manager.instance(applicationCtx).deselectElement(prevSelected);
             prevSelected = null;
         }
 
@@ -381,7 +359,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         // Element touched
         else
         {
-            selected.selectElement();
+            Manager.instance(applicationCtx).selectElement(selected, Manager.instance(applicationCtx).getUser().getColor());
             prevSelected = selected;
         }
 
@@ -395,7 +373,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
                 // We add the selected element from the menu to the canvas
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
-                toAdd.add(drawElem);
+                //Manager.instance(applicationCtx).addElement(drawElem);
+                //mode = INSERT;
                 break;
 
             case NONE:
@@ -411,7 +390,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                     else linkedTo = null;
 
                     // Create new link
-                    stopAnchor =  new Anchor(currAbsolutePoint.x, currAbsolutePoint.y);
+                    stopAnchor =  new Anchor(currAbsolutePoint.x, currAbsolutePoint.y,null);
                     stopAnchor.setActive(true);
 
                     // Link the anchor
@@ -443,6 +422,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // Update last point and element
                 mAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
+                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
                 break;
 
             case SCROLL:
@@ -464,9 +444,9 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 {
                     // Translate object
                     selected.move(new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y));
-
                     // Save initial element's top-left position
                     iAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
+                    //Manager.instance(applicationCtx).moveElement(selected, p);
                 }
                 break;
 
@@ -475,6 +455,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 {
                     mAbsolutePoint = new PointF(currAbsolutePoint.x, currAbsolutePoint.y);
                     selected.set(iAbsolutePoint, mAbsolutePoint);
+                    //Manager.instance(applicationCtx).updatePositionElement(selected, iPointAbsolutePoint, mPointAbsolutePoint);
                 }
                 break;
 
@@ -497,11 +478,21 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iAbsolutePoint, mAbsolutePoint);
+                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iAbsolutePoint, mAbsolutePoint);
+                drawElem.set(iAbsolutePoint,mAbsolutePoint);
+                Manager.instance(applicationCtx).addElement(drawElem);
                 drawElem = null;
                 break;
 
             case MOVE:
+                if(selected != null)
+                {
+                    // Translate object
+                    PointF p = new PointF(currAbsolutePoint.x + touchFromCenter.x, currAbsolutePoint.y + touchFromCenter.y);
+                    Manager.instance(applicationCtx).moveElement(selected, p);
+                    // Save initial element's top-left position
+                    iAbsolutePoint = new PointF(selected.getxMin(), selected.getyMin());
+                }
                 // Deselect anchors
                 if(startAnchor != null) startAnchor.setActive(false);
                 if(stopAnchor != null) stopAnchor.setActive(false);
@@ -519,16 +510,19 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                     if(elemAnchor.isConnected()) elemAnchor.getLink().linkTo(null);
 
                     // Connect in both sides
-                    startAnchor.linkTo(elemAnchor);
-                    elemAnchor.linkTo(startAnchor);
+                    //startAnchor.linkTo(elemAnchor);
+                    //elemAnchor.linkTo(startAnchor);
+                    Manager.instance(applicationCtx).connectElement(startAnchor, elemAnchor);
+
                 }
                 else
                 {
                     if(linkedTo != null)
                     {
                         // Reset the previous link
-                        startAnchor.linkTo(linkedTo);
-                        linkedTo.linkTo(startAnchor);
+                        //startAnchor.linkTo(linkedTo);
+                        //linkedTo.linkTo(startAnchor);
+                        Manager.instance(applicationCtx).connectElement(startAnchor, linkedTo);
                     }
                     else startAnchor.linkTo(null);
                 }
@@ -536,6 +530,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if(startAnchor != null) startAnchor.setActive(false);
                 if(stopAnchor != null) stopAnchor.setActive(false);
 
+                break;
+            case RESIZE:
+                if(selected != null)
+                {
+                    Manager.instance(applicationCtx).updatePositionElement(selected, iAbsolutePoint, mAbsolutePoint);
+                }
                 break;
         }
 
@@ -557,7 +557,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                drawElem.set(iAbsolutePoint,mAbsolutePoint);
+                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iAbsolutePoint, mAbsolutePoint);
+                drawElem.set(iAbsolutePoint, mAbsolutePoint);
                 drawElem = null;
                 break;
         }
@@ -570,7 +571,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             case RESIZE:
                 if(selected != null)
                 {
-                    selected.set(iAbsolutePoint, mAbsolutePoint);
+                    Manager.instance(applicationCtx).updatePositionElement(selected, iAbsolutePoint, mAbsolutePoint);
                 }
                 break;
         }
@@ -620,19 +621,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         return true;
     }
 
-    public Element getElementById(String id)
-    {
-        for(Element elem : listElement)
-        {
-            if(elem.getId() == id) return elem;
-        }
-
-        return null;
-    }
 
     private Element getTouchedElement(final PointF pointTouch)
     {
-        for (Element elem : listElement)
+        for (Element elem : getManager().getCurrentDiagram().getListElement().values())
         {
             if (elem.isTouch(pointTouch))
             {
@@ -646,7 +638,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     {
         Anchor anch;
 
-        for(Element elem : listElement)
+        for(Element elem : getManager().getCurrentDiagram().getListElement().values())
         {
             anch = elem.isAnchorTouch(touched);
             if(anch != null && anch != stopAnchor) return anch;
@@ -687,17 +679,13 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 //((InputMethodManager) ctx.getSystemService(Context.INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_FORCED,InputMethodManager.HIDE_IMPLICIT_ONLY);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 
-
-                //userTextInput = new EditText(getContext());
-
-                //if(!selected.getText().isEmpty()) userTextInput.setText(selected.getText());
-
                 final LinearLayout ll = selected.getTextEdit(getContext());
 
                 builder.setTitle("Edition du contenu").setView(ll);
                 builder.setPositiveButton("Valider", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface di, int i) {
-                        selected.setTextFromLayout(ll);
+                    public void onClick(DialogInterface di, int i)
+                    {
+                        Manager.instance(applicationCtx).changeText(selected, ll);
                     }
                 });
 

@@ -2,6 +2,7 @@ package com.ia04nf28.colladia.model.Elements;
 
 import android.content.Context;
 import android.databinding.BaseObservable;
+import android.databinding.ObservableMap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,29 +13,20 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.UUID;
 
 /**
  * Created by Mar on 17/05/2016.
  */
-@JsonTypeInfo(use=JsonTypeInfo.Id.CLASS, include=JsonTypeInfo.As.EXTERNAL_PROPERTY, property="type")
-@JsonSubTypes({
-        @JsonSubTypes.Type(value = CircleElement.class, name = "CircleElement"),
-        @JsonSubTypes.Type(value = SquareElement.class, name = "SquareElement"),
-        @JsonSubTypes.Type(value = SquareElement.class, name = "ClassElement") })
-@JsonPropertyOrder(alphabetic=true)
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
-public abstract class Element extends BaseObservable {
+public abstract class Element extends BaseObservable implements Cloneable {
 
     // Directions
     protected static final int TOP_LEFT = 1;
@@ -46,43 +38,53 @@ public abstract class Element extends BaseObservable {
     // Touch tolerance (for lines)
     public static final float TOLERANCE = 20f;
 
+    public static final String JSON_TYPE = "type";
     protected String id = UUID.randomUUID().toString();
+    public static final String JSON_ID = "id";
     protected String text = "";
+    private static final String JSON_TEXT = "text";
     protected float xMin;
     protected float yMin;
     protected float xMax;
     protected float yMax;
-    @JsonIgnore
-    protected Paint paint;
-    @JsonIgnore
-    public static Paint textPaint;
+
+    private static final String JSON_X_MIN = "xMin";
+    private static final String JSON_Y_MIN = "yMin";
+    private static final String JSON_X_MAX = "xMax";
+    private static final String JSON_Y_MAX = "yMax";
 
     // Element's lines size and color
-    protected int color = Color.BLACK;
-    protected int selectColor = Color.RED;
-    protected float thickness = 12;
+    protected static final float THICKNESS = 12;
+    protected static final float TEXT_SIZE = 30;
+    protected static final int TEXT_COLOR = Color.BLACK;
+
+    protected int notSelectedColor = Color.BLACK;
+    protected int currentColor = notSelectedColor;
     protected boolean active = false;
+    public static Paint textPaint;//not serialized
+
+    private static final String JSON_NOT_SELECTED_COLOR = "notSelectedColor";
+    private static final String JSON_CURRENT_COLOR = "currentColor";
+    private static final String JSON_ACTIVE = "active";
 
     // Link points
-    protected Anchor center = new Anchor(Anchor.CENTER);
-    protected Anchor top = new Anchor(Anchor.TOP);
-    protected Anchor bottom = new Anchor(Anchor.BOTTOM);
-    protected Anchor left = new Anchor(Anchor.LEFT);
-    protected Anchor right = new Anchor(Anchor.RIGHT);
+    protected Anchor center = new Anchor(Anchor.CENTER, id);
+    protected Anchor top = new Anchor(Anchor.TOP, id);
+    protected Anchor bottom = new Anchor(Anchor.BOTTOM, id);
+    protected Anchor left = new Anchor(Anchor.LEFT, id);
+    protected Anchor right = new Anchor(Anchor.RIGHT, id);
+    public static final String JSON_ANCHOR_CENTER = "center";
+    public static final String JSON_ANCHOR_TOP = "top";
+    public static final String JSON_ANCHOR_BOTTOM  = "bottom";
+    public static final String JSON_ANCHOR_LEFT = "left";
+    public static final String JSON_ANCHOR_RIGHT = "right";
 
-    public Element()
-    {
-        paint = new Paint();
-        paint.setColor(color);
-        paint.setStrokeWidth(thickness);
-        paint.setStyle(Paint.Style.STROKE);
-
+    public Element() {
         // Instanciate TextPaint only once
-        if(textPaint == null)
-        {
+        if (textPaint == null) {
             textPaint = new Paint();
-            textPaint.setColor(Color.BLACK);
-            textPaint.setTextSize(30);
+            textPaint.setColor(TEXT_COLOR);
+            textPaint.setTextSize(TEXT_SIZE);
         }
     }
 
@@ -92,10 +94,23 @@ public abstract class Element extends BaseObservable {
         this.set(xMin, yMin, xMax, yMax);
     }
 
-    public Element(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        this(xMin, yMin, xMax, yMax);
-        this.paint = paint;
+
+    public Element(Element originalElement) {
+        this();
+        this.setId(originalElement.getId());
+        this.setText(originalElement.getText());
+        this.setxMin(originalElement.getxMin());
+        this.setyMin(originalElement.getyMin());
+        this.setxMax(originalElement.getxMax());
+        this.setyMax(originalElement.getyMax());
+        this.setNotSelectedColor(originalElement.getNotSelectedColor());
+        this.setCurrentColor(originalElement.getCurrentColor());
+        this.setActive(originalElement.isActive());
+        this.setCenter(new Anchor(originalElement.getCenter()));
+        this.setTop(new Anchor(originalElement.getTop()));
+        this.setBottom(new Anchor(originalElement.getBottom()));
+        this.setLeft(new Anchor(originalElement.getLeft()));
+        this.setRight(new Anchor(originalElement.getRight()));
     }
 
     public static int getDirection(PointF first, PointF second)
@@ -134,7 +149,7 @@ public abstract class Element extends BaseObservable {
         this.left.set(this.xMin /*- thickness*/, (this.yMin + this.yMax) / 2);
         this.right.set(this.xMax /*+ thickness*/, (this.yMin + this.yMax) / 2);
 
-        this.center.set( (this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
+        this.center.set((this.xMin + this.xMax) / 2, (this.yMin + this.yMax) / 2);
     }
 
     public void set(PointF first, PointF second)
@@ -226,13 +241,13 @@ public abstract class Element extends BaseObservable {
         drawAnchor(canvas);
     }
 
-    public void selectElement(){
-        paint.setColor(selectColor);
+    public void selectElement(int usersColor){
+        currentColor = usersColor;
         setActive(true);
     }
 
     public void deselectElement(){
-        paint.setColor(color);
+        currentColor = notSelectedColor;
         setActive(false);
     }
 
@@ -260,39 +275,9 @@ public abstract class Element extends BaseObservable {
         }
     }
 
-
-
-    /**
-     * Method to serialize the Element into a String
-     * @return
-     */
-    public String serializeJSON () {
-        ObjectMapper mapper = new ObjectMapper();
-        String jsonString = null;
-
-        try {
-            jsonString = mapper.writeValueAsString(this);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-        }
-        return jsonString;
-    }
-
-    /**
-     * Method to get a serialized Element from a String
-     * @param serialized
-     * @return
-     */
-    public static Element deserializeJSON (String serialized) {
-        ObjectMapper mapper = new ObjectMapper();
-        Element elemnt = null;
-
-        try {
-            elemnt = mapper.readValue(serialized, Element.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return elemnt;
+    public void changeColor(int newColor){
+        notSelectedColor = newColor;
+        currentColor = notSelectedColor;
     }
 
     public String getId() {
@@ -335,12 +320,12 @@ public abstract class Element extends BaseObservable {
         this.yMax = yMax;
     }
 
-    public Paint getPaint() {
+    public Paint getElementPaint() {
+        Paint paint = new Paint();
+        paint.setColor(currentColor);
+        paint.setStrokeWidth(THICKNESS);
+        paint.setStyle(Paint.Style.STROKE);
         return paint;
-    }
-
-    public void setPaint(Paint paint) {
-        this.paint = paint;
     }
 
     public String getText() {
@@ -351,21 +336,7 @@ public abstract class Element extends BaseObservable {
         this.text = text;
     }
 
-    public int getColor() {
-        return color;
-    }
 
-    public void setColor(int color) {
-        this.color = color;
-    }
-
-    public int getSelectColor() {
-        return selectColor;
-    }
-
-    public void setSelectColor(int selectColor) {
-        this.selectColor = selectColor;
-    }
 
     public boolean isActive() {
         return active;
@@ -414,4 +385,139 @@ public abstract class Element extends BaseObservable {
     public void setRight(Anchor right) {
         this.right = right;
     }
+
+    public int getNotSelectedColor() {
+        return notSelectedColor;
+    }
+
+    public void setNotSelectedColor(int notSelectedColor) {
+        this.notSelectedColor = notSelectedColor;
+    }
+
+    public int getCurrentColor() {
+        return currentColor;
+    }
+
+    public void setCurrentColor(int currentColor) {
+        this.currentColor = currentColor;
+    }
+
+    public Anchor getAnchor(int positionAnchor){
+        Anchor searchedAnchor = null;
+        switch (positionAnchor){
+            case Anchor.TOP :
+                searchedAnchor =  this.getTop();
+                break;
+            case Anchor.CENTER :
+                searchedAnchor =  this.getCenter();
+                break;
+            case Anchor.BOTTOM :
+                searchedAnchor =  this.getBottom();
+                break;
+            case Anchor.LEFT :
+                searchedAnchor =  this.getLeft();
+                break;
+            case Anchor.RIGHT :
+                searchedAnchor =  this.getRight();
+                break;
+        }
+        return searchedAnchor;
+    }
+
+    /**
+     * Method to serialize the Element into a String
+     * @return
+     */
+    public String serializeJSON () {
+        JSONObject json = new JSONObject();
+        try {
+            json.put(JSON_TYPE, this.getClass().getSimpleName());
+            json.put(JSON_ID, getId());
+            json.put(JSON_TEXT, getText());
+            json.put(JSON_X_MIN, "" + getxMin());
+            json.put(JSON_Y_MIN, "" + getyMin());
+            json.put(JSON_X_MAX, "" + getxMax());
+            json.put(JSON_Y_MAX, "" + getyMax());
+            json.put(JSON_CURRENT_COLOR, "" + getCurrentColor());
+            json.put(JSON_NOT_SELECTED_COLOR, "" + getNotSelectedColor());
+            json.put(JSON_ACTIVE, "" + isActive());
+            json.put(JSON_ANCHOR_CENTER, getCenter().anchorToJsonString());
+            json.put(JSON_ANCHOR_TOP,getTop().anchorToJsonString());
+            json.put(JSON_ANCHOR_BOTTOM,getBottom().anchorToJsonString());
+            json.put(JSON_ANCHOR_LEFT,getLeft().anchorToJsonString());
+            json.put(JSON_ANCHOR_RIGHT,getRight().anchorToJsonString());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return json.toString();
+    }
+
+
+
+
+    public void updateElement(JSONObject jsonUpdatedElement, final ObservableMap<String, Element> listElement){
+            this.parseElement(jsonUpdatedElement, listElement);
+            this.set(this.getxMin(),this.getyMin(),this.getxMax(),this.getyMax());
+    }
+
+
+
+
+    private void parseElement(JSONObject jsonElement, final ObservableMap<String, Element> listElement){
+        try {
+            Iterator<String> keys = jsonElement.keys();
+            while(keys.hasNext()){
+                String currKey = keys.next();
+                String attribute = jsonElement.getString(currKey);
+                switch(currKey){
+                    case JSON_ID:
+                        this.setId(attribute);
+                        break;
+                    case JSON_TEXT:
+                        this.setText(attribute);
+                        break;
+                    case JSON_X_MIN:
+                        this.setxMin(new Float(attribute));
+                        break;
+                    case JSON_Y_MIN:
+                        this.setyMin(new Float(attribute));
+                        break;
+                    case JSON_X_MAX:
+                        this.setxMax(new Float(attribute));
+                        break;
+                    case JSON_Y_MAX:
+                        this.setyMax(new Float(attribute));
+                        break;
+                    case JSON_CURRENT_COLOR:
+                        this.setCurrentColor(new Integer(attribute));
+                        break;
+                    case JSON_NOT_SELECTED_COLOR:
+                        this.setNotSelectedColor(new Integer(attribute));
+                        break;
+                    case JSON_ACTIVE:
+                        this.setActive(new Boolean(attribute));
+                        break;
+                    case JSON_ANCHOR_CENTER:
+                        this.setCenter(new Anchor(attribute,listElement ));
+                        break;
+                    case JSON_ANCHOR_TOP:
+                        this.setTop(new Anchor(attribute,listElement ));
+                        break;
+                    case JSON_ANCHOR_BOTTOM:
+                        this.setBottom(new Anchor(attribute,listElement ));
+                        break;
+                    case JSON_ANCHOR_LEFT:
+                        this.setLeft(new Anchor(attribute,listElement ));
+                        break;
+                    case JSON_ANCHOR_RIGHT:
+                        this.setRight(new Anchor(attribute,listElement ));
+                        break;
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

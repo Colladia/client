@@ -1,20 +1,20 @@
 package com.ia04nf28.colladia.model.Elements;
 
 import android.content.Context;
+import android.databinding.ObservableMap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.PointF;
-import android.support.design.widget.TextInputEditText;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ClassElement extends Element {
 
     // Header size in %
     private float header = 25;
     private String headerText = "";
+    private static final String JSON_HEADER = "header";
 
     public ClassElement()
     {
@@ -26,10 +26,6 @@ public class ClassElement extends Element {
         super(xMin, yMin, xMax, yMax);
     }
 
-    public ClassElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        super(xMin, yMin, xMax, yMax, paint);
-    }
 
     @Override
     public void drawElement(Canvas canvas)
@@ -37,8 +33,8 @@ public class ClassElement extends Element {
         // Header separator position
         float yPos = yMin + ((yMax - yMin)/100 * header);
 
-        canvas.drawRect(xMin, yMin, xMax, yPos, paint);
-        canvas.drawRect(xMin, yPos, xMax, yMax, paint);
+        canvas.drawRect(xMin, yMin, xMax, yPos, getElementPaint());
+        canvas.drawRect(xMin, yPos, xMax, yMax, getElementPaint());
 
         float size = 0f, y = 0f;
 
@@ -93,4 +89,43 @@ public class ClassElement extends Element {
         }
     }
 
+
+    public float getHeader() {
+        return header;
+    }
+    public void setHeader(float header) {
+        this.header = header;
+    }
+
+    @Override
+    public String serializeJSON() {
+        String elementSerialized = super.serializeJSON();
+        try {
+
+            JSONObject json = new JSONObject(elementSerialized);
+            json.put(JSON_HEADER,""+getHeader());
+            elementSerialized = json.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return elementSerialized;
+    }
+
+    @Override
+    public void updateElement(JSONObject jsonUpdatedElement, ObservableMap<String, Element> listElement) {
+        super.updateElement(jsonUpdatedElement, listElement);
+        try {
+            if (jsonUpdatedElement.has(JSON_HEADER))
+                setHeader(new Float(jsonUpdatedElement.getString(JSON_HEADER)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ClassElement(Element originalElement) {
+        super(originalElement);
+        this.setHeader(((ClassElement) originalElement).getHeader());
+    }
 }

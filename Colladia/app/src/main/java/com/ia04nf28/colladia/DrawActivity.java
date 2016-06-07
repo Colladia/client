@@ -20,6 +20,7 @@ import android.widget.ListView;
 
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
+import com.ia04nf28.colladia.model.Manager;
 
 public class DrawActivity extends AppCompatActivity {
     private static final String TAG = "DrawActivity";
@@ -52,20 +53,6 @@ public class DrawActivity extends AppCompatActivity {
         drawer.closeDrawers();
 
         nav = (NavigationView) findViewById(R.id.nav_view);
-
-        Menu menu = nav.getMenu();
-        for(int i = 0; i < 4; i++) menu.add("Menu " + i);
-
-        for (int i = 0, count = nav.getChildCount(); i < count; i++)
-        {
-            final View child = nav.getChildAt(i);
-            if (child != null && child instanceof ListView) {
-                final ListView menuView = (ListView) child;
-                final HeaderViewListAdapter adapter = (HeaderViewListAdapter) menuView.getAdapter();
-                final BaseAdapter wrapped = (BaseAdapter) adapter.getWrappedAdapter();
-                wrapped.notifyDataSetChanged();
-            }
-        }
 
         nav.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
