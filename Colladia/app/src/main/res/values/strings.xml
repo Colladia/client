@@ -22,30 +22,11 @@
     <string name="shape_text">Zone de texte</string>
 
     <string name="action_settings">Settings</string>
-    <string name="nav_menu_home_back">Back</string>
-<<<<<<< HEAD
+    <string name="nav_home">Back</string>
+
     <string name="nav_position">Repositionner</string>
     <string name="title_activity_workspaces_list">WorkspacesListActivity</string>
-    <string name="text">Texte</string>
 
-=======
-    <string name="square">Square</string>
-    <string name="circle">Circle</string>
-    <string name="triangle">Triangle</string>
-    <string name="classe">Classe</string>
-    <string name="line">Simple</string>
-    <string name="arrow">Arrow</string>
-    <string name="doubleArrow">Double Arrow</string>
-    <string-array name="menu_titles">
-        <item>Forme</item>
-        <item>Texte</item>
-        <item>Exemple</item>
-    </string-array>
-
-    <array name="icons">
-        <item></item>
-        <item></item>
-    </array>
     <string name="title_activity_worspaces_list">Workspaces</string>
     <string name="text">Text</string>
     <string name="access_button">Access</string>
@@ -55,5 +36,4 @@
     <string name="add_diagram_button">Add</string>
     <string name="add_diagram_title">Add a new diagram</string>
     <string name="nav_menu_auto_position">Auto</string>
->>>>>>> ac41158f048c6864eeb971f24cb1d5ac222cacbb
 </resources>

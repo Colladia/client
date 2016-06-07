@@ -63,7 +63,7 @@
                         android:inputType="textUri"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:text="http://172.25.28.76:8182"
+                        android:text="http://172.26.25.22:8182"
                     />
 
             </android.support.design.widget.TextInputLayout>
