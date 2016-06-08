@@ -3,7 +3,9 @@ package com.ia04nf28.colladia.model;
 import android.content.Context;
 import android.databinding.ObservableArrayMap;
 import android.databinding.ObservableMap;
+import android.util.Log;
 
+import com.android.volley.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ia04nf28.colladia.R;
@@ -35,33 +37,18 @@ public class Diagram {
         this.listElement = listElement;
     }
 
+    public Diagram() {
+        this.name = null;
+    }
+    public Diagram(String name) {
+        this.name = name;
+    }
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public static String toJson(Diagram d){
-        ObjectMapper mapper = new ObjectMapper();
-        //Object to JSON in String
-        try {
-            return mapper.writeValueAsString(d);
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Diagram toObject(String json){
-        ObjectMapper mapper = new ObjectMapper();
-        try {
-            return mapper.readValue(json, Diagram.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
     }
 
 
@@ -72,4 +59,7 @@ public class Diagram {
     public void addOnElementsChangeCallback(ObservableMap.OnMapChangedCallback<ObservableMap<String,Element>,String, Element> callback){
         listElement.addOnMapChangedCallback(callback);
     }
+
+
+
 }

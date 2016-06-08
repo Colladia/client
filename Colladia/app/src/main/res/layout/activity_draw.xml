@@ -2,17 +2,16 @@
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:openDrawer="start">
-    <RelativeLayout
-        xmlns:circle="http://schemas.android.com/apk/res-auto"
+    android:layout_height="match_parent">
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/draw_layout">
-        <!-- Draw View -->
+
         <com.ia04nf28.colladia.DrawColladiaView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -22,30 +21,25 @@
         <include layout="@layout/contextual_main" />
         <!-- Circular Menu for selected element -->
         <include layout="@layout/contextual_select" />
-    </RelativeLayout>
 
-    <include
-        layout="@layout/app_bar_draw"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_height="?attr/actionBarSize"
+            android:layout_width="?attr/actionBarSize"
+            android:minHeight="?attr/actionBarSize"
+            android:background="?attr/colorPrimary">
+        </android.support.v7.widget.Toolbar>
 
+    </FrameLayout>
+
+    <!-- Left navigation menu -->
     <android.support.design.widget.NavigationView
         android:id="@+id/nav_view"
-        android:layout_width="140dp"
+        android:layout_width="?attr/actionBarSize"
         android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize"
         android:layout_gravity="start"
-        android:fitsSystemWindows="true"
-        app:headerLayout="@layout/nav_header_draw"
-        app:menu="@menu/activity_draw_drawer" >
-
-        <ExpandableListView
-            android:id="@+id/navigation_menu_expand_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="192dp"
-            android:background="@android:color/white"
-            android:choiceMode="singleChoice"
-            android:listSelector="@color/colorGrey">
-        </ExpandableListView>
+        android:fitsSystemWindows="false"
+        app:menu="@menu/nav_view_items" >
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

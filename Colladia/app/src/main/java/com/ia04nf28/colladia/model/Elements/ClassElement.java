@@ -1,15 +1,20 @@
 package com.ia04nf28.colladia.model.Elements;
 
+import android.content.Context;
+import android.databinding.ObservableMap;
 import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Path;
-import android.graphics.Point;
-import android.graphics.PointF;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 
-public class ClassElement extends SquareElement {
+import org.json.JSONException;
+import org.json.JSONObject;
 
-    // Header size
-    private float header = 100f;
+public class ClassElement extends Element {
+
+    // Header size in %
+    private float header = 25;
+    private String headerText = "";
+    private static final String JSON_HEADER = "header";
 
     public ClassElement()
     {
@@ -21,19 +26,107 @@ public class ClassElement extends SquareElement {
         super(xMin, yMin, xMax, yMax);
     }
 
-    public ClassElement(float xMin, float yMin, float xMax, float yMax, Paint paint)
-    {
-        super(xMin, yMin, xMax, yMax, paint);
-    }
 
     @Override
     public void drawElement(Canvas canvas)
     {
-        // Draw the container
-        super.drawElement(canvas);
+        // Header separator position
+        float yPos = yMin + ((yMax - yMin)/100 * header);
 
-        // Draw the header separator
-        canvas.drawLine(xMin, yMin + header, xMax, yMin + header, paint);
+        canvas.drawRect(xMin, yMin, xMax, yPos, getElementPaint());
+        canvas.drawRect(xMin, yPos, xMax, yMax, getElementPaint());
+
+        float size = 0f, y = 0f;
+
+        if(!text.isEmpty())
+        {
+            for(String sub : text.split("\n"))
+            {
+                size = (textPaint.measureText(sub) / 2);
+                canvas.drawText(sub, center.x - size, (yMax + yPos) / 2 + y, Element.textPaint);
+                y += textPaint.descent() - textPaint.ascent();
+            }
+        }
+
+        if(!headerText.isEmpty())
+        {
+            y = 0;
+            for(String sub : headerText.split("\n"))
+            {
+                size = (textPaint.measureText(sub) / 2);
+                canvas.drawText(sub, center.x - size, (yMin + yPos) / 2 + y, Element.textPaint);
+                y += textPaint.descent() - textPaint.ascent();
+            }
+        }
+
+        super.drawAnchor(canvas);
     }
 
+    @Override
+    public LinearLayout getTextEdit(Context ctx)
+    {
+        LinearLayout ll = super.getTextEdit(ctx);
+
+        final EditText title = new EditText(ctx);
+        title.setHint("Titre");
+
+        if(!this.headerText.isEmpty()) title.setText(headerText);
+
+        ll.addView(title);
+
+        return ll;
+    }
+
+    @Override
+    public void setTextFromLayout(LinearLayout layout)
+    {
+        // Set text content
+        super.setTextFromLayout(layout);
+
+        if(layout.getChildCount() > 1)
+        {
+            EditText title = (EditText)layout.getChildAt(1);
+            this.headerText = title.getText().toString();
+        }
+    }
+
+
+    public float getHeader() {
+        return header;
+    }
+    public void setHeader(float header) {
+        this.header = header;
+    }
+
+    @Override
+    public String serializeJSON() {
+        String elementSerialized = super.serializeJSON();
+        try {
+
+            JSONObject json = new JSONObject(elementSerialized);
+            json.put(JSON_HEADER,""+getHeader());
+            elementSerialized = json.toString();
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return elementSerialized;
+    }
+
+    @Override
+    public void updateElement(JSONObject jsonUpdatedElement, ObservableMap<String, Element> listElement) {
+        super.updateElement(jsonUpdatedElement, listElement);
+        try {
+            if (jsonUpdatedElement.has(JSON_HEADER))
+                setHeader(new Float(jsonUpdatedElement.getString(JSON_HEADER)));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public ClassElement(Element originalElement) {
+        super(originalElement);
+        this.setHeader(((ClassElement) originalElement).getHeader());
+    }
 }

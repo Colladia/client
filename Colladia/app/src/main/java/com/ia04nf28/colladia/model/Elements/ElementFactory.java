@@ -15,21 +15,66 @@ public class ElementFactory {
     {
         Element newElement = null;
 
-        if(typeElement.equals(ctx.getString(R.string.circle)))
+        if(typeElement.equals(ctx.getString(R.string.shape_circle)))
         {
             newElement = new CircleElement();
         }
-        else if(typeElement.equals(ctx.getString(R.string.square)))
+        else if(typeElement.equals(ctx.getString(R.string.shape_square)))
         {
             newElement = new SquareElement();
         }
-        else if(typeElement.equals(ctx.getString(R.string.line)))
-        {
-            newElement = new LineElement();
-        }
-        else if(typeElement.equals(ctx.getString(R.string.classe)))
+        else if(typeElement.equals(ctx.getString(R.string.shape_class)))
         {
             newElement = new ClassElement();
+        }
+        else
+        {
+            Log.d(TAG, "No such element");
+        }
+        return newElement;
+    }
+
+
+    public static Element createElementSerialized( String typeElement)
+    {
+        Element newElement = null;
+
+        if(typeElement.equals(CircleElement.class.getSimpleName()))
+        {
+            newElement = new CircleElement();
+        }
+        else if(typeElement.equals(SquareElement.class.getSimpleName()))
+        {
+            newElement = new SquareElement();
+        }
+        else if(typeElement.equals(ClassElement.class.getSimpleName()))
+        {
+            newElement = new ClassElement();
+        }
+        else
+        {
+            Log.d(TAG, "No such element");
+        }
+        return newElement;
+    }
+
+
+    public static Element createCopyElement( Element originalElement)
+    {
+        Element newElement = null;
+        String className = originalElement.getClass().getSimpleName();
+
+        if(className.equals(CircleElement.class.getSimpleName()))
+        {
+            newElement = new CircleElement(originalElement);
+        }
+        else if(className.equals(SquareElement.class.getSimpleName()))
+        {
+            newElement = new SquareElement(originalElement);
+        }
+        else if(className.equals(ClassElement.class.getSimpleName()))
+        {
+            newElement = new ClassElement(originalElement);
         }
         else
         {

@@ -16,9 +16,14 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
 
+    <string name="shape_circle">Cercle</string>
+    <string name="shape_square">Rectangle</string>
+    <string name="shape_class">Classe</string>
+    <string name="shape_text">Zone de texte</string>
+
     <string name="action_settings">Settings</string>
-    <string name="nav_menu_contributor">Users</string>
-    <string name="nav_menu_home_back">Back</string>
+    <string name="nav_home">Back</string>
+    <string name="nav_position">Repositionner</string>
     <string name="square">Square</string>
     <string name="circle">Circle</string>
     <string name="triangle">Triangle</string>
@@ -26,6 +31,20 @@
     <string name="line">Simple</string>
     <string name="arrow">Arrow</string>
     <string name="doubleArrow">Double Arrow</string>
-    <string name="title_activity_worspaces_list">WorkspacesListActivity</string>
+    <string-array name="menu_titles">
+        <item>Forme</item>
+        <item>Texte</item>
+        <item>Exemple</item>
+    </string-array>
+
+    <string name="title_activity_worspaces_list">Workspaces</string>
     <string name="text">Text</string>
+    <string name="access_button">Access</string>
+    <string name="delete_button">Delete</string>
+    <string name="cancel_button">Cancel</string>
+    <string name="delete_title">Delete diagram </string>
+    <string name="add_diagram_button">Add</string>
+    <string name="add_diagram_title">Add a new diagram</string>
+    <string name="nav_menu_auto_position">Auto</string>
+    <string name="nav_menu_home_back">Retour</string>
 </resources>
