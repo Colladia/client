@@ -46,4 +46,5 @@
     <string name="add_diagram_button">Add</string>
     <string name="add_diagram_title">Add a new diagram</string>
     <string name="nav_menu_auto_position">Auto</string>
+    <string name="nav_menu_home_back">Retour</string>
 </resources>
