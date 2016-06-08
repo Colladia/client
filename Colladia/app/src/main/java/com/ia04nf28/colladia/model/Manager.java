@@ -257,6 +257,8 @@ public class Manager {
                         jsonElement = new JSONObject(modification.getString(PROPERTIES_FIELD));
                         Element newElement = ElementFactory.createElementSerialized(jsonElement.getString(Element.JSON_TYPE));
                         newElement.updateElement(jsonElement, getCurrentDiagram().getListElement());
+                        if(getCurrentDiagram().getListElement().containsKey(idElement))
+                            getCurrentDiagram().getListElement().remove(idElement);
                         getCurrentDiagram().getListElement().put(idElement, newElement);
                         break;
                     case TYPE_REQUEST_POST :

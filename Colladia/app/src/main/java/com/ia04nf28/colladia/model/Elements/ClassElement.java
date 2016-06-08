@@ -14,6 +14,7 @@ public class ClassElement extends Element {
     // Header size in %
     private float header = 25;
     private String headerText = "";
+    private static final String JSON_HEADER_TEXT = "headerText";
     private static final String JSON_HEADER = "header";
 
     public ClassElement()
@@ -97,6 +98,12 @@ public class ClassElement extends Element {
     public void setHeader(float header) {
         this.header = header;
     }
+    public String getHeaderText() {
+        return headerText;
+    }
+    public void setHeaderText(String headerText) {
+        this.headerText = headerText;
+    }
 
     @Override
     public String serializeJSON() {
@@ -105,6 +112,7 @@ public class ClassElement extends Element {
 
             JSONObject json = new JSONObject(elementSerialized);
             json.put(JSON_HEADER,""+getHeader());
+            json.put(JSON_HEADER_TEXT,getHeaderText());
             elementSerialized = json.toString();
 
         } catch (JSONException e) {
@@ -120,6 +128,8 @@ public class ClassElement extends Element {
         try {
             if (jsonUpdatedElement.has(JSON_HEADER))
                 setHeader(new Float(jsonUpdatedElement.getString(JSON_HEADER)));
+            if (jsonUpdatedElement.has(JSON_HEADER_TEXT))
+                setHeaderText(jsonUpdatedElement.getString(JSON_HEADER_TEXT));
         } catch (JSONException e) {
             e.printStackTrace();
         }
