@@ -374,6 +374,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
                 // We add the selected element from the menu to the canvas
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
+                Manager.instance(applicationCtx).getCurrentDiagram().getListElement().put(drawElem.getId(), drawElem);
                 //Manager.instance(applicationCtx).addElement(drawElem);
                 //mode = INSERT;
                 break;
