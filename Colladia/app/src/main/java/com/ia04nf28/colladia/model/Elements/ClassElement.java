@@ -14,7 +14,7 @@ public class ClassElement extends Element {
     // Header size in %
     private float header = 25;
     private String headerText = "";
-    private static final String JSON_HEADER_TEXT = "headerText";
+    public static final String JSON_HEADER_TEXT = "headerText";
     private static final String JSON_HEADER = "header";
 
     public ClassElement()

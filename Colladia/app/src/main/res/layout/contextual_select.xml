@@ -5,7 +5,6 @@
     android:id="@+id/select_contextual_menu"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:layout_centerVertical="true"
     circle:circleBackground="@drawable/bg_select"
     android:visibility="gone"
     tools:showIn="@layout/activity_draw">
