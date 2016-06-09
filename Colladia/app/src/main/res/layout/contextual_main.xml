@@ -6,6 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     circle:circleBackground="@drawable/bg_main"
+    circle:isRotating="false"
     android:visibility="gone"
     tools:showIn="@layout/activity_draw">
     <!-- Menu items -->
@@ -29,6 +30,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_class"
+        android:background="@drawable/circle" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/add_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_comment"
         android:background="@drawable/circle" />
 
     <com.szugyi.circlemenu.view.CircleImageView
