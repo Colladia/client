@@ -16,11 +16,16 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/draw_view" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
+            <!-- Circular Menu contextual main -->
+            <include layout="@layout/contextual_main" />
+            <!-- Circular Menu for selected element -->
+            <include layout="@layout/contextual_select" />
+        </LinearLayout>
 
-        <!-- Circular Menu contextual main -->
-        <include layout="@layout/contextual_main" />
-        <!-- Circular Menu for selected element -->
-        <include layout="@layout/contextual_select" />
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
