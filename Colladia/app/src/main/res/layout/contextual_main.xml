@@ -11,46 +11,31 @@
     tools:showIn="@layout/activity_draw">
     <!-- Menu items -->
     <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_calendar_image"
+        android:id="@+id/add_square"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
+        android:src="@drawable/ic_square"
         android:background="@drawable/circle" />
 
     <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_cloud_image"
+        android:id="@+id/add_circle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
+        android:src="@drawable/ic_circle"
         android:background="@drawable/circle" />
 
 
     <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_mail_image"
+        android:id="@+id/add_umlclass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
+        android:src="@drawable/ic_class"
         android:background="@drawable/circle" />
 
     <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_key_image"
+        android:id="@+id/auto_layout_elements"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
+        android:src="@drawable/ic_position"
         android:background="@drawable/circle" />
-
-    <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_profile_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
-        android:background="@drawable/circle" />
-
-    <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_tap_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
-        android:background="@drawable/circle" />
-
 </com.szugyi.circlemenu.view.CircleLayout>

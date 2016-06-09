@@ -9,10 +9,12 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.*;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Elements.Anchor;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Manager;
+import com.szugyi.circlemenu.view.CircleImageView;
 import com.szugyi.circlemenu.view.CircleLayout;
 
 import java.util.ArrayList;
@@ -22,7 +24,7 @@ import java.util.List;
 /**
  * Created by Mar on 17/05/2016.
  */
-public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback{
+public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback, CircleLayout.OnItemClickListener{
     private static final String TAG = "DrawColladiaView";
 
     private Paint paint;
@@ -99,10 +101,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     public void setMainContextualMenu(CircleLayout cl) {
         this.mainContextualMenu = cl;
+        mainContextualMenu.setOnItemClickListener(this);
     }
 
     public void setSelectContextualMenu(CircleLayout cl) {
         this.selectContextualMenu = cl;
+        selectContextualMenu.setOnItemClickListener(this);
     }
 
     private android.databinding.Observable.OnPropertyChangedCallback elementCallback = new android.databinding.Observable.OnPropertyChangedCallback(){
@@ -677,11 +681,33 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         return null;
     }
 
-
-
     public void insertNewElement(Element newElement){
         drawElem = newElement;
         mode = DrawColladiaView.INSERT;
+    }
+
+    @Override
+    public void onItemClick(View view) {
+        switch (view.getId()) {
+            case R.id.add_square:
+                // Handle add_square click
+                //Toast.makeText(this.applicationCtx, "add_square_contextual", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.add_circle:
+                // Handle cloud click
+                break;
+            case R.id.add_umlclass:
+                // Handle key click
+                break;
+            case R.id.auto_layout_elements:
+                // Handle mail click
+                break;
+        }
+
+        // exit contextual menu
+
+        // mode = NONE;
+
     }
 
     public class SimpleScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
