@@ -27,6 +27,10 @@ public class ElementFactory {
         {
             newElement = new ClassElement();
         }
+        else if(typeElement.equals(ctx.getString(R.string.shape_text)))
+        {
+            newElement = new TextElement();
+        }
         else
         {
             Log.d(TAG, "No such element");
@@ -51,30 +55,9 @@ public class ElementFactory {
         {
             newElement = new ClassElement();
         }
-        else
+        else if(typeElement.equals(TextElement.class.getSimpleName()))
         {
-            Log.d(TAG, "No such element");
-        }
-        return newElement;
-    }
-
-
-    public static Element createCopyElement( Element originalElement)
-    {
-        Element newElement = null;
-        String className = originalElement.getClass().getSimpleName();
-
-        if(className.equals(CircleElement.class.getSimpleName()))
-        {
-            newElement = new CircleElement(originalElement);
-        }
-        else if(className.equals(SquareElement.class.getSimpleName()))
-        {
-            newElement = new SquareElement(originalElement);
-        }
-        else if(className.equals(ClassElement.class.getSimpleName()))
-        {
-            newElement = new ClassElement(originalElement);
+            newElement = new TextElement();
         }
         else
         {
@@ -82,4 +65,7 @@ public class ElementFactory {
         }
         return newElement;
     }
+
+
+
 }

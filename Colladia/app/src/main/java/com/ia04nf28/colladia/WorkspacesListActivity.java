@@ -112,7 +112,7 @@ public class WorkspacesListActivity extends ListActivity {
         Object o = l.getItemAtPosition(position);
         diagramSelected = o.toString();
 
-        Toast.makeText(getApplicationContext() ,"clicked " +diagramSelected, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "clicked " + diagramSelected, Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
         // Neutral button is on center
@@ -160,6 +160,12 @@ public class WorkspacesListActivity extends ListActivity {
         setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
     }
 
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Manager.instance(getApplicationContext()).quitServer();
+    }
 
 
 }

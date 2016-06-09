@@ -55,7 +55,7 @@ public abstract class Element extends BaseObservable implements Cloneable {
 
     // Element's lines size and color
     protected static final float THICKNESS = 12;
-    protected static final float TEXT_SIZE = 30;
+    protected static final float TEXT_SIZE = 50;
     protected static final int TEXT_COLOR = Color.BLACK;
 
     protected int notSelectedColor = Color.BLACK;

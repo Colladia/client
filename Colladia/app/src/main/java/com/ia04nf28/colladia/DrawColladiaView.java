@@ -211,7 +211,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     {
         // Start our thread
         mThread.setRunning(true);
-        mThread.start();
+        if (mThread.getState() == Thread.State.NEW)
+        {
+            mThread.start();
+        }
     }
 
     @Override
@@ -379,8 +382,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // We add the selected element from the menu to the canvas
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
                 Manager.instance(applicationCtx).getCurrentDiagram().getListElement().put(drawElem.getId(), drawElem);
-                //Manager.instance(applicationCtx).addElement(drawElem);
-                //mode = INSERT;
                 break;
 
             case NONE:
@@ -439,7 +440,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // Update last point and element
                 mAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
-                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
                 break;
 
             case SCROLL:
@@ -585,7 +585,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iAbsolutePoint, mAbsolutePoint);
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
                 drawElem = null;
                 break;
@@ -770,6 +769,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
+
     public class DrawThread extends Thread {
 
         private boolean running = false;
@@ -818,4 +818,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             }
         }
     }
+
+
 }

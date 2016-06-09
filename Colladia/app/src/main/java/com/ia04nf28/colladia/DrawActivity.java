@@ -74,8 +74,10 @@ public class DrawActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case R.id.nav_home:
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);*/
+                Manager.instance(getApplicationContext()).quitWorkspace();
+                finish();
                 break;
 
             default:
@@ -123,7 +125,9 @@ public class DrawActivity extends AppCompatActivity {
 
         //return super.onOptionsItemSelected(item);
     }
-    /*public void onBackPressed() {
+
+  /*  public void onBackPressed() {
+        super.onBackPressed();
         Log.d(TAG, "onBackPressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -133,4 +137,9 @@ public class DrawActivity extends AppCompatActivity {
         }
     }*/
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Manager.instance(getApplicationContext()).quitWorkspace();
+    }
 }
