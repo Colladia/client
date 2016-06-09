@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import com.android.volley.Response;
 import com.ia04nf28.colladia.model.Elements.Anchor;
+import com.ia04nf28.colladia.model.Elements.ClassElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
 import org.json.JSONArray;
@@ -484,12 +485,13 @@ public class Manager {
 
     public void changeText(Element originalElement, LinearLayout inputs){
         try {
-
             originalElement.setTextFromLayout(inputs);
             JSONObject properties = new JSONObject();
-            properties.put(Element.JSON_TYPE,originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
             properties.put(Element.JSON_ID, originalElement.getId());
             properties.put(Element.JSON_TEXT, originalElement.getText());
+            if(ClassElement.class.isInstance(originalElement))
+                properties.put(ClassElement.JSON_HEADER_TEXT, ((ClassElement)originalElement).getHeaderText());
             Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {
