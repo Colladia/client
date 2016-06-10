@@ -128,7 +128,7 @@ public class WorkspacesListActivity extends ListActivity {
             public void onClick(DialogInterface di, int i) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
-                builder.setTitle(getString(R.string.delete_title) + diagramSelected + " ?");
+                builder.setTitle(getString(R.string.delete_title) + " " + diagramSelected + " ?");
 
                 builder.setNegativeButton(R.string.delete_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
