@@ -712,7 +712,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if (newElement != null) insertNewElement(newElement);
                 break;
             case R.id.auto_layout_elements:
-                // Handle mail click
+                Manager.instance(applicationCtx).autoPositioning();
+                mode = NONE;
                 break;
         }
 
