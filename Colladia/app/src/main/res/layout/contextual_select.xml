@@ -11,10 +11,10 @@
     tools:showIn="@layout/activity_draw">
     <!-- Menu items -->
     <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_calendar_image"
+        android:id="@+id/delete_element"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
+        android:src="@drawable/ic_delete"
         android:background="@drawable/circle" />
 
     <com.szugyi.circlemenu.view.CircleImageView
@@ -24,33 +24,5 @@
         android:src="@drawable/ic_home"
         android:background="@drawable/circle" />
 
-
-    <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_mail_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
-        android:background="@drawable/circle" />
-
-    <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_key_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
-        android:background="@drawable/circle" />
-
-    <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_profile_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
-        android:background="@drawable/circle" />
-
-    <com.szugyi.circlemenu.view.CircleImageView
-        android:id="@+id/main_tap_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_home"
-        android:background="@drawable/circle" />
 
 </com.szugyi.circlemenu.view.CircleLayout>

@@ -715,6 +715,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 Manager.instance(applicationCtx).autoPositioning();
                 mode = NONE;
                 break;
+            case R.id.delete_element:
+                Manager.instance(applicationCtx).removeElement(selected);
+                mode = NONE;
+                break;
         }
 
         // exit contextual menus
