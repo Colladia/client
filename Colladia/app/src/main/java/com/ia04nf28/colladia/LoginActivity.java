@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.Observable;
 import android.databinding.ObservableList;
 import android.os.AsyncTask;
@@ -69,6 +70,35 @@ public class LoginActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // get last stored settings
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        String lastLogin = settings.getString("login", "");
+        String lastUrl = settings.getString("url", "");
+        int lastColor = settings.getInt("color", -1); // -1 == White, default value, replaced by random color
+        // inject in forms
+        mUserLoginView.setText(lastLogin);
+        mServerAddressView.setText(lastUrl);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // get user
+        User user = Manager.instance(getApplicationContext()).getUser();
+        String url = Manager.instance(getApplicationContext()).getUrl();
+
+        // edit settings
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("login", user.getLogin());
+        editor.putString("url", url);
+        editor.putInt("color", user.getColor());
+
+        // save edits
+        editor.apply();
     }
 
     /**
@@ -109,6 +139,10 @@ public class LoginActivity extends AppCompatActivity {
             focusView = mServerAddressView;
             cancel = true;
         }
+
+        // Handle color selection
+        // No white, please.
+        // TODO
 
         if (cancel) {
             // There was an error; don't attempt login and focus the first

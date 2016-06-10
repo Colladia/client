@@ -40,6 +40,7 @@ public class Manager {
     private final ObservableList<String> diagrams;
     private Diagram currentDiagram;
     private User user;
+    private String url;
     private String lastClock;
 
     public ObservableBoolean getLogged() {
@@ -118,6 +119,8 @@ public class Manager {
         return user;
     }
 
+    public String getUrl() { return url; }
+
     public void login(User user, String url) {
         Pattern p = Pattern.compile("^http://");
         Matcher m = p.matcher(url) ;
@@ -129,6 +132,7 @@ public class Manager {
 
         Requestator.instance(context).setUrl(url);
         this.user = user;
+        this.url = url;
         // TODO check url
         // TODO if url valid
 
