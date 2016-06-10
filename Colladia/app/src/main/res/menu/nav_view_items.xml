@@ -13,24 +13,6 @@
                     <item
                         android:icon="@drawable/ic_position"
                         android:title="@string/nav_position" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
                 </group>
             </menu>
         </item>
@@ -50,34 +32,10 @@
                     <item
                         android:icon="@drawable/ic_comment"
                         android:title="@string/shape_text" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
-                    <item
-                        android:icon="@drawable/ic_comment"
-                        android:title="@string/action_settings" />
 
                 </group>
             </menu>
         </item>
-
-
-
     </group>
 
 </menu>

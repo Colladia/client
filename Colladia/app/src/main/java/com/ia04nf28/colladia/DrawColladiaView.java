@@ -9,10 +9,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.*;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import com.ia04nf28.colladia.Utils.ChangementBase;
 import com.ia04nf28.colladia.model.Elements.Anchor;
 import com.ia04nf28.colladia.model.Elements.Element;
+import com.ia04nf28.colladia.model.Elements.ElementFactory;
 import com.ia04nf28.colladia.model.Manager;
+import com.szugyi.circlemenu.view.CircleImageView;
 import com.szugyi.circlemenu.view.CircleLayout;
 
 import java.util.ArrayList;
@@ -22,7 +25,7 @@ import java.util.List;
 /**
  * Created by Mar on 17/05/2016.
  */
-public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback{
+public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callback, CircleLayout.OnItemClickListener{
     private static final String TAG = "DrawColladiaView";
 
     private Paint paint;
@@ -99,10 +102,12 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 
     public void setMainContextualMenu(CircleLayout cl) {
         this.mainContextualMenu = cl;
+        mainContextualMenu.setOnItemClickListener(this);
     }
 
     public void setSelectContextualMenu(CircleLayout cl) {
         this.selectContextualMenu = cl;
+        selectContextualMenu.setOnItemClickListener(this);
     }
 
     private android.databinding.Observable.OnPropertyChangedCallback elementCallback = new android.databinding.Observable.OnPropertyChangedCallback(){
@@ -207,7 +212,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     {
         // Start our thread
         mThread.setRunning(true);
-        mThread.start();
+        if (mThread.getState() == Thread.State.NEW)
+        {
+            mThread.start();
+        }
     }
 
     @Override
@@ -375,8 +383,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // We add the selected element from the menu to the canvas
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
                 Manager.instance(applicationCtx).getCurrentDiagram().getListElement().put(drawElem.getId(), drawElem);
-                //Manager.instance(applicationCtx).addElement(drawElem);
-                //mode = INSERT;
                 break;
 
             case NONE:
@@ -435,7 +441,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 // Update last point and element
                 mAbsolutePoint = new PointF(Math.round(currAbsolutePoint.x),Math.round(currAbsolutePoint.y));
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
-                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iPointAbsolutePoint, mPointAbsolutePoint);
                 break;
 
             case SCROLL:
@@ -581,7 +586,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iAbsolutePoint, mAbsolutePoint);
                 drawElem.set(iAbsolutePoint, mAbsolutePoint);
                 drawElem = null;
                 break;
@@ -677,11 +681,45 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         return null;
     }
 
-
-
     public void insertNewElement(Element newElement){
         drawElem = newElement;
         mode = DrawColladiaView.INSERT;
+    }
+
+    @Override
+    public void onItemClick(View view) {
+        Element newElement;
+
+        switch (view.getId()) {
+            case R.id.add_square:
+                // Handle add_square click
+                newElement = ElementFactory.createElement(applicationCtx, applicationCtx.getString(R.string.shape_square));
+                if (newElement != null) insertNewElement(newElement);
+                break;
+            case R.id.add_circle:
+                // Handle circle click
+                newElement = ElementFactory.createElement(applicationCtx, applicationCtx.getString(R.string.shape_circle));
+                if (newElement != null) insertNewElement(newElement);
+                break;
+            case R.id.add_umlclass:
+                // Handle class click
+                newElement = ElementFactory.createElement(applicationCtx, applicationCtx.getString(R.string.shape_class));
+                if (newElement != null) insertNewElement(newElement);
+                break;
+            case R.id.add_text:
+                // Handle class click
+                newElement = ElementFactory.createElement(applicationCtx, applicationCtx.getString(R.string.shape_text));
+                if (newElement != null) insertNewElement(newElement);
+                break;
+            case R.id.auto_layout_elements:
+                Manager.instance(applicationCtx).autoPositioning();
+                mode = NONE;
+                break;
+        }
+
+        // exit contextual menus
+        mainContextualMenu.setVisibility(GONE);
+        selectContextualMenu.setVisibility(GONE);
     }
 
     public class SimpleScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
@@ -744,6 +782,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
+
     public class DrawThread extends Thread {
 
         private boolean running = false;
@@ -792,4 +831,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             }
         }
     }
+
+
 }

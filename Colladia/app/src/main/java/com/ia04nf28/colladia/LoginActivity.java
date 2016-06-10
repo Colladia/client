@@ -60,6 +60,15 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        Manager.instance(this.getApplicationContext()).getLogged().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if(Manager.instance(getApplicationContext()).getLogged().get()){
+                    showProgress(false);
+                    startDrawActivity();
+                }
+            }
+        });
     }
 
     /**
@@ -109,15 +118,6 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-
-            Manager.instance(this.getApplicationContext()).getLogged().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-                @Override
-                public void onPropertyChanged(Observable sender, int propertyId) {
-                    showProgress(false);
-                    startDrawActivity();
-                }
-            });
-
             Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
         }
         //startDrawActivity();

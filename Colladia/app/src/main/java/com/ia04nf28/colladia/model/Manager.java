@@ -58,12 +58,15 @@ public class Manager {
         };
     }
     private Timer requestTimerElements = new Timer();
-    private TimerTask getElementsTask = new TimerTask() {
-        @Override
-        public void run() {
-            requestElements();
-        }
-    };
+    private TimerTask getElementsTask;
+    private TimerTask createElementsTask () {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                requestElements();
+            }
+        };
+    }
     private final static long delayRequestDiagrams = 5000;
     private final static long delayRequestElements = 1000;
 
@@ -139,7 +142,7 @@ public class Manager {
 
 
     public void joinWorkspace(){
-        requestTimerElements.schedule(getElementsTask, 0, delayRequestElements);
+        requestTimerElements.schedule(createElementsTask(), 0, delayRequestElements);
     }
 
     public void quitWorkspace(){
@@ -150,7 +153,7 @@ public class Manager {
     }
 
     public void quitServer(){
-        //logged.set(false);
+        logged.set(false);
         requestTimer.cancel();
         requestTimer = new Timer();
     }
@@ -550,7 +553,7 @@ public class Manager {
 
         //TODO see if necessary to add this one
 
-/*            Element elementB = getCurrentDiagram().getListElement().get(anchorB.getIdParent());
+            /*Element elementB = getCurrentDiagram().getListElement().get(anchorB.getIdParent());
             properties = new JSONObject();
             properties.put(Element.JSON_TYPE,elementB.getClass().getSimpleName());
             properties.put(Element.JSON_ID, elementB.getId());
