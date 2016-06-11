@@ -53,13 +53,13 @@ public class CircleElement extends Element {
     @Override
     public void set(float xMin, float yMin, float xMax, float yMax)
     {
-        float max = Math.max(xMax, yMax);
+        float max = Math.max(xMax - xMin, yMax - yMin);
 
         // We want a perfect square
         this.xMin = xMin;
         this.yMin = yMin;
-        this.xMax = max;
-        this.yMax = max;
+        this.xMax = xMin + max;
+        this.yMax = yMin + max;
 
         this.top.set((this.xMin + this.xMax) / 2, this.yMin /*- thickness*/ );
         this.bottom.set((this.xMin + this.xMax) / 2, this.yMax /*+ thickness*/);
