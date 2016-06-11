@@ -94,10 +94,15 @@ public abstract class Element extends BaseObservable implements Cloneable {
         this.set(xMin, yMin, xMax, yMax);
     }
 
-
+    /**
+     * Copy constructor : generate a new UUID
+     * @param originalElement
+     */
     public Element(Element originalElement) {
         this();
-        this.setId(originalElement.getId());
+        // new UUID
+        this.setId(UUID.randomUUID().toString());
+
         this.setText(originalElement.getText());
         this.setxMin(originalElement.getxMin());
         this.setyMin(originalElement.getyMin());
@@ -105,12 +110,16 @@ public abstract class Element extends BaseObservable implements Cloneable {
         this.setyMax(originalElement.getyMax());
         this.setNotSelectedColor(originalElement.getNotSelectedColor());
         this.setCurrentColor(originalElement.getCurrentColor());
-        this.setActive(originalElement.isActive());
-        this.setCenter(new Anchor(originalElement.getCenter()));
-        this.setTop(new Anchor(originalElement.getTop()));
-        this.setBottom(new Anchor(originalElement.getBottom()));
-        this.setLeft(new Anchor(originalElement.getLeft()));
-        this.setRight(new Anchor(originalElement.getRight()));
+
+        // two elements can't be active at the same time
+        this.setActive(false);
+
+        // new Anchors
+        this.setCenter(new Anchor(Anchor.CENTER, this.id));
+        this.setTop(new Anchor(Anchor.TOP, this.id));
+        this.setBottom(new Anchor(Anchor.BOTTOM, this.id));
+        this.setLeft(new Anchor(Anchor.LEFT, this.id));
+        this.setRight(new Anchor(Anchor.RIGHT, this.id));
     }
 
     public static int getDirection(PointF first, PointF second)

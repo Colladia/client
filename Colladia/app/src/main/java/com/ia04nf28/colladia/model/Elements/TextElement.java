@@ -21,6 +21,14 @@ public class TextElement extends Element {
         super(xMin, yMin, xMax, yMax);
     }
 
+    /**
+     * Copy constructor
+     * @param originalElement the original element
+     */
+    public TextElement(Element originalElement) {
+        super(originalElement);
+    }
+
     @Override
     public void drawElement(Canvas canvas)
     {
@@ -50,9 +58,5 @@ public class TextElement extends Element {
     @Override
     public void updateElement(JSONObject jsonUpdatedElement, ObservableMap<String, Element> listElement) {
         super.updateElement(jsonUpdatedElement, listElement);
-    }
-
-    public TextElement(Element originalElement) {
-        super(originalElement);
     }
 }

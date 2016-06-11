@@ -67,5 +67,16 @@ public class ElementFactory {
     }
 
 
+    public static Element copyOf(Element original) {
+        if (original instanceof CircleElement)
+            return new CircleElement(original);
+        if (original instanceof SquareElement)
+            return new SquareElement(original);
+        if (original instanceof ClassElement)
+            return new ClassElement(original);
+        if (original instanceof TextElement)
+            return new TextElement(original);
 
+        return null;
+    }
 }

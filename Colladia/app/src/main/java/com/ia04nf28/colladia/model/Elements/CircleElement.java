@@ -35,6 +35,14 @@ public class CircleElement extends Element {
         this.radius = radius;
     }
 
+    /**
+     * Copy constructor
+     * @param originalElement the original element
+     */
+    public CircleElement(Element originalElement) {
+        super(originalElement);
+        this.setRadius(((CircleElement)originalElement).getRadius());
+    }
 
     @Override
     public void drawElement(Canvas canvas)
@@ -118,10 +126,5 @@ public class CircleElement extends Element {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    public CircleElement(Element originalElement) {
-        super(originalElement);
-        this.setRadius(((CircleElement)originalElement).getRadius());
     }
 }

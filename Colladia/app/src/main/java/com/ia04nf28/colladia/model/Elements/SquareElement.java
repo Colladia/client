@@ -23,6 +23,14 @@ public class SquareElement extends Element{
         super(xMin, yMin, xMax, yMax);
     }
 
+    /**
+     * Copy constructor the original element
+     * @param originalElement
+     */
+    public SquareElement(Element originalElement) {
+        super(originalElement);
+    }
+
     @Override
     public void drawElement(Canvas canvas)
     {
@@ -39,9 +47,5 @@ public class SquareElement extends Element{
     @Override
     public void updateElement(JSONObject jsonUpdatedElement, ObservableMap<String, Element> listElement) {
         super.updateElement(jsonUpdatedElement, listElement);
-    }
-
-    public SquareElement(Element originalElement) {
-        super(originalElement);
     }
 }

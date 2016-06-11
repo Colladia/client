@@ -3,6 +3,7 @@ package com.ia04nf28.colladia.model.Elements;
 import android.content.Context;
 import android.databinding.ObservableMap;
 import android.graphics.Canvas;
+import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -27,6 +28,15 @@ public class ClassElement extends Element {
         super(xMin, yMin, xMax, yMax);
     }
 
+    /**
+     * Copy constructor
+     * @param originalElement the original element
+     */
+    public ClassElement(Element originalElement) {
+        super(originalElement);
+        this.setHeader(((ClassElement) originalElement).getHeader());
+        this.setHeaderText(((ClassElement) originalElement).getHeaderText());
+    }
 
     @Override
     public void drawElement(Canvas canvas)
@@ -133,10 +143,5 @@ public class ClassElement extends Element {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-    }
-
-    public ClassElement(Element originalElement) {
-        super(originalElement);
-        this.setHeader(((ClassElement) originalElement).getHeader());
     }
 }
