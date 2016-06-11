@@ -44,7 +44,7 @@
                         android:inputType="text"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:text="L'homme"/>
+                        android:text=""/>
 
             </android.support.design.widget.TextInputLayout>
 
@@ -63,10 +63,16 @@
                         android:inputType="textUri"
                         android:maxLines="1"
                         android:singleLine="true"
-                        android:text="http://172.26.25.22:8182"
+                        android:text=""
                     />
 
             </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/color_picker"
+                android:text="@string/color_picker_button_text" />
 
             <Button
                     android:id="@+id/validate_form_button"

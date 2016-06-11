@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.Observable;
 import android.databinding.ObservableList;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +31,12 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.ia04nf28.colladia.model.Manager;
 import com.ia04nf28.colladia.model.User;
+import com.pavelsikun.vintagechroma.ChromaDialog;
+import com.pavelsikun.vintagechroma.IndicatorMode;
+import com.pavelsikun.vintagechroma.OnColorSelectedListener;
+import com.pavelsikun.vintagechroma.colormode.ColorMode;
 
+import java.util.Random;
 import java.util.regex.Pattern;
 
 /**
@@ -40,8 +46,12 @@ public class LoginActivity extends AppCompatActivity {
     // UI references.
     private EditText mUserLoginView;
     private EditText mServerAddressView;
+    private Button mColorPickerButton;
     private View mProgressView;
     private View mLoginFormView;
+
+    private int color;
+    private ColorMode mode = ColorMode.RGB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +60,13 @@ public class LoginActivity extends AppCompatActivity {
         // Set up the login form.
         mUserLoginView = (EditText) findViewById(R.id.user_login);
         mServerAddressView = (EditText) findViewById(R.id.server_address);
-
+        mColorPickerButton = (Button) findViewById(R.id.color_picker);
+        mColorPickerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showColorPickerDialog();
+            }
+        });
         Button mEmailSignInButton = (Button) findViewById(R.id.validate_form_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -71,15 +87,20 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        Random rnd = new Random();
+        int rndDefaultColor = Color.argb(255, rnd.nextInt(256), rnd.nextInt(256), rnd.nextInt(256));
+
         // get last stored settings
         SharedPreferences settings = getPreferences(MODE_PRIVATE);
         String lastLogin = settings.getString("login", "");
         String lastUrl = settings.getString("url", "");
-        int lastColor = settings.getInt("color", -1); // -1 == White, default value, replaced by random color
+
+
+        color = settings.getInt("color", rndDefaultColor);
         // inject in forms
         mUserLoginView.setText(lastLogin);
         mServerAddressView.setText(lastUrl);
-
+        updateColorPickerButton(color);
     }
 
     @Override
@@ -152,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
+            Manager.instance(this.getApplicationContext()).login(new User(userLogin, color), address);
         }
         //startDrawActivity();
     }
@@ -213,6 +234,25 @@ public class LoginActivity extends AppCompatActivity {
         mServerAddressView.setError(error.getMessage());
         mServerAddressView.requestFocus();
         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
+    private void showColorPickerDialog() {
+        new ChromaDialog.Builder()
+                .initialColor(color)
+                .colorMode(ColorMode.RGB)
+                .indicatorMode(IndicatorMode.DECIMAL) //HEX or DECIMAL;
+                .onColorSelected(new OnColorSelectedListener() {
+                    @Override public void onColorSelected(int newColor) {
+                        updateColorPickerButton(newColor);
+                        color = newColor;
+                    }
+                })
+                .create()
+                .show(getSupportFragmentManager(), "dialog");
+    }
+
+    private void updateColorPickerButton(int color){
+        mColorPickerButton.setBackgroundColor(color);
     }
 }
 

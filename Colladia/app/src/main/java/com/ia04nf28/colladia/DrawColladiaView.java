@@ -339,13 +339,13 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     public void recenter()
     {
         Log.d(TAG, "recenter");
-        xPos = 0f;
-        yPos = 0f;
-        translateX = 0f;
-        translateY = 0f;
+        xPos = this.getWidth() / 2;
+        yPos = this.getHeight() / 2;
+        translateX = xPos;
+        translateY = yPos;
         prevTranslateX = 0f;
         prevTranslateY = 0f;
-        root.set(0, 0);
+        root.set(xPos, yPos);
         invalidate();
     }
 
@@ -731,6 +731,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 break;
             case R.id.auto_layout_elements:
                 Manager.instance(applicationCtx).autoPositioning();
+                mode = NONE;
+                break;
+            case R.id.center_view:
+                this.recenter();
                 mode = NONE;
                 break;
             case R.id.delete_element:
