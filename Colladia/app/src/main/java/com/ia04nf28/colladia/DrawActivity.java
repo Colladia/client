@@ -92,20 +92,22 @@ public class DrawActivity extends AppCompatActivity {
             case R.id.nav_position:
                 Manager.instance(getApplicationContext()).autoPositioning();
                 colladiaView.setMode(0);
+                drawer.closeDrawers();
                 break;
 
             case R.id.nav_center:
                 colladiaView.recenter();
+                drawer.closeDrawers();
                 break;
 
             default:
                 Element newElement = ElementFactory.createElement(getApplicationContext(), item.getTitle().toString());
 
                 if (newElement != null) colladiaView.insertNewElement(newElement);
+
+                drawer.closeDrawers();
                 break;
         }
-
-        drawer.closeDrawers();
     }
 
     @Override

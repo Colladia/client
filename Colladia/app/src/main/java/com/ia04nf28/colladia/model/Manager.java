@@ -522,8 +522,8 @@ public class Manager {
     public void connectElement(Anchor anchorA, Anchor anchorB){
 
         try {
-            anchorA.linkTo(anchorB);
-            anchorB.linkTo(anchorA);
+            if( anchorA != null ) anchorA.linkTo(anchorB);
+            if( anchorB != null ) anchorB.linkTo(anchorA);
 
             Element elementA = getCurrentDiagram().getListElement().get(anchorA.getIdParent());
             JSONObject properties = new JSONObject();

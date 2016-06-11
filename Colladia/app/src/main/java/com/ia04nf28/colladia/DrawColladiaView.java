@@ -404,8 +404,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 {
                     mode = LINK;
 
-                    Log.d(TAG, "Anchor is connected ? " + startAnchor.isConnected());
-
                     // Save the previous anchor it was linked to
                     if(startAnchor.isConnected()) linkedTo = startAnchor.getLink();
                     else linkedTo = null;
@@ -536,8 +534,15 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 if(elemAnchor != null && startAnchor != elemAnchor)
                 {
                     // Remove previous link
-                    if(linkedTo != null) linkedTo.linkTo(null);
-                    if(elemAnchor.isConnected()) elemAnchor.getLink().linkTo(null);
+                    if(linkedTo != null) //linkedTo.linkTo(null);
+                    {
+                        Manager.instance(applicationCtx).connectElement(linkedTo, null);
+                    }
+
+                    if(elemAnchor.isConnected()) //elemAnchor.getLink().linkTo(null);
+                    {
+                        Manager.instance(applicationCtx).connectElement(elemAnchor.getLink(), null);
+                    }
 
                     // Connect in both sides
                     //startAnchor.linkTo(elemAnchor);
