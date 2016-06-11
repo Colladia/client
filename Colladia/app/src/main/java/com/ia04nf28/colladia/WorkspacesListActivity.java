@@ -112,7 +112,7 @@ public class WorkspacesListActivity extends ListActivity {
         Object o = l.getItemAtPosition(position);
         diagramSelected = o.toString();
 
-        Toast.makeText(getApplicationContext() ,"clicked " +diagramSelected, Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "clicked " + diagramSelected, Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
         // Neutral button is on center
@@ -128,7 +128,7 @@ public class WorkspacesListActivity extends ListActivity {
             public void onClick(DialogInterface di, int i) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
-                builder.setTitle(getString(R.string.delete_title) + diagramSelected + " ?");
+                builder.setTitle(getString(R.string.delete_title) + " " + diagramSelected + " ?");
 
                 builder.setNegativeButton(R.string.delete_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
@@ -159,4 +159,13 @@ public class WorkspacesListActivity extends ListActivity {
     private void updateAdapter(List<String> list){
         setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
     }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Manager.instance(getApplicationContext()).quitServer();
+    }
+
+
 }

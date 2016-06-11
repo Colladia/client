@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.databinding.Observable;
 import android.databinding.ObservableList;
 import android.os.AsyncTask;
@@ -60,6 +61,44 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        Manager.instance(this.getApplicationContext()).getLogged().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
+            @Override
+            public void onPropertyChanged(Observable sender, int propertyId) {
+                if(Manager.instance(getApplicationContext()).getLogged().get()){
+                    showProgress(false);
+                    startDrawActivity();
+                }
+            }
+        });
+
+        // get last stored settings
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        String lastLogin = settings.getString("login", "");
+        String lastUrl = settings.getString("url", "");
+        int lastColor = settings.getInt("color", -1); // -1 == White, default value, replaced by random color
+        // inject in forms
+        mUserLoginView.setText(lastLogin);
+        mServerAddressView.setText(lastUrl);
+
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        // get user
+        User user = Manager.instance(getApplicationContext()).getUser();
+        String url = Manager.instance(getApplicationContext()).getUrl();
+
+        // edit settings
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("login", user.getLogin());
+        editor.putString("url", url);
+        editor.putInt("color", user.getColor());
+
+        // save edits
+        editor.apply();
     }
 
     /**
@@ -101,6 +140,10 @@ public class LoginActivity extends AppCompatActivity {
             cancel = true;
         }
 
+        // Handle color selection
+        // No white, please.
+        // TODO
+
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -109,15 +152,6 @@ public class LoginActivity extends AppCompatActivity {
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-
-            Manager.instance(this.getApplicationContext()).getLogged().addOnPropertyChangedCallback(new Observable.OnPropertyChangedCallback() {
-                @Override
-                public void onPropertyChanged(Observable sender, int propertyId) {
-                    showProgress(false);
-                    startDrawActivity();
-                }
-            });
-
             Manager.instance(this.getApplicationContext()).login(new User(userLogin), address);
         }
         //startDrawActivity();

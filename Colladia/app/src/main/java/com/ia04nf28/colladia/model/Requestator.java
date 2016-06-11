@@ -169,6 +169,6 @@ class Requestator {
     };
 
     private void displayErrorInToast(VolleyError e){
-        Toast.makeText(Requestator.ctx, e.getLocalizedMessage(), Toast.LENGTH_LONG);
+        Toast.makeText(Requestator.ctx, e.getMessage(), Toast.LENGTH_SHORT).show();
     }
 }

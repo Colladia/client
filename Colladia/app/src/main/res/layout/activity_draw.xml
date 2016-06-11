@@ -5,24 +5,50 @@
 
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" >
+    android:layout_height="match_parent">
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/draw_layout">
 
         <com.ia04nf28.colladia.DrawColladiaView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/draw_view" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical">
+            <!-- Circular Menu contextual main -->
+            <include layout="@layout/contextual_main" />
+            <!-- Circular Menu for selected element -->
+            <include layout="@layout/contextual_select" />
+        </LinearLayout>
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:layout_width="?attr/actionBarSize"
-            android:minHeight="?attr/actionBarSize"
-            android:background="?attr/colorPrimary">
-        </android.support.v7.widget.Toolbar>
+            android:orientation="horizontal">
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_height="match_parent"
+                android:layout_width="?attr/actionBarSize"
+                android:minHeight="?attr/actionBarSize"
+                android:background="?attr/colorPrimary">
+            </android.support.v7.widget.Toolbar>
+            <TextView
+                android:id="@+id/labelDraw"
+                android:paddingLeft="@dimen/activity_horizontal_margin"
+                android:paddingRight="@dimen/activity_horizontal_margin"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="testText"
+                android:textColor="@android:color/black"
+                android:background="@android:color/holo_blue_bright"
+                android:textSize="20sp"/>
+        </LinearLayout>
+
 
     </FrameLayout>
 
@@ -36,5 +62,4 @@
         android:fitsSystemWindows="false"
         app:menu="@menu/nav_view_items" >
     </android.support.design.widget.NavigationView>
-
 </android.support.v4.widget.DrawerLayout>

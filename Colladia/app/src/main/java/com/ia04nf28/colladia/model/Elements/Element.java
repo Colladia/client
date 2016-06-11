@@ -42,20 +42,20 @@ public abstract class Element extends BaseObservable implements Cloneable {
     protected String id = UUID.randomUUID().toString();
     public static final String JSON_ID = "id";
     protected String text = "";
-    private static final String JSON_TEXT = "text";
+    public static final String JSON_TEXT = "text";
     protected float xMin;
     protected float yMin;
     protected float xMax;
     protected float yMax;
 
-    private static final String JSON_X_MIN = "xMin";
-    private static final String JSON_Y_MIN = "yMin";
-    private static final String JSON_X_MAX = "xMax";
-    private static final String JSON_Y_MAX = "yMax";
+    public static final String JSON_X_MIN = "xMin";
+    public static final String JSON_Y_MIN = "yMin";
+    public static final String JSON_X_MAX = "xMax";
+    public static final String JSON_Y_MAX = "yMax";
 
     // Element's lines size and color
     protected static final float THICKNESS = 12;
-    protected static final float TEXT_SIZE = 30;
+    protected static final float TEXT_SIZE = 50;
     protected static final int TEXT_COLOR = Color.BLACK;
 
     protected int notSelectedColor = Color.BLACK;
@@ -63,9 +63,9 @@ public abstract class Element extends BaseObservable implements Cloneable {
     protected boolean active = false;
     public static Paint textPaint;//not serialized
 
-    private static final String JSON_NOT_SELECTED_COLOR = "notSelectedColor";
-    private static final String JSON_CURRENT_COLOR = "currentColor";
-    private static final String JSON_ACTIVE = "active";
+    public static final String JSON_NOT_SELECTED_COLOR = "notSelectedColor";
+    public static final String JSON_CURRENT_COLOR = "currentColor";
+    public static final String JSON_ACTIVE = "active";
 
     // Link points
     protected Anchor center = new Anchor(Anchor.CENTER, id);

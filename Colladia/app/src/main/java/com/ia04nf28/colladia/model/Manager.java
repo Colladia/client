@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 
 import com.android.volley.Response;
 import com.ia04nf28.colladia.model.Elements.Anchor;
+import com.ia04nf28.colladia.model.Elements.ClassElement;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
 import org.json.JSONArray;
@@ -39,6 +40,7 @@ public class Manager {
     private final ObservableList<String> diagrams;
     private Diagram currentDiagram;
     private User user;
+    private String url;
     private String lastClock;
 
     public ObservableBoolean getLogged() {
@@ -47,19 +49,25 @@ public class Manager {
 
     private final ObservableBoolean logged;
     private Timer requestTimer = new Timer();
-    private TimerTask getDiagramsTask = new TimerTask() {
-        @Override
-        public void run() {
-            requestDiagrams();
-        }
-    };
+    //private TimerTask getDiagramsTask;
+    private TimerTask createDiagramsTask () {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                requestDiagrams();
+            }
+        };
+    }
     private Timer requestTimerElements = new Timer();
-    private TimerTask getElementsTask = new TimerTask() {
-        @Override
-        public void run() {
-            requestElements();
-        }
-    };
+    private TimerTask getElementsTask;
+    private TimerTask createElementsTask () {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                requestElements();
+            }
+        };
+    }
     private final static long delayRequestDiagrams = 5000;
     private final static long delayRequestElements = 1000;
 
@@ -111,6 +119,8 @@ public class Manager {
         return user;
     }
 
+    public String getUrl() { return url; }
+
     public void login(User user, String url) {
         Pattern p = Pattern.compile("^http://");
         Matcher m = p.matcher(url) ;
@@ -122,15 +132,34 @@ public class Manager {
 
         Requestator.instance(context).setUrl(url);
         this.user = user;
+        this.url = url;
         // TODO check url
         // TODO if url valid
-        requestTimer.schedule(getDiagramsTask, 0, delayRequestDiagrams);
+
+        if(requestTimer!=null) {
+            requestTimer.cancel();
+            requestTimer = new Timer();
+        }
+        requestTimer.schedule(createDiagramsTask(), 0, delayRequestDiagrams);
         // end of if url valid
     }
 
 
     public void joinWorkspace(){
-        requestTimerElements.schedule(getElementsTask, 0, delayRequestElements);
+        requestTimerElements.schedule(createElementsTask(), 0, delayRequestElements);
+    }
+
+    public void quitWorkspace(){
+        requestTimerElements.cancel();
+        requestTimerElements = new Timer();
+        lastClock = "0";
+        currentDiagram = null;
+    }
+
+    public void quitServer(){
+        logged.set(false);
+        requestTimer.cancel();
+        requestTimer = new Timer();
     }
 
 
@@ -171,7 +200,6 @@ public class Manager {
                     while( keys.hasNext() ) {
                         String key = (String)keys.next();
                         //TODO may be test if not element expected, or keep it for the exceptions
-                        //getCurrentDiagram().getListElement().put(key, Element.deserializeJSON(descArray.getString(key)));
                         JSONObject jsonElement = new JSONObject(descArray.getString(key));
                         Element newElement = ElementFactory.createElementSerialized(jsonElement.getString(Element.JSON_TYPE));
                         newElement.updateElement(jsonElement, getCurrentDiagram().getListElement());
@@ -237,6 +265,8 @@ public class Manager {
                         jsonElement = new JSONObject(modification.getString(PROPERTIES_FIELD));
                         Element newElement = ElementFactory.createElementSerialized(jsonElement.getString(Element.JSON_TYPE));
                         newElement.updateElement(jsonElement, getCurrentDiagram().getListElement());
+                        if(getCurrentDiagram().getListElement().containsKey(idElement))
+                            getCurrentDiagram().getListElement().remove(idElement);
                         getCurrentDiagram().getListElement().put(idElement, newElement);
                         break;
                     case TYPE_REQUEST_POST :
@@ -381,57 +411,103 @@ public class Manager {
     }
 
     public void updatePositionElement(Element originalElement, PointF first, PointF second){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.set(first, second);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            originalElement.set(first, second);
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_X_MIN, ""+originalElement.getxMin());
+            properties.put(Element.JSON_Y_MIN, ""+originalElement.getyMin());
+            properties.put(Element.JSON_X_MAX, ""+originalElement.getxMax());
+            properties.put(Element.JSON_Y_MAX, "" + originalElement.getyMax());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void moveElement(Element originalElement, PointF newPosition){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.move(newPosition);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            originalElement.move(newPosition);
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_X_MIN, ""+originalElement.getxMin());
+            properties.put(Element.JSON_Y_MIN, ""+originalElement.getyMin());
+            properties.put(Element.JSON_X_MAX, ""+originalElement.getxMax());
+            properties.put(Element.JSON_Y_MAX, ""+originalElement.getyMax());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void selectElement(Element originalElement, int userColor){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.selectElement(userColor);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE,originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_CURRENT_COLOR, ""+userColor);
+            properties.put(Element.JSON_ACTIVE, "true");
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
+
+
     public void deselectElement(Element originalElement){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.deselectElement();
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE,originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_CURRENT_COLOR, ""+originalElement.getNotSelectedColor());
+            properties.put(Element.JSON_ACTIVE, "false");
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void changeText(Element originalElement, LinearLayout inputs){
-        Element elementToServer = ElementFactory.createCopyElement(originalElement);
-        elementToServer.setTextFromLayout(inputs);
-        Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), elementToServer.getId(), lastClock, elementToServer.serializeJSON(), new Response.Listener<String>() {
-            @Override
-            public void onResponse(String s) {
-                responseRequestHandler(s);
-            }
-        });
+        try {
+            originalElement.setTextFromLayout(inputs);
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_TEXT, originalElement.getText());
+            if(ClassElement.class.isInstance(originalElement))
+                properties.put(ClassElement.JSON_HEADER_TEXT, ((ClassElement)originalElement).getHeaderText());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     public void autoPositioning(){
@@ -481,7 +557,7 @@ public class Manager {
 
         //TODO see if necessary to add this one
 
-/*            Element elementB = getCurrentDiagram().getListElement().get(anchorB.getIdParent());
+            /*Element elementB = getCurrentDiagram().getListElement().get(anchorB.getIdParent());
             properties = new JSONObject();
             properties.put(Element.JSON_TYPE,elementB.getClass().getSimpleName());
             properties.put(Element.JSON_ID, elementB.getId());

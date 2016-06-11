@@ -10,19 +10,16 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.BaseAdapter;
-import android.widget.HeaderViewListAdapter;
-import android.widget.ListView;
+import android.widget.TextView;
 
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
 import com.ia04nf28.colladia.model.Manager;
+import com.szugyi.circlemenu.view.CircleLayout;
 
 public class DrawActivity extends AppCompatActivity {
+
     private static final String TAG = "DrawActivity";
 
     private DrawerLayout drawer;
@@ -30,15 +27,19 @@ public class DrawActivity extends AppCompatActivity {
     private NavigationView nav;
     private DrawColladiaView colladiaView;
 
+    private CircleLayout mainContextualMenu;
+    private CircleLayout selectContextualMenu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
-
+        ((TextView)findViewById(R.id.labelDraw)).setText(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
         // Change toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
 
         colladiaView = (DrawColladiaView) findViewById(R.id.draw_view);
         colladiaView.setApplicationCtx(getApplicationContext());
@@ -51,6 +52,11 @@ public class DrawActivity extends AppCompatActivity {
         // Removes overlay
         drawer.setScrimColor(Color.TRANSPARENT);
         drawer.closeDrawers();
+
+        mainContextualMenu = (CircleLayout) findViewById(R.id.main_contextual_menu);
+        selectContextualMenu = (CircleLayout) findViewById(R.id.select_contextual_menu);
+        colladiaView.setMainContextualMenu(mainContextualMenu);
+        colladiaView.setSelectContextualMenu(selectContextualMenu);
 
         nav = (NavigationView) findViewById(R.id.nav_view);
 
@@ -70,8 +76,10 @@ public class DrawActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case R.id.nav_home:
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);
+                /*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                startActivity(intent);*/
+                Manager.instance(getApplicationContext()).quitWorkspace();
+                finish();
                 break;
 
             default:
@@ -119,7 +127,9 @@ public class DrawActivity extends AppCompatActivity {
 
         //return super.onOptionsItemSelected(item);
     }
-    /*public void onBackPressed() {
+
+  /*  public void onBackPressed() {
+        super.onBackPressed();
         Log.d(TAG, "onBackPressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
@@ -129,4 +139,9 @@ public class DrawActivity extends AppCompatActivity {
         }
     }*/
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Manager.instance(getApplicationContext()).quitWorkspace();
+    }
 }

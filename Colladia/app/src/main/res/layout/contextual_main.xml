@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.szugyi.circlemenu.view.CircleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:circle="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main_contextual_menu"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    circle:circleBackground="@drawable/bg_main"
+    circle:isRotating="false"
+    android:visibility="gone"
+    tools:showIn="@layout/activity_draw">
+    <!-- Menu items -->
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/add_square"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_square"
+        android:background="@drawable/circle" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/add_circle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_circle"
+        android:background="@drawable/circle" />
+
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/add_umlclass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_class"
+        android:background="@drawable/circle" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/add_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_comment"
+        android:background="@drawable/circle" />
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/auto_layout_elements"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_position"
+        android:background="@drawable/circle" />
+</com.szugyi.circlemenu.view.CircleLayout>

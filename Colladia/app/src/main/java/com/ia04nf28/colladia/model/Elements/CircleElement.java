@@ -72,7 +72,6 @@ public class CircleElement extends Element {
 
     @Override
     public void set(PointF first, PointF second) {
-
         super.set(first, second);
 
         this.radius = Math.max(Math.round((getxMax() - getxMin()) / 2), Math.round((getyMax() - getyMin()) / 2));
@@ -82,6 +81,8 @@ public class CircleElement extends Element {
         this.yMax = this.yMin + 2 * this.radius;
 
     }
+
+
 
     public int getRadius() {
         return radius;
