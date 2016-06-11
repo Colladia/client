@@ -16,7 +16,7 @@
                         android:title="@string/nav_position" />
                     <item
                         android:id="@+id/nav_center"
-                        android:icon="@drawable/ic_menu_manage"
+                        android:icon="@drawable/ic_center_diagram"
                         android:title="@string/nav_center" />
                 </group>
             </menu>

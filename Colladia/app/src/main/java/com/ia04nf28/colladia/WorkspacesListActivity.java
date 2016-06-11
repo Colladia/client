@@ -112,7 +112,6 @@ public class WorkspacesListActivity extends ListActivity {
         Object o = l.getItemAtPosition(position);
         diagramSelected = o.toString();
 
-        Toast.makeText(getApplicationContext(), "clicked " + diagramSelected, Toast.LENGTH_SHORT).show();
         AlertDialog.Builder builder = new AlertDialog.Builder(WorkspacesListActivity.this);
 
         // Neutral button is on center

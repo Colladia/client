@@ -343,8 +343,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         yPos = this.getHeight() / 2;
         translateX = xPos;
         translateY = yPos;
-        prevTranslateX = 0f;
-        prevTranslateY = 0f;
+        prevTranslateX = xPos;
+        prevTranslateY = yPos;
         root.set(xPos, yPos);
         invalidate();
     }
