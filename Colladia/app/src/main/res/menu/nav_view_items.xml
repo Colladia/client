@@ -11,8 +11,13 @@
                         android:icon="@drawable/ic_home"
                         android:title="@string/nav_home" />
                     <item
+                        android:id="@+id/nav_position"
                         android:icon="@drawable/ic_position"
                         android:title="@string/nav_position" />
+                    <item
+                        android:id="@+id/nav_center"
+                        android:icon="@drawable/ic_menu_manage"
+                        android:title="@string/nav_center" />
                 </group>
             </menu>
         </item>

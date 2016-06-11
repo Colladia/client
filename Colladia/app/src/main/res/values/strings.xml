@@ -24,6 +24,7 @@
     <string name="action_settings">Settings</string>
     <string name="nav_home">Back</string>
     <string name="nav_position">Repositionner</string>
+    <string name="nav_center">Recentrer</string>
     <string name="square">Square</string>
     <string name="circle">Circle</string>
     <string name="triangle">Triangle</string>

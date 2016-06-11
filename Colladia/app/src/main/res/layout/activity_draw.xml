@@ -33,20 +33,10 @@
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_height="match_parent"
-                android:layout_width="?attr/actionBarSize"
+                android:layout_width="match_parent"
                 android:minHeight="?attr/actionBarSize"
                 android:background="?attr/colorPrimary">
             </android.support.v7.widget.Toolbar>
-            <TextView
-                android:id="@+id/labelDraw"
-                android:paddingLeft="@dimen/activity_horizontal_margin"
-                android:paddingRight="@dimen/activity_horizontal_margin"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:text="testText"
-                android:textColor="@android:color/black"
-                android:background="@android:color/holo_blue_bright"
-                android:textSize="20sp"/>
         </LinearLayout>
 
 
@@ -60,6 +50,7 @@
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_gravity="start"
         android:fitsSystemWindows="false"
-        app:menu="@menu/nav_view_items" >
+        app:menu="@menu/nav_view_items"
+        app:theme="@style/NavigationView">
     </android.support.design.widget.NavigationView>
 </android.support.v4.widget.DrawerLayout>

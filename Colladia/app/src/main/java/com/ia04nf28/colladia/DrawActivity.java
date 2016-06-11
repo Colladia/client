@@ -35,11 +35,18 @@ public class DrawActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
-        ((TextView)findViewById(R.id.labelDraw)).setText(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
+
         // Change toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         getSupportActionBar().setTitle(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
+
+        if(getSupportActionBar().getTitle() == null)
+        {
+            getSupportActionBar().setTitle("Colladia");
+        }
+
 
         colladiaView = (DrawColladiaView) findViewById(R.id.draw_view);
         colladiaView.setApplicationCtx(getApplicationContext());
@@ -82,14 +89,23 @@ public class DrawActivity extends AppCompatActivity {
                 finish();
                 break;
 
+            case R.id.nav_position:
+                Manager.instance(getApplicationContext()).autoPositioning();
+                colladiaView.setMode(0);
+                break;
+
+            case R.id.nav_center:
+                colladiaView.recenter();
+                break;
+
             default:
                 Element newElement = ElementFactory.createElement(getApplicationContext(), item.getTitle().toString());
 
                 if (newElement != null) colladiaView.insertNewElement(newElement);
-
-                drawer.closeDrawers();
                 break;
         }
+
+        drawer.closeDrawers();
     }
 
     @Override
@@ -118,14 +134,6 @@ public class DrawActivity extends AppCompatActivity {
             default:
                 return true;
         }
-
-        /*if(drawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }*/
-
-        // Handle any other menu item selections...
-
-        //return super.onOptionsItemSelected(item);
     }
 
   /*  public void onBackPressed() {

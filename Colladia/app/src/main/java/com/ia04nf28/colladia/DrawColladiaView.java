@@ -36,7 +36,7 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
     private static final float TOLERANCE = 5;
 
     // ZOOM LIMITS
-    private static final float ZOOM_MIN = 0.35f;
+    private static final float ZOOM_MIN = 0.20f;
     private static final float ZOOM_MAX = 2.0f;
 
     // ALLOWED MODES
@@ -335,6 +335,19 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         canvas.drawLines(points, grid);
     }
 
+
+    public void recenter()
+    {
+        Log.d(TAG, "recenter");
+        xPos = 0f;
+        yPos = 0f;
+        translateX = 0f;
+        translateY = 0f;
+        prevTranslateX = 0f;
+        prevTranslateY = 0f;
+        root.set(0, 0);
+        invalidate();
+    }
 
 
     private void startTouch(float x, float y)
@@ -724,6 +737,11 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         // exit contextual menus
         mainContextualMenu.setVisibility(GONE);
         selectContextualMenu.setVisibility(GONE);
+    }
+
+    public void setMode(int mode)
+    {
+        this.mode = mode;
     }
 
     public class SimpleScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {

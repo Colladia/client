@@ -20,6 +20,10 @@
 
     </style>
 
+    <style name="NavigationView">
+        <item name="android:textSize">8sp</item>
+    </style>
+
 
 
     <!-- Base application theme. -->
