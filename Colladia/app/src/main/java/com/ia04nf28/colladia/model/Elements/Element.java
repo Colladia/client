@@ -531,4 +531,11 @@ public abstract class Element extends BaseObservable implements Cloneable {
         }
     }
 
+    public void removeAnchors() {
+        top.reset();
+        center.reset();
+        right.reset();
+        bottom.reset();
+        left.reset();
+    }
 }

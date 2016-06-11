@@ -338,4 +338,15 @@ public class Anchor {
     public void setIdParent(String idParent) {
         this.idParent = idParent;
     }
+
+    public void reset() {
+        if(link != null)
+        {
+            link.setPositionLink(NONE);
+            link.setIdParentLink(NO_PARENT);
+            link.setLink(null);
+        }
+
+        this.setLink(null);
+    }
 }

@@ -24,5 +24,18 @@
         android:src="@drawable/ic_duplicate"
         android:background="@drawable/circle" />
 
+    <!--<com.szugyi.circlemenu.view.CircleImageView-->
+        <!--android:id="@+id/edit_element"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:src="@drawable/ic_edit"-->
+        <!--android:background="@drawable/circle" />-->
+
+    <com.szugyi.circlemenu.view.CircleImageView
+        android:id="@+id/remove_links"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_break_link"
+        android:background="@drawable/circle" />
 
 </com.szugyi.circlemenu.view.CircleLayout>
