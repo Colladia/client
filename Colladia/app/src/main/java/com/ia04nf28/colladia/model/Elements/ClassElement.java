@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.ia04nf28.colladia.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -80,10 +81,11 @@ public class ClassElement extends Element {
 
         final EditText title = new EditText(ctx);
         title.setHint("Titre");
+        title.setId(R.id.class_edit_title);
 
         if(!this.headerText.isEmpty()) title.setText(headerText);
 
-        ll.addView(title);
+        ll.addView(title, 0);
 
         return ll;
     }
@@ -96,7 +98,7 @@ public class ClassElement extends Element {
 
         if(layout.getChildCount() > 1)
         {
-            EditText title = (EditText)layout.getChildAt(1);
+            EditText title = (EditText)layout.findViewById(R.id.class_edit_title);
             this.headerText = title.getText().toString();
         }
     }

@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import com.ia04nf28.colladia.R;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -267,6 +268,7 @@ public abstract class Element extends BaseObservable implements Cloneable {
 
         final EditText content = new EditText(ctx);
         content.setHint("Contenu");
+        content.setId(R.id.element_edit_content);
 
         if(!this.text.isEmpty()) content.setText(text);
 
@@ -279,7 +281,7 @@ public abstract class Element extends BaseObservable implements Cloneable {
     {
         if(layout.getChildCount() > 0)
         {
-            EditText content = (EditText)layout.getChildAt(0);
+            EditText content = (EditText)layout.findViewById(R.id.element_edit_content);
             this.setText(content.getText().toString());
         }
     }
