@@ -507,7 +507,6 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         switch(mode)
         {
             case INSERT:
-                //Manager.instance(applicationCtx).updatePositionElement(drawElem, iAbsolutePoint, mAbsolutePoint);
                 drawElem.set(iAbsolutePoint,mAbsolutePoint);
                 Manager.instance(applicationCtx).addElement(drawElem);
                 drawElem = null;
