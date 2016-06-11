@@ -115,6 +115,22 @@ public class Manager {
         lastClock = "0";
     }
 
+    // Listener for current diagram changes
+    public interface CurrentDiagramListener {
+        void onStateChange(Diagram currentDiagram);
+    }
+
+    private CurrentDiagramListener mListener = null;
+    public void registerListener (CurrentDiagramListener listener) {
+        mListener = listener;
+    }
+
+    public void synchronizeDiagramState() {
+        // now notify if someone is interested.
+        if (mListener != null)
+            mListener.onStateChange(currentDiagram);
+    }
+
     public User getUser() {
         return user;
     }
@@ -161,11 +177,6 @@ public class Manager {
         requestTimer.cancel();
         requestTimer = new Timer();
     }
-
-
-
-
-
 
 
     /**

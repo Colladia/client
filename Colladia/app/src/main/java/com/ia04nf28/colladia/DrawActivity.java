@@ -12,13 +12,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.ia04nf28.colladia.model.Diagram;
 import com.ia04nf28.colladia.model.Elements.Element;
 import com.ia04nf28.colladia.model.Elements.ElementFactory;
 import com.ia04nf28.colladia.model.Manager;
 import com.szugyi.circlemenu.view.CircleLayout;
 
-public class DrawActivity extends AppCompatActivity {
+public class DrawActivity extends AppCompatActivity implements Manager.CurrentDiagramListener {
 
     private static final String TAG = "DrawActivity";
 
@@ -35,6 +37,10 @@ public class DrawActivity extends AppCompatActivity {
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_draw);
+
+        // Register to currentDiagram listener
+        Manager.instance(getApplicationContext()).registerListener(this);
+        Manager.instance(getApplicationContext()).synchronizeDiagramState();
 
         // Change toolbar
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -151,5 +157,13 @@ public class DrawActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         Manager.instance(getApplicationContext()).quitWorkspace();
+    }
+
+    @Override
+    public void onStateChange(Diagram currentDiagram) {
+        //Toast.makeText(getApplicationContext(), "diagram name changed", Toast.LENGTH_LONG).show();
+        try{
+            getSupportActionBar().setTitle(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
+        }catch (Throwable e) {}
     }
 }
