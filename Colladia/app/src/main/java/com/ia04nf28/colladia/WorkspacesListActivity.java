@@ -90,7 +90,8 @@ public class WorkspacesListActivity extends ListActivity {
                 builder.setTitle(getString(R.string.add_diagram_title)).setView(userTextInput);
                 builder.setNegativeButton(R.string.add_diagram_button, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface di, int i) {
-                        Manager.instance(getApplicationContext()).addDiagram(userTextInput.getText().toString());
+                        String diagrameName = userTextInput.getText().toString().replaceAll(" ","_");
+                        Manager.instance(getApplicationContext()).addDiagram(diagrameName);
                     }
                 });
 
