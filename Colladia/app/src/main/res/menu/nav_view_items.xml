@@ -32,7 +32,7 @@
                         android:icon="@drawable/ic_circle"
                         android:title="@string/shape_circle" />
                     <item
-                        android:icon="@drawable/ic_class"
+                        android:icon="@drawable/ic_umlclass"
                         android:title="@string/shape_class" />
                     <item
                         android:icon="@drawable/ic_comment"

@@ -24,12 +24,11 @@
         android:src="@drawable/ic_circle"
         android:background="@drawable/circle" />
 
-
     <com.szugyi.circlemenu.view.CircleImageView
         android:id="@+id/add_umlclass"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_class"
+        android:src="@drawable/ic_umlclass"
         android:background="@drawable/circle" />
 
     <com.szugyi.circlemenu.view.CircleImageView

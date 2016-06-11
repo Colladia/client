@@ -704,6 +704,10 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         mode = DrawColladiaView.INSERT;
     }
 
+    /**
+     * Handle interactions with contextual menus
+     * @param view the menu item
+     */
     @Override
     public void onItemClick(View view) {
         Element newElement;
@@ -735,6 +739,14 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
                 break;
             case R.id.center_view:
                 this.recenter();
+                mode = NONE;
+                break;
+            case R.id.duplicate_element:
+                Element dupl = ElementFactory.copyOf(selected);
+                Manager.instance(applicationCtx).addElement(dupl);
+                Manager.instance(applicationCtx).deselectElement(selected);
+                prevSelected = selected;
+                selected = null;
                 mode = NONE;
                 break;
             case R.id.delete_element:
