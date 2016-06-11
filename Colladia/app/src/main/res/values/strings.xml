@@ -48,4 +48,5 @@
     <string name="add_diagram_title">Add a new diagram</string>
     <string name="nav_menu_auto_position">Auto</string>
     <string name="nav_menu_home_back">Retour</string>
+    <string name="color_picker_button_text">Choose your color</string>
 </resources>
