@@ -133,8 +133,8 @@ public class LoginActivity extends AppCompatActivity {
         mServerAddressView.setError(null);
 
         // Store values at the time of the login attempt.
-        String userLogin = mUserLoginView.getText().toString();
-        String address = mServerAddressView.getText().toString();
+        String userLogin = mUserLoginView.getText().toString().trim();
+        String address = mServerAddressView.getText().toString().trim();
 
         boolean cancel = false;
         View focusView = null;
@@ -184,7 +184,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean isAddressValid(String s) {
-        return Pattern.matches("^(http://)?((?:\\d{1,3}.?){4}:8182)/?$", s);
+        return Pattern.matches("^(http://)?((?:\\d{1,3}.?){4}(:8182)?)/?$", s);
     }
 
     /**

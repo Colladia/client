@@ -32,26 +32,37 @@
                 android:orientation="vertical"
                 android:layout_gravity="center_vertical">
 
-            <android.support.design.widget.TextInputLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
-                <EditText
+                <android.support.design.widget.TextInputLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5">
+                    <EditText
                         android:id="@+id/user_login"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:hint="@string/prompt_user_login"
                         android:inputType="text"
                         android:maxLines="1"
                         android:singleLine="true"
                         android:text=""/>
+                </android.support.design.widget.TextInputLayout>
 
-            </android.support.design.widget.TextInputLayout>
+                <Button
+                    android:id="@+id/color_picker"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    style="?android:textAppearanceSmall"
+                    android:text="@string/color_picker_button_text" />
+            </LinearLayout>
 
             <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
-
                 <EditText
                         android:id="@+id/server_address"
                         android:layout_width="match_parent"
@@ -65,14 +76,12 @@
                         android:singleLine="true"
                         android:text=""
                     />
-
             </android.support.design.widget.TextInputLayout>
 
-            <Button
+            <Space
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:id="@+id/color_picker"
-                android:text="@string/color_picker_button_text" />
+                android:layout_height="30dp"
+                android:layout_gravity="center_horizontal" />
 
             <Button
                     android:id="@+id/validate_form_button"
