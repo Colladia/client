@@ -166,15 +166,19 @@ public class WorkspacesListActivity extends AppCompatActivity {
     }
 
     private void updateAdapter(List<String> list){
-        listView.setAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
+        listView.setAdapter(new ArrayAdapter<String>(this, R.layout.list_workspaces, list));
     }
 
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Manager.instance(getApplicationContext()).quitServer();
+    protected void onResume() {
+        super.onResume();
+        Manager.instance(getApplicationContext()).joinServer();
     }
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Manager.instance(getApplicationContext()).quitServer();
+    }
 }

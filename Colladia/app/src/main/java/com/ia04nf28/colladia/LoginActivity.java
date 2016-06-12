@@ -103,7 +103,7 @@ public class LoginActivity extends AppCompatActivity {
         updateColorPickerButton(color);
     }
 
-    @Override
+    /*@Override
     protected void onStop() {
         super.onStop();
 
@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity {
 
         // save edits
         editor.apply();
-    }
+    }*/
 
     /**
      * Attempts to connect.
@@ -224,8 +224,22 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startDrawActivity() {
+
+        // get user
+        User user = Manager.instance(getApplicationContext()).getUser();
+        String url = Manager.instance(getApplicationContext()).getUrl();
+
+        // edit settings
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("login", user.getLogin());
+        editor.putString("url", url);
+        editor.putInt("color", user.getColor());
+
+        // save edits
+        editor.apply();
+
         Intent intent = new Intent(this, WorkspacesListActivity.class);
-        //Intent intent = new Intent(this, DrawActivity.class);
         startActivity(intent);
     }
 
@@ -253,6 +267,12 @@ public class LoginActivity extends AppCompatActivity {
 
     private void updateColorPickerButton(int color){
         mColorPickerButton.setBackgroundColor(color);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Manager.instance(getApplicationContext()).getLogged().set(false);
     }
 }
 

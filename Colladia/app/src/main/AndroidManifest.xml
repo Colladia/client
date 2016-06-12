@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/ColladiaTheme" >
-        android:screenOrientation="portrait" > <!-- disable auto-rotate -->
+         <!-- android:screenOrientation="portrait" disable auto-rotate -->
 
         <activity
             android:name=".LoginActivity"
