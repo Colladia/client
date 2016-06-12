@@ -157,15 +157,20 @@ public class WorkspacesListActivity extends ListActivity {
     }
 
     private void updateAdapter(List<String> list){
-        setListAdapter(new ArrayAdapter<String>(this,R.layout.list_workspaces,list));
+        setListAdapter(new ArrayAdapter<String>(this, R.layout.list_workspaces, list));
     }
+
 
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Manager.instance(getApplicationContext()).quitServer();
+    protected void onResume() {
+        super.onResume();
+        Manager.instance(getApplicationContext()).joinServer();
     }
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Manager.instance(getApplicationContext()).quitServer();
+    }
 }

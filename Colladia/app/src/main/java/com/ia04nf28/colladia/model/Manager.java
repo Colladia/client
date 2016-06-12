@@ -152,6 +152,11 @@ public class Manager {
         // TODO check url
         // TODO if url valid
 
+        joinServer();
+
+    }
+
+    public void joinServer(){
         if(requestTimer!=null) {
             requestTimer.cancel();
             requestTimer = new Timer();
@@ -160,24 +165,31 @@ public class Manager {
         // end of if url valid
     }
 
-
-    public void joinWorkspace(){
-        requestTimerElements.schedule(createElementsTask(), 0, delayRequestElements);
-    }
-
-    public void quitWorkspace(){
-        requestTimerElements.cancel();
-        requestTimerElements = new Timer();
-        lastClock = "0";
-        currentDiagram = null;
+    public void joinWorkspace() {
+        if (getCurrentDiagram() != null) {
+            if (requestTimerElements != null) {
+                requestTimerElements.cancel();
+                requestTimerElements = new Timer();
+                lastClock = "0";
+            }
+            requestTimerElements.schedule(createElementsTask(), 0, delayRequestElements);
+        }
     }
 
     public void quitServer(){
-        logged.set(false);
-        requestTimer.cancel();
-        requestTimer = new Timer();
+        if(requestTimer!=null) {
+            requestTimer.cancel();
+            requestTimer = new Timer();
+        }
     }
 
+    public void quitWorkspace()     {
+        if(requestTimerElements!=null) {
+            requestTimerElements.cancel();
+            requestTimerElements = new Timer();
+            lastClock = "0";
+        }
+    }
 
     /**
      * Method that handle every response from the server
@@ -188,11 +200,6 @@ public class Manager {
             JSONObject mainObject = new JSONObject(responseRequest);
             if (mainObject.getString(STATUS_FIELD).equalsIgnoreCase(STATUS_OK)){
                 Log.d(TAG, "Request success "+responseRequest );
-                // if first response
-                if (!logged.get())
-                {
-                    logged.set(true);
-                }
                 if(mainObject.has(CLOCK_FIELD))
                     lastClock = mainObject.getString(CLOCK_FIELD);
 
@@ -306,7 +313,20 @@ public class Manager {
         Requestator.instance(context).getDiagramsList(new Response.Listener<String>() {
             @Override
             public void onResponse(String s) {
-                responseRequestHandler(s);
+                try {
+                    JSONObject mainObject = new JSONObject(s);
+                    if (mainObject.getString(STATUS_FIELD).equalsIgnoreCase(STATUS_OK)) {
+                        if (!logged.get())
+                        {
+                            logged.set(true);
+                        }
+                        responseRequestHandler(s);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+
             }
         });
     }

@@ -89,9 +89,6 @@ public class DrawActivity extends AppCompatActivity implements Manager.CurrentDi
         switch(item.getItemId())
         {
             case R.id.nav_home:
-                /*Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(intent);*/
-                Manager.instance(getApplicationContext()).quitWorkspace();
                 finish();
                 break;
 
@@ -144,22 +141,7 @@ public class DrawActivity extends AppCompatActivity implements Manager.CurrentDi
         }
     }
 
-  /*  public void onBackPressed() {
-        super.onBackPressed();
-        Log.d(TAG, "onBackPressed");
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START)) {
-            drawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
-    }*/
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Manager.instance(getApplicationContext()).quitWorkspace();
-    }
 
     @Override
     public void onStateChange(Diagram currentDiagram) {
@@ -167,5 +149,19 @@ public class DrawActivity extends AppCompatActivity implements Manager.CurrentDi
         try{
             getSupportActionBar().setTitle(Manager.instance(getApplicationContext()).getCurrentDiagram().getName());
         }catch (Throwable e) {}
+    }
+
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Manager.instance(getApplicationContext()).joinWorkspace();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Manager.instance(getApplicationContext()).quitWorkspace();
     }
 }
