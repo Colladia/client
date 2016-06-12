@@ -105,9 +105,7 @@ public class DrawActivity extends AppCompatActivity implements Manager.CurrentDi
 
             default:
                 Element newElement = ElementFactory.createElement(getApplicationContext(), item.getTitle().toString());
-
                 if (newElement != null) colladiaView.insertNewElement(newElement);
-
                 drawer.closeDrawers();
                 break;
         }

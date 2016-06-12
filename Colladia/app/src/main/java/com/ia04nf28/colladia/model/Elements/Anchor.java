@@ -141,20 +141,25 @@ public class Anchor {
             }
 
             if(!this.getIdParentLink().equals(NO_PARENT) && this.getPositionLink() != NONE && listElement.containsKey(this.getIdParentLink())){//it is an anchor fixed to an element that is referenced
-
                 // Anchor was already connected
                 if(this.getLink() != null && !this.getIdParentLink().equals(this.getLink().getIdParent())){
                     // Remove link to current anchor from the other one
-                    this.getLink().setIdParentLink(NO_PARENT);
-                    this.getLink().setPositionLink(NONE);
-                    this.getLink().setLink(null);
+                    this.getLink().disconnect();
+                }
+
+                //if the anchor to connect to was already connected then ask its old anchor partner to disconnect
+                Anchor linkToThisAnchor = listElement.get(this.getIdParentLink()).getAnchor(this.getPositionLink());
+                if(linkToThisAnchor.getLink()!=null && !linkToThisAnchor.getIdParentLink().equals(NO_PARENT) && linkToThisAnchor.getPositionLink() != NONE) {
+                    linkToThisAnchor.getLink().disconnect();
                 }
 
                 // Connect to new anchor
-                this.setLink(listElement.get(this.getIdParentLink()).getAnchor(this.getPositionLink()));
+                this.setLink(linkToThisAnchor);
 
                 if(this.getLink().getLink() == null || this.getLink().getLink() != this.getLink()){//condition fulfilled if the anchor referenced has to get a reference of this one
-                    this.getLink().setLink(this.getLink());
+                    this.getLink().setIdParentLink(getIdParent());
+                    this.getLink().setPositionLink(getPosition());
+                    this.getLink().setLink(this);
                 }
 
 
@@ -164,15 +169,9 @@ public class Anchor {
 
                 if(this.getLink() != null)
                 {
-                    this.getLink().setPositionLink(NONE);
-                    this.getLink().setIdParentLink(NO_PARENT);
-                    this.getLink().setLink(null);
+                    this.getLink().disconnect();
                 }
-
                 this.setLink(null);
-               /* if(jsonAnchor.has(JSON_LINK) && !jsonAnchor.getString(JSON_LINK).equals("")){//it is a mobile anchor that is referenced
-                    this.setLink(new Anchor(jsonAnchor.getString(JSON_LINK), listElement));
-                }*/
             }
 
         } catch (JSONException e) {
@@ -340,13 +339,21 @@ public class Anchor {
     }
 
     public void reset() {
-        if(link != null)
+        if(this.getLink() != null)
         {
-            link.setPositionLink(NONE);
-            link.setIdParentLink(NO_PARENT);
-            link.setLink(null);
+            this.getLink().setPositionLink(NONE);
+            this.getLink().setIdParentLink(NO_PARENT);
+            this.getLink().setLink(null);
         }
 
+        this.setPositionLink(NONE);
+        this.setIdParentLink(NO_PARENT);
+        this.setLink(null);
+    }
+
+    private void disconnect(){
+        this.setPositionLink(NONE);
+        this.setIdParentLink(NO_PARENT);
         this.setLink(null);
     }
 }

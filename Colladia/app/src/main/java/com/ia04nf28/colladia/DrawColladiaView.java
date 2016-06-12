@@ -369,7 +369,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
         // Deselect previous selected element
         if(prevSelected != null)
         {
-            Manager.instance(applicationCtx).deselectElement(prevSelected);
+            if(Manager.instance(applicationCtx).getCurrentDiagram().getListElement().containsKey(prevSelected.getId()))
+                Manager.instance(applicationCtx).deselectElement(prevSelected);
             prevSelected = null;
         }
 
@@ -529,8 +530,8 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
             case LINK:
                 Anchor elemAnchor = getTouchedAnchor(currAbsolutePoint);
 
-                // Valid anchor found
-                if(elemAnchor != null && startAnchor != elemAnchor)
+                // Valid anchor found and cannot connect anchor on same element
+                if(elemAnchor != null && startAnchor != elemAnchor && (!startAnchor.getIdParent().equals(elemAnchor.getIdParent()) || startAnchor.getIdParent().equals(Anchor.NO_PARENT)))
                 {
                     // Remove previous link
                     if(linkedTo != null) //linkedTo.linkTo(null);

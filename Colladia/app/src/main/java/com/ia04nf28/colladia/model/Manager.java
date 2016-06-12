@@ -69,7 +69,7 @@ public class Manager {
         };
     }
     private final static long delayRequestDiagrams = 1000;
-    private final static long delayRequestElements = 100;
+    private final static long delayRequestElements = 1000;
 
 
     private final static String STATUS_FIELD = "status";
@@ -431,7 +431,7 @@ public class Manager {
             }
         });
     }
-    public void removeElement(final Element newElement) {
+    public void removeElement(Element newElement) {
         // get diagrams list
         Requestator.instance(this.context).deleteElement(getCurrentDiagram().getName(), newElement.getId(), lastClock, new Response.Listener<String>() {
             @Override
