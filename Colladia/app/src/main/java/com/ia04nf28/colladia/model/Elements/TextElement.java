@@ -41,13 +41,14 @@ public class TextElement extends Element {
                 canvas.drawText(sub, center.x - size, center.y + y, Element.textPaint);
                 y += textPaint.descent() - textPaint.ascent();
             }
-        }else{
-            Paint fgPaintSel = new Paint();
-            fgPaintSel.setARGB(255, 0, 0,0);
-            fgPaintSel.setStyle(Paint.Style.STROKE);
-            fgPaintSel.setPathEffect(new DashPathEffect(new float[] {10,20}, 0));
-            canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), fgPaintSel);
         }
+
+        Paint fgPaintSel = new Paint();
+        fgPaintSel.setARGB(255, 0, 0,0);
+        fgPaintSel.setStyle(Paint.Style.STROKE);
+        fgPaintSel.setPathEffect(new DashPathEffect(new float[] {10,20}, 0));
+        canvas.drawRect(getxMin(), getyMin(), getxMax(), getyMax(), fgPaintSel);
+
     }
 
     @Override
