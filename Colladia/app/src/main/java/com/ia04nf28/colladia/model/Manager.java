@@ -138,12 +138,20 @@ public class Manager {
     public String getUrl() { return url; }
 
     public void login(User user, String url) {
-        Pattern p = Pattern.compile("^http://");
-        Matcher m = p.matcher(url) ;
-        if (!m.lookingAt())
+        Pattern purl = Pattern.compile("^http://");
+        Matcher murl = purl.matcher(url) ;
+        if (!murl.lookingAt())
         {
             url = "http://" + url;
         }
+
+        Pattern pport = Pattern.compile(".*:8182$");
+        Matcher mport = pport.matcher(url) ;
+        if (!mport.lookingAt())
+        {
+            url = url + ":8182";
+        }
+
         System.out.println(url);
 
         Requestator.instance(context).setUrl(url);
