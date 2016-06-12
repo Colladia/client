@@ -758,7 +758,13 @@ public class DrawColladiaView extends SurfaceView implements SurfaceHolder.Callb
 //                mode = NONE;
 //                break;
             case R.id.remove_links:
-                selected.removeAnchors();
+                //selected.removeAnchors();
+
+                Manager.instance(applicationCtx).removeAnchors(selected);
+                //Manager.instance(applicationCtx).connectElement(selected.getBottom(),null);
+                //Manager.instance(applicationCtx).connectElement(selected.getCenter(),null);
+                //Manager.instance(applicationCtx).connectElement(selected.getLeft(),null);
+                //Manager.instance(applicationCtx).connectElement(selected.getRight(),null);
                 mode = NONE;
                 break;
         }

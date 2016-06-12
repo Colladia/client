@@ -69,7 +69,7 @@ public class Manager {
         };
     }
     private final static long delayRequestDiagrams = 1000;
-    private final static long delayRequestElements = 1000;
+    private final static long delayRequestElements = 500;
 
 
     private final static String STATUS_FIELD = "status";
@@ -389,7 +389,7 @@ public class Manager {
                         currentDiagram = new Diagram();
                         currentDiagram.setName(diaId);
                         joinWorkspace();
-                    } else{
+                    } else {
                         //TODO go back to menu workspace in case of error
                     }
                     responseRequestHandler(s);
@@ -538,6 +538,31 @@ public class Manager {
             properties.put(Element.JSON_TEXT, originalElement.getText());
             if(ClassElement.class.isInstance(originalElement))
                 properties.put(ClassElement.JSON_HEADER_TEXT, ((ClassElement)originalElement).getHeaderText());
+            Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
+                @Override
+                public void onResponse(String s) {
+                    responseRequestHandler(s);
+                }
+            });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void removeAnchors(final Element originalElement){
+        try {
+            List<Anchor> listAnchorAssociatedToReset = originalElement.removeAnchors();
+            for(Anchor anc : listAnchorAssociatedToReset){
+                this.connectElement(anc, null);
+            }
+            JSONObject properties = new JSONObject();
+            properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
+            properties.put(Element.JSON_ID, originalElement.getId());
+            properties.put(Element.JSON_ANCHOR_CENTER, originalElement.getCenter().anchorToJsonString());
+            properties.put(Element.JSON_ANCHOR_TOP, originalElement.getTop().anchorToJsonString());
+            properties.put(Element.JSON_ANCHOR_BOTTOM, originalElement.getBottom().anchorToJsonString());
+            properties.put(Element.JSON_ANCHOR_LEFT, originalElement.getLeft().anchorToJsonString());
+            properties.put(Element.JSON_ANCHOR_RIGHT, originalElement.getRight().anchorToJsonString());
             Requestator.instance(this.context).postElement(getCurrentDiagram().getName(), originalElement.getId(), lastClock, properties.toString(), new Response.Listener<String>() {
                 @Override
                 public void onResponse(String s) {

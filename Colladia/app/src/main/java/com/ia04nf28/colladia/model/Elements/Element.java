@@ -21,7 +21,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -531,11 +533,18 @@ public abstract class Element extends BaseObservable implements Cloneable {
         }
     }
 
-    public void removeAnchors() {
-        top.reset();
-        center.reset();
-        right.reset();
-        bottom.reset();
-        left.reset();
+    public List<Anchor> removeAnchors() {
+        List<Anchor> listAnchorAssociatedToReset = new ArrayList<>();
+        listAnchorAssociatedToReset.add(top.reset());
+        listAnchorAssociatedToReset.remove(null);
+        listAnchorAssociatedToReset.add(center.reset());
+        listAnchorAssociatedToReset.remove(null);
+        listAnchorAssociatedToReset.add(right.reset());
+        listAnchorAssociatedToReset.remove(null);
+        listAnchorAssociatedToReset.add(bottom.reset());
+        listAnchorAssociatedToReset.remove(null);
+        listAnchorAssociatedToReset.add(left.reset());
+        listAnchorAssociatedToReset.remove(null);
+        return listAnchorAssociatedToReset;
     }
 }

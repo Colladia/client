@@ -338,9 +338,11 @@ public class Anchor {
         this.idParent = idParent;
     }
 
-    public void reset() {
+    public Anchor reset() {
+        Anchor associatedAnchor = null;
         if(this.getLink() != null)
         {
+            associatedAnchor = this.getLink();
             this.getLink().setPositionLink(NONE);
             this.getLink().setIdParentLink(NO_PARENT);
             this.getLink().setLink(null);
@@ -349,6 +351,7 @@ public class Anchor {
         this.setPositionLink(NONE);
         this.setIdParentLink(NO_PARENT);
         this.setLink(null);
+        return associatedAnchor;
     }
 
     private void disconnect(){
