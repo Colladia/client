@@ -536,15 +536,10 @@ public abstract class Element extends BaseObservable implements Cloneable {
     public List<Anchor> removeAnchors() {
         List<Anchor> listAnchorAssociatedToReset = new ArrayList<>();
         listAnchorAssociatedToReset.add(top.reset());
-        listAnchorAssociatedToReset.remove(null);
         listAnchorAssociatedToReset.add(center.reset());
-        listAnchorAssociatedToReset.remove(null);
         listAnchorAssociatedToReset.add(right.reset());
-        listAnchorAssociatedToReset.remove(null);
         listAnchorAssociatedToReset.add(bottom.reset());
-        listAnchorAssociatedToReset.remove(null);
         listAnchorAssociatedToReset.add(left.reset());
-        listAnchorAssociatedToReset.remove(null);
         return listAnchorAssociatedToReset;
     }
 }

@@ -553,7 +553,9 @@ public class Manager {
         try {
             List<Anchor> listAnchorAssociatedToReset = originalElement.removeAnchors();
             for(Anchor anc : listAnchorAssociatedToReset){
-                this.connectElement(anc, null);
+                if(anc!=null) {
+                    this.connectElement(anc, null);
+                }
             }
             JSONObject properties = new JSONObject();
             properties.put(Element.JSON_TYPE, originalElement.getClass().getSimpleName());
